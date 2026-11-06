@@ -24,6 +24,8 @@
     uninstall: async () => true,
     launch: async () => ({ ok: false, error: 'Games can only be launched from the desktop app' }),
     stop: async () => true,
+    readAllAchievements: async () => ({}),
+    onAchievements: () => () => {},
     onInstallProgress: () => () => {},
     onGameExited: (cb) => { listeners.exited.push(cb); return () => {}; },
     onMaximized: () => () => {},

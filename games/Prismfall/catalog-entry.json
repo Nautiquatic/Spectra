@@ -1,0 +1,57 @@
+{
+  "news": [
+    {
+      "tag": "Release",
+      "title": "Prismfall 1.0 is live",
+      "body": "One hull. Endless light. Dash, level up and seal the rift in Spectra Games' neon survival shooter.",
+      "date": "2026-11-06",
+      "game": "prismfall"
+    }
+  ],
+  "games": [
+    {
+      "id": "prismfall",
+      "title": "Prismfall",
+      "tagline": "One hull. Endless light. Survive the rift.",
+      "description": "A neon arena survival shooter. Your prism cannon auto-fires at the nearest hostile while you move, dash and harvest light shards to level up. Survive escalating swarms, then break the Prism Wraith that breaches the rift every seventy seconds.",
+      "status": "available",
+      "version": "1.0.0",
+      "released": "2026-11-06",
+      "genres": ["Arcade", "Survival"],
+      "platforms": ["Windows"],
+      "featured": true,
+
+      "download": "https://your-server.com/spectra/prismfall/1.0.0.zip",
+      "exe": "Prismfall.exe",
+      "sizeBytes": 263127,
+
+      "art": { "from": "#1a0c3a", "to": "#050111", "glow": "#6ef2ff", "motif": "prism" },
+
+      "features": [
+        "Auto-firing prism cannon with 12 stackable augmentations",
+        "Four enemy types and a boss that breaches every 70 seconds",
+        "Dash with invulnerability and a risk/reward pickup loop",
+        "Mouse-free controls, keyboard and touch support",
+        "WebAudio soundtrack-free synth effects — no asset files"
+      ],
+      "achievements": [
+        { "id": "first-blood", "name": "First Light", "desc": "Destroy your first hostile." },
+        { "id": "level-ten", "name": "Resonant", "desc": "Reach level 10 in a single run." },
+        { "id": "rift-sealed", "name": "Rift Sealed", "desc": "Defeat a Prism Wraith." },
+        { "id": "survive-five", "name": "Last Light", "desc": "Survive for five minutes." },
+        { "id": "score-five-k", "name": "Overcharge", "desc": "Score 5,000 points in one run." }
+      ],
+      "patchNotes": [
+        {
+          "version": "1.0.0",
+          "date": "2026-11-06",
+          "notes": [
+            "Initial release",
+            "Four enemy types, boss encounters and twelve upgrades",
+            "Keyboard and touch controls with full HUD"
+          ]
+        }
+      ]
+    }
+  ]
+}

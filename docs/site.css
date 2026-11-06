@@ -268,3 +268,6 @@ dd { font-weight: 600; text-align: right; }
   .mock-side { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+.ach > div { display: flex; gap: 12px; align-items: center; }
+.ach > div img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+.ach > div.secret { display: block; border-left-color: var(--muted); opacity: .75; }

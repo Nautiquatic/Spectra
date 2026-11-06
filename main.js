@@ -7,6 +7,9 @@ const http = require('http');
 const https = require('https');
 const { spawn, execFile } = require('child_process');
 
+// Fixed name so the data folder is always %APPDATA%\Spectra Launcher (games rely on this path)
+app.setName('Spectra Launcher');
+
 const stateFile = () => path.join(app.getPath('userData'), 'state.json');
 const defaultInstallRoot = () => path.join(app.getPath('home'), 'Spectra Games');
 const safeId = (id) => /^[a-z0-9-]+$/i.test(String(id));
@@ -141,7 +144,40 @@ function finished(id) {
   const r = running.get(id);
   if (!r) return;
   running.delete(id);
+  r.unwatch?.();
   win?.webContents.send('game:exited', { id, seconds: Math.round((Date.now() - r.started) / 1000) });
+}
+
+// ---------- achievements ----------
+// Each game unlocks achievements by appending one achievement id per line to
+//   %APPDATA%/Spectra Launcher/achievements/<gameId>.txt
+// The path is passed to the game in the SPECTRA_ACHIEVEMENTS_FILE environment variable.
+const achDir = () => path.join(app.getPath('userData'), 'achievements');
+const achFile = (id) => path.join(achDir(), `${id}.txt`);
+const ACH_ID = /^[a-z0-9_.-]{1,64}$/i;
+
+function readAchievements(id) {
+  try {
+    return [...new Set(fs.readFileSync(achFile(id), 'utf8').split(/\r?\n/).map((l) => l.trim()).filter((l) => ACH_ID.test(l)))];
+  } catch { return []; }
+}
+
+ipcMain.handle('achievements:readAll', () => {
+  const out = {};
+  try {
+    for (const f of fs.readdirSync(achDir())) {
+      const id = f.replace(/\.txt$/i, '');
+      if (f.toLowerCase().endsWith('.txt') && safeId(id)) out[id] = readAchievements(id);
+    }
+  } catch {}
+  return out;
+});
+
+function watchAchievements(id) {
+  const file = achFile(id);
+  const push = () => win?.webContents.send('achievements:update', { id, ids: readAchievements(id) });
+  fs.watchFile(file, { interval: 750 }, push);
+  return () => { fs.unwatchFile(file, push); push(); };
 }
 
 ipcMain.handle('game:launch', (_e, { id, exe, root }) => {
@@ -150,8 +186,10 @@ ipcMain.handle('game:launch', (_e, { id, exe, root }) => {
   const dir = path.join(root || defaultInstallRoot(), id);
   const exePath = path.join(dir, exe || '');
   if (!exe || !fs.existsSync(exePath)) return { ok: false, error: `Executable not found: ${exePath}` };
-  const child = spawn(exePath, [], { cwd: dir, detached: false, stdio: 'ignore' });
-  running.set(id, { started: Date.now(), kill: () => child.kill() });
+  fs.mkdirSync(achDir(), { recursive: true });
+  const env = { ...process.env, SPECTRA_LAUNCHER: '1', SPECTRA_GAME_ID: id, SPECTRA_ACHIEVEMENTS_FILE: achFile(id) };
+  const child = spawn(exePath, [], { cwd: dir, detached: false, stdio: 'ignore', env });
+  running.set(id, { started: Date.now(), kill: () => child.kill(), unwatch: watchAchievements(id) });
   child.on('exit', () => finished(id));
   child.on('error', () => finished(id));
   return { ok: true };

@@ -217,7 +217,7 @@
         ${g.description ? `<p class="lead">${esc(g.description)}</p>` : ''}
         <div class="shots">${shots}</div>
         ${g.features.length ? `<h2>Features</h2><ul class="flist">${g.features.map((f) => `<li>${check}<span>${esc(f)}</span></li>`).join('')}</ul>` : ''}
-        ${g.achievements.length ? `<h2>Achievements <span class="muted">${g.achievements.length}</span></h2><div class="ach">${g.achievements.map((a) => `<div><b>${esc(a.name)}</b><p>${esc(a.desc)}</p></div>`).join('')}</div>` : ''}
+        ${g.achievements.length ? `<h2>Achievements <span class="muted">${g.achievements.length}</span></h2><div class="ach">${g.achievements.map((a) => a.hidden ? '<div class="secret"><b>Hidden achievement</b><p>Unlock it in the game to find out.</p></div>' : `<div>${a.icon ? `<img src="${esc(a.icon)}" alt="">` : ''}<span><b>${esc(a.name)}</b><p>${esc(a.desc)}</p></span></div>`).join('')}</div>` : ''}
         ${g.patchNotes.length ? `<h2>Patch notes</h2>${g.patchNotes.map((p) => `<div class="patch"><div class="row between"><b>Version ${esc(p.version)}</b><time class="muted">${fmtDate(p.date)}</time></div><ul>${(p.notes || []).map((n) => `<li>${esc(n)}</li>`).join('')}</ul></div>`).join('')}` : ''}
       </div>
       <aside class="info">

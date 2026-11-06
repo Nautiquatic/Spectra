@@ -82,7 +82,6 @@
     wishlist: [],
     playtime: {},
     lastPlayed: {},
-    achSeen: {},
     completed: [],
     achievements: {},
     catalogCache: null,
@@ -106,7 +105,40 @@
   const owned = (id) => state.owned.includes(id);
   const installed = (id) => !!state.installed[id];
   const dlOf = (id) => rt.queue.find((d) => d.id === id);
-  const achUnlocked = (id) => state.achievements?.[id] || [];
+  // state.achievements[gameId] = { achievementId: unlockedAt (ms) }
+  const achMap = (id) => { const m = state.achievements?.[id]; return m && typeof m === 'object' && !Array.isArray(m) ? m : {}; };
+  const achUnlocked = (id) => Object.keys(achMap(id));
+  // only counts achievements that exist in the catalogue
+  const achCount = (g) => g.achievements.filter((a) => achMap(g.id)[a.id]).length;
+  const totalAch = () => GAMES.reduce((n, g) => n + achCount(g), 0);
+
+  // Merge achievement ids reported by a game (via its achievements file) into the launcher's record.
+  function mergeAchievements(gameId, ids, { live = false } = {}) {
+    if (!Array.isArray(ids) || !ids.length) return 0;
+    state.achievements = state.achievements || {};
+    const map = { ...achMap(gameId) };
+    const g = byId[gameId];
+    const fresh = ids.filter((aid) => !map[aid]);
+    if (!fresh.length) return 0;
+    const now = Date.now();
+    fresh.forEach((aid) => (map[aid] = now));
+    state.achievements[gameId] = map;
+    const named = g ? fresh.map((aid) => g.achievements.find((a) => a.id === aid)).filter(Boolean) : [];
+    named.forEach((a) => {
+      if (live) {
+        toast(`🏆 Achievement unlocked: ${a.name}`, 'ok');
+        // the launcher is usually minimised while a game runs, so also show a Windows notification
+        if (!document.hasFocus() && 'Notification' in window) {
+          try { new Notification(`🏆 ${a.name}`, { body: `${g.title} · ${a.desc || 'Achievement unlocked'}`, icon: '../Assets/icon.png', silent: false }); } catch {}
+        }
+      }
+      notify(`${g.title}: unlocked “${a.name}”`);
+    });
+    if (!live && named.length > 1) toast(`🏆 ${named.length} new achievements unlocked`, 'ok');
+    else if (!live && named.length === 1) toast(`🏆 Achievement unlocked: ${named[0].name}`, 'ok');
+    save();
+    return fresh.length;
+  }
   const totalPlay = () => Object.values(state.playtime).reduce((a, b) => a + b, 0);
 
   // ---------------- art ----------------
@@ -185,6 +217,7 @@
           <div><dt>Installed</dt><dd>${Object.keys(state.installed).length}</dd></div>
           <div><dt>Total playtime</dt><dd>${fmtTime(totalPlay()) === '—' ? '0 minutes' : fmtTime(totalPlay())}</dd></div>
           <div><dt>Last played</dt><dd>${last ? esc(last.title) : 'Not played yet'}</dd></div>
+          <div><dt>Achievements</dt><dd>${totalAch()}</dd></div>
           <div><dt>Launcher</dt><dd class="accent-text">v0.1 · Beta</dd></div>
         </dl>
         <button class="btn secondary block" data-route="${GAMES.length ? 'library' : 'store'}">${GAMES.length ? 'Open library' : 'Browse store'}</button>
@@ -297,7 +330,7 @@
         : `<div class="lib-table">
             <div class="lt-head"><span>Title</span><span>Achievements</span><span>Status</span><span>Time Played</span><span>Size</span><span></span></div>
             ${list.map((g) => {
-              const total = g.achievements.length, got = achUnlocked(g.id).length;
+              const total = g.achievements.length, got = achCount(g);
               const d = dlOf(g.id);
               return `<div class="lt-row" data-game="${g.id}">
                 <div class="lt-title">${cover(g, 'xs')}<div><b>${esc(g.title)}</b>${libAction(g)}</div></div>
@@ -355,9 +388,10 @@
     const g = byId[id];
     if (!g) return '<p class="empty muted">Game not found.</p>';
     const fav = state.favorites.includes(g.id);
-    const got = achUnlocked(g.id);
+    const amap = achMap(g.id);
+    const gotN = achCount(g);
     const tab = rt.gameTab;
-    const tabs = [['overview', 'Overview'], ['achievements', `Achievements${g.achievements.length ? ` ${got.length}/${g.achievements.length}` : ''}`], ['patch', 'Patch notes']];
+    const tabs = [['overview', 'Overview'], ['achievements', `Achievements${g.achievements.length ? ` ${gotN}/${g.achievements.length}` : ''}`], ['patch', 'Patch notes']];
     let content = '';
     if (tab === 'overview') {
       content = `
@@ -366,10 +400,18 @@
         <h3>Features</h3>
         <ul class="features">${g.features.map((f) => `<li>${icon.check}<span>${esc(f)}</span></li>`).join('')}</ul>`;
     } else if (tab === 'achievements') {
+      const sorted = [...g.achievements].sort((a, b) => (amap[b.id] ? 1 : 0) - (amap[a.id] ? 1 : 0) || (amap[b.id] || 0) - (amap[a.id] || 0));
       content = g.achievements.length
-        ? `<div class="ach-summary"><div class="ach-bar lg"><i style="width:${(got.length / g.achievements.length) * 100}%"></i></div><span>${got.length} of ${g.achievements.length} unlocked</span></div>
-           <div class="ach-list">${g.achievements.map((a) => { const on = got.includes(a.id); return `<div class="ach ${on ? 'on' : ''}"><div class="ach-ico">${on ? icon.trophy : icon.lock}</div><div><b>${esc(a.name)}</b><p>${esc(a.desc)}</p></div>${on ? '<span class="pill ok">Unlocked</span>' : ''}</div>`; }).join('')}</div>`
-        : '<p class="muted">No achievements announced yet.</p>';
+        ? `<div class="ach-summary"><div class="ach-bar lg"><i style="width:${(gotN / g.achievements.length) * 100}%"></i></div><span>${gotN} of ${g.achievements.length} unlocked</span></div>
+           <div class="ach-list">${sorted.map((a) => {
+             const at = amap[a.id];
+             const secret = a.hidden && !at;
+             const ico = a.icon && !secret ? `<img src="${esc(a.icon)}" alt="">` : at ? icon.trophy : icon.lock;
+             return `<div class="ach ${at ? 'on' : ''}"><div class="ach-ico">${ico}</div>
+               <div><b>${secret ? 'Hidden achievement' : esc(a.name)}</b><p>${secret ? 'Keep playing to find out.' : esc(a.desc)}</p></div>
+               ${at ? `<span class="ach-date">Unlocked<br>${new Date(at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</span>` : ''}</div>`;
+           }).join('')}</div>`
+        : '<p class="muted">This game has no achievements.</p>';
     } else {
       content = g.patchNotes.length
         ? g.patchNotes.map((p) => `<div class="patch"><div class="row between"><b>Version ${esc(p.version)}</b><time class="muted">${fmtDate(p.date)}</time></div><ul>${p.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul></div>`).join('')
@@ -704,8 +746,6 @@
     const r = await api.launch({ id, exe: g.exe, root: state.settings.installRoot || rt.info.defaultInstallRoot });
     if (!r.ok) { toast(`Couldn't launch ${g.title}: ${r.error}`, 'err'); return; }
     rt.running.add(id);
-    rt.achBefore = rt.achBefore || {};
-    rt.achBefore[id] = achUnlocked(id);
     state.lastPlayed[id] = Date.now();
     save();
     toast(`Launching ${g.title}…`);
@@ -715,18 +755,21 @@
 
   function stopGame(id) { api.stop(id); }
 
+  // live updates while a game is running (the main process watches the game's achievements file)
+  api.onAchievements(({ id, ids }) => { if (mergeAchievements(id, ids, { live: true })) rerender(); });
+
+  // pick up achievements earned while the launcher was closed (e.g. the game exe was run directly)
+  async function syncAchievements() {
+    const all = await api.readAllAchievements();
+    let changed = 0;
+    for (const [gid, ids] of Object.entries(all || {})) changed += mergeAchievements(gid, ids);
+    if (changed) rerender();
+  }
+
   api.onGameExited(({ id, seconds }) => {
     rt.running.delete(id);
     state.playtime[id] = (state.playtime[id] || 0) + seconds;
     state.lastPlayed[id] = Date.now();
-    const g = byId[id];
-    const before = rt.achBefore?.[id] || [];
-    const now = achUnlocked(id);
-    const fresh = now.filter((a) => !before.includes(a));
-    fresh.forEach((aid) => {
-      const a = g.achievements.find((x) => x.id === aid);
-      if (a) { toast(`🏆 Achievement unlocked: ${a.name}`, 'ok'); notify(`${g.title}: unlocked “${a.name}”`); }
-    });
     save();
     if (state.settings.minimizeOnLaunch && api.isDesktop) api.win.restore();
     rerender();
@@ -867,7 +910,7 @@
   }
 
   // refresh achievements when the launcher regains focus
-  window.addEventListener('focus', () => { if (rt.route.name === 'game' || rt.route.name === 'library') rerender(); });
+  window.addEventListener('focus', () => { syncAchievements(); });
 
   async function loadCatalog() {
     const url = catalogUrl();
@@ -897,6 +940,8 @@
     render();
     await loadCatalog();
     render();
+    syncAchievements();
+    if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {});
     resetHero();
   })();
 })();

@@ -47,7 +47,14 @@ The launcher caches the last catalogue it loaded, so the library still works off
 | `cover` (3:4), `banner` (wide) | | image URLs. Without them (or if they fail to load), art is generated from `art` |
 | `tagline`, `description`, `version`, `released`, `genres`, `platforms`, `featured`, `features`, `achievements`, `patchNotes` | | shown on the store and game pages |
 
+Achievements: see [sdk/README.md](sdk/README.md) for how games unlock them, plus ready-made helpers for Unity, Godot and GameMaker.
+
 `news` items appear on the Home page. Link one to a game with `"game": "<id>"`.
+
+## Games in this repo
+
+`games/` holds Spectra's own games. Each one has a `catalog-entry.json` to merge into your `catalog.json`.
+- **Prismfall**: neon arena survival shooter with 5 achievements. See [games/Prismfall/README.md](games/Prismfall/README.md).
 
 ## Website
 

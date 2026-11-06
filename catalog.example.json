@@ -30,7 +30,10 @@
       "art": { "from": "#2a1458", "to": "#0b0b1a", "glow": "#927dff", "motif": "prism" },
 
       "features": ["Feature one", "Feature two"],
-      "achievements": [{ "id": "first-win", "name": "First Win", "desc": "Win a round." }],
+      "achievements": [
+        { "id": "first-win", "name": "First Win", "desc": "Win a round." },
+        { "id": "secret-ending", "name": "The Real Ending", "desc": "Find the secret ending.", "hidden": true }
+      ],
       "patchNotes": [{ "version": "1.0.0", "date": "2026-11-06", "notes": ["Initial release"] }]
     }
   ]
