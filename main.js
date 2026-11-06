@@ -103,8 +103,12 @@ function fetchTo(url, dest, onProgress, entry, redirects = 0) {
 
 function extractZip(zip, dir) {
   return new Promise((resolve, reject) => {
-    execFile('powershell.exe', ['-NoProfile', '-Command', 'Expand-Archive', '-LiteralPath', zip, '-DestinationPath', dir, '-Force'],
-      (err) => (err ? reject(err) : resolve()));
+    // Paths go in through environment variables so spaces, quotes or $ in folder names
+    // (e.g. "C:\Users\me\Spectra Games") can't break the PowerShell command.
+    execFile('powershell.exe',
+      ['-NoProfile', '-NonInteractive', '-Command', 'Expand-Archive -LiteralPath $env:SPECTRA_ZIP -DestinationPath $env:SPECTRA_DEST -Force'],
+      { env: { ...process.env, SPECTRA_ZIP: zip, SPECTRA_DEST: dir }, windowsHide: true },
+      (err, _out, stderr) => (err ? reject(new Error(String(stderr || err.message).split('\n')[0].trim() || 'Could not extract the game')) : resolve()));
   });
 }
 
