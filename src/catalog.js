@@ -14,5 +14,5 @@
  *   'C:\\path\\to\\catalog.json'   (local file, handy for testing — desktop app only)
  */
 window.SPECTRA_CONFIG = {
-  catalogUrl: '',
+  catalogUrl: 'https://nautiquatic.github.io/Spectra/catalog.json',
 };
