@@ -9,7 +9,7 @@
  *               While empty, the Download button shows "Coming soon".
  */
 window.SPECTRA_SITE = {
-  catalogUrl: '',
+  catalogUrl: 'catalog.json',
   downloadUrl: 'https://github.com/Nautiquatic/Spectra/releases/latest/download/SpectraLauncherSetup.exe',
   launcherVersion: '0.1.0',
   launcherSize: '78 MB',
