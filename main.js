@@ -112,10 +112,15 @@ function extractZip(zip, dir) {
   });
 }
 
+// Used for fresh installs and updates. The new build is unpacked into "<id>.part" first and only
+// swapped in once it's complete, so a failed or cancelled update leaves the old version playable,
+// and files removed in the new version don't linger.
 ipcMain.handle('game:install', async (_e, { id, url, root }) => {
   if (!safeId(id)) throw new Error('Bad game id');
-  const dir = path.join(root || defaultInstallRoot(), id);
-  fs.mkdirSync(dir, { recursive: true });
+  if (running.has(id)) return { ok: false, error: 'Close the game first' };
+  const base = root || defaultInstallRoot();
+  const dir = path.join(base, id);
+  const staging = path.join(base, `${id}.part`);
   const fileName = decodeURIComponent(new URL(url).pathname.split('/').pop() || `${id}.bin`);
   const tmp = path.join(os.tmpdir(), `spectra-${id}-${Date.now()}-${fileName}`);
   const entry = { aborted: false };
@@ -123,10 +128,16 @@ ipcMain.handle('game:install', async (_e, { id, url, root }) => {
   try {
     await fetchTo(url, tmp, (received, total) => win?.webContents.send('install:progress', { id, received, total }), entry);
     if (entry.aborted) throw new Error('cancelled');
-    if (fileName.toLowerCase().endsWith('.zip')) await extractZip(tmp, dir);
-    else fs.copyFileSync(tmp, path.join(dir, fileName));
+    fs.rmSync(staging, { recursive: true, force: true });
+    fs.mkdirSync(staging, { recursive: true });
+    if (fileName.toLowerCase().endsWith('.zip')) await extractZip(tmp, staging);
+    else fs.copyFileSync(tmp, path.join(staging, fileName));
+    if (entry.aborted) throw new Error('cancelled');
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.renameSync(staging, dir);
     return { ok: true, dir };
   } catch (err) {
+    fs.rm(staging, { recursive: true, force: true }, () => {});
     return { ok: false, error: err.message };
   } finally {
     downloads.delete(id);

@@ -461,3 +461,22 @@ a.mini-act:hover { color: var(--accent); }
 .update-pill:disabled { cursor: default; }
 .pre { white-space: pre-line; }
 .btn:disabled { opacity: .45; pointer-events: none; }
+
+/* ---------- game updates ---------- */
+.btn.update { background: var(--info); color: #06121c; }
+.btn.update:hover { filter: brightness(1.1); }
+.upd-text { color: var(--info); font-style: normal; }
+.pill.upd { background: rgba(94, 200, 255, .12); color: var(--info); }
+.upd-badge { position: absolute; top: 8px; left: 8px; z-index: 2; padding: 3px 8px; border-radius: 999px; background: var(--info); color: #06121c; font-size: 11px; font-weight: 700; letter-spacing: .02em; box-shadow: 0 4px 14px rgba(0, 0, 0, .4); }
+.upd-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--info); box-shadow: 0 0 8px var(--info); flex: none; }
+.tab-count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 4px; border-radius: 9px; background: var(--info); color: #06121c; font-size: 11px; font-weight: 700; vertical-align: 2px; }
+.tabs { align-items: center; }
+.tabs-end { margin-left: auto; margin-bottom: 6px; }
+
+/* ---------- right-click menus ---------- */
+.menu { min-width: 200px; width: auto; max-width: 300px; z-index: 150; }
+.menu button { white-space: nowrap; }
+.menu button span { flex: 1; }
+.menu button kbd { font: 11px/1 inherit; color: var(--muted); opacity: .8; margin-left: 18px; }
+.menu button:disabled { opacity: .38; cursor: default; }
+.menu button:disabled:hover { background: none; color: #d7d7e5; }

@@ -70,6 +70,12 @@
     folder: '<svg viewBox="0 0 24 24"><path d="M3.5 7a2 2 0 012-2H10l2 2h6.5a2 2 0 012 2v8a2 2 0 01-2 2h-13a2 2 0 01-2-2z"/></svg>',
     trash: '<svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></svg>',
     chevron: '<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg>',
+    copy: '<svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M5 15V6a2 2 0 012-2h8"/></svg>',
+    cut: '<svg viewBox="0 0 24 24"><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M8.3 15.7L18 4M15.7 15.7L6 4"/></svg>',
+    paste: '<svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="16" rx="2"/><path d="M9 5V3.5h6V5"/></svg>',
+    back: '<svg viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></svg>',
+    fwd: '<svg viewBox="0 0 24 24"><path d="M9.5 6l6 6-6 6"/></svg>',
+    gear: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg>',
   };
 
   // ---------------- state ----------------
@@ -105,6 +111,26 @@
   const owned = (id) => state.owned.includes(id);
   const installed = (id) => !!state.installed[id];
   const dlOf = (id) => rt.queue.find((d) => d.id === id);
+
+  // ---------------- game updates ----------------
+  // Compare dotted versions ("1.10.0" > "1.9.2"). Returns >0 if a is newer.
+  function cmpVer(a, b) {
+    const pa = String(a || '').replace(/^v/i, '').split(/[.+-]/), pb = String(b || '').replace(/^v/i, '').split(/[.+-]/);
+    for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+      const x = pa[i] ?? '0', y = pb[i] ?? '0';
+      const nx = Number(x), ny = Number(y);
+      const d = Number.isFinite(nx) && Number.isFinite(ny) ? nx - ny : x.localeCompare(y);
+      if (d) return d;
+    }
+    return 0;
+  }
+  // An installed game has an update when the server lists a newer version than the one installed.
+  const updateAvail = (g) => {
+    const inst = g && state.installed[g.id];
+    if (!inst || !g.version || !playable(g) || (api.isDesktop && !g.download)) return false;
+    return !inst.version || cmpVer(g.version, inst.version) > 0;
+  };
+  const updatesList = () => state.owned.map((id) => byId[id]).filter(updateAvail);
   // state.achievements[gameId] = { achievementId: unlockedAt (ms) }
   const achMap = (id) => { const m = state.achievements?.[id]; return m && typeof m === 'object' && !Array.isArray(m) ? m : {}; };
   const achUnlocked = (id) => Object.keys(achMap(id));
@@ -159,8 +185,9 @@
     if (rt.running.has(g.id)) return `<button class="btn running ${size}" data-action="stop" data-id="${g.id}">${icon.stop}<span>Running</span></button>`;
     if (d) {
       const pct = d.total ? Math.floor((d.received / d.total) * 100) : 0;
-      return `<button class="btn progress ${size}" data-route="downloads" style="--p:${pct}%"><span>${d.paused ? 'Paused' : d.started ? 'Installing' : 'Queued'} ${d.started ? pct + '%' : ''}</span></button>`;
+      return `<button class="btn progress ${size}" data-route="downloads" style="--p:${pct}%"><span>${d.paused ? 'Paused' : d.started ? (d.update ? 'Updating' : 'Installing') : 'Queued'} ${d.started ? pct + '%' : ''}</span></button>`;
     }
+    if (updateAvail(g)) return `<button class="btn update ${size}" data-action="update-game" data-id="${g.id}" title="Update to v${esc(g.version)}">${icon.dl}<span>Update</span></button>`;
     if (installed(g.id)) return `<button class="btn primary ${size}" data-action="play" data-id="${g.id}">${icon.play}<span>Play</span></button>`;
     if (!playable(g)) {
       const w = state.wishlist.includes(g.id);
@@ -218,7 +245,7 @@
           <div><dt>Total playtime</dt><dd>${fmtTime(totalPlay()) === '—' ? '0 minutes' : fmtTime(totalPlay())}</dd></div>
           <div><dt>Last played</dt><dd>${last ? esc(last.title) : 'Not played yet'}</dd></div>
           <div><dt>Achievements</dt><dd>${totalAch()}</dd></div>
-          <div><dt>Launcher</dt><dd class="accent-text">v0.1 · Beta</dd></div>
+          <div><dt>Launcher</dt><dd class="accent-text">v${esc(rt.info.version)}</dd></div>
         </dl>
         <button class="btn secondary block" data-route="${GAMES.length ? 'library' : 'store'}">${GAMES.length ? 'Open library' : 'Browse store'}</button>
       </div>
@@ -259,7 +286,8 @@
       ${cover(g)}
       ${d ? `<div class="tile-bar"><i style="width:${pct}%"></i></div>` : ''}
       <div class="tile-hover">${installed(g.id) && !rt.running.has(g.id) ? `<button class="round-play" data-action="play" data-id="${g.id}">${icon.play}</button>` : ''}</div>
-      <div class="tile-meta"><b>${esc(g.title)}</b><span>${rt.running.has(g.id) ? '<i class="live"></i>Running' : installed(g.id) ? fmtTime(state.playtime[g.id]) === '—' ? 'Ready to play' : fmtTime(state.playtime[g.id]) + ' played' : d ? 'Installing…' : owned(g.id) ? 'Not installed' : STATUS[g.status].label}</span></div>
+      ${updateAvail(g) && !d ? '<span class="upd-badge">Update</span>' : ''}
+      <div class="tile-meta"><b>${esc(g.title)}</b><span>${rt.running.has(g.id) ? '<i class="live"></i>Running' : d?.update ? 'Updating…' : updateAvail(g) ? `<em class="upd-text">v${esc(g.version)} available</em>` : installed(g.id) ? fmtTime(state.playtime[g.id]) === '—' ? 'Ready to play' : fmtTime(state.playtime[g.id]) + ' played' : d ? 'Installing…' : owned(g.id) ? 'Not installed' : STATUS[g.status].label}</span></div>
     </div>`;
   }
 
@@ -309,6 +337,7 @@
     let list = state.owned.map((id) => byId[id]).filter(Boolean);
     if (ui.libTab === 'favorites') list = list.filter((g) => state.favorites.includes(g.id));
     if (ui.libTab === 'installed' || F.installed) list = list.filter((g) => installed(g.id));
+    if (ui.libTab === 'updates') list = list.filter(updateAvail);
     if (F.q) list = list.filter((g) => g.title.toLowerCase().includes(F.q.toLowerCase()));
     if (F.genres.size) list = list.filter((g) => g.genres.some((x) => F.genres.has(x)));
     const sorters = {
@@ -322,9 +351,10 @@
     const ownedGames = state.owned.map((id) => byId[id]).filter(Boolean);
     const genres = [...new Set(ownedGames.flatMap((g) => g.genres))];
     const instCount = ownedGames.filter((g) => installed(g.id)).length;
+    const updCount = ownedGames.filter(updateAvail).length;
 
     const body = !list.length
-      ? `<div class="empty-state">${icon.grid}<h3>${state.owned.length ? 'No games match' : 'Your library is empty'}</h3><p class="muted">${state.owned.length ? 'Try clearing filters.' : GAMES.length ? 'Grab a free game from the store.' : 'No Spectra games have been released yet.'}</p><button class="btn primary" data-route="store">Browse store</button></div>`
+      ? `<div class="empty-state">${icon.grid}<h3>${ui.libTab === 'updates' ? 'Everything is up to date' : state.owned.length ? 'No games match' : 'Your library is empty'}</h3><p class="muted">${ui.libTab === 'updates' ? 'Updated games will be ready to play.' : state.owned.length ? 'Try clearing filters.' : GAMES.length ? 'Grab a free game from the store.' : 'No Spectra games have been released yet.'}</p><button class="btn primary" data-route="store">Browse store</button></div>`
       : ui.libView === 'grid'
         ? `<div class="lib-grid">${list.map(tile).join('')}</div>`
         : `<div class="lib-table">
@@ -335,7 +365,7 @@
               return `<div class="lt-row" data-game="${g.id}">
                 <div class="lt-title">${cover(g, 'xs')}<div><b>${esc(g.title)}</b>${libAction(g)}</div></div>
                 <div>${total ? `<div class="ach-bar" title="${got}/${total}"><i style="width:${(got / total) * 100}%"></i></div>` : '<span class="muted">–</span>'}</div>
-                <div>${rt.running.has(g.id) ? '<span class="live-text"><i class="live"></i>Running</span>' : d ? `<span class="muted">${d.started ? Math.floor((d.received / d.total) * 100) + '%' : 'Queued'}</span>` : statusPill(g)}</div>
+                <div>${rt.running.has(g.id) ? '<span class="live-text"><i class="live"></i>Running</span>' : d ? `<span class="muted">${d.started ? Math.floor((d.received / (d.total || 1)) * 100) + '%' : 'Queued'}</span>` : updateAvail(g) ? '<span class="pill upd">Update available</span>' : statusPill(g)}</div>
                 <div>${fmtTime(state.playtime[g.id])}</div>
                 <div>${installed(g.id) ? fmtBytes(g.sizeBytes) : '<span class="muted">–</span>'}</div>
                 <div><button class="icon-btn" data-action="menu" data-id="${g.id}" title="More">${icon.more}</button></div>
@@ -348,7 +378,8 @@
       <div class="row gap"><h1>Library</h1><button class="icon-btn" data-action="refresh" title="Refresh">${icon.refresh}</button></div>
     </div>
     <div class="tabs">
-      ${['all', 'favorites', 'installed'].map((t) => `<button class="tab ${ui.libTab === t ? 'on' : ''}" data-action="libtab" data-tab="${t}">${t[0].toUpperCase() + t.slice(1)}</button>`).join('')}
+      ${['all', 'favorites', 'installed', ...(updCount || ui.libTab === 'updates' ? ['updates'] : [])].map((t) => `<button class="tab ${ui.libTab === t ? 'on' : ''}" data-action="libtab" data-tab="${t}">${t[0].toUpperCase() + t.slice(1)}${t === 'updates' && updCount ? ` <span class="tab-count">${updCount}</span>` : ''}</button>`).join('')}
+      ${updCount > 1 ? `<button class="btn update sm tabs-end" data-action="update-all">${icon.dl}<span>Update all (${updCount})</span></button>` : ''}
     </div>
     <div class="lib-wrap">
       <div class="lib-main">
@@ -378,7 +409,8 @@
 
   function libAction(g) {
     if (rt.running.has(g.id)) return `<a class="mini-act" data-action="stop" data-id="${g.id}">${icon.stop} Stop</a>`;
-    if (dlOf(g.id)) return `<a class="mini-act" data-route="downloads">${icon.dl} Installing</a>`;
+    if (dlOf(g.id)) return `<a class="mini-act" data-route="downloads">${icon.dl} ${dlOf(g.id).update ? 'Updating' : 'Installing'}</a>`;
+    if (updateAvail(g)) return `<a class="mini-act upd-text" data-action="update-game" data-id="${g.id}">${icon.dl} Update to v${esc(g.version)}</a>`;
     if (installed(g.id)) return `<a class="mini-act" data-action="play" data-id="${g.id}">${icon.play} Launch</a>`;
     if (playable(g)) return `<a class="mini-act" data-action="install" data-id="${g.id}">${icon.dl} Install</a>`;
     return `<span class="mini-act muted">${STATUS[g.status].label}</span>`;
@@ -441,6 +473,7 @@
         <dl>
           <div><dt>Status</dt><dd>${STATUS[g.status].label}</dd></div>
           <div><dt>Version</dt><dd>${esc(g.version || '—')}</dd></div>
+          ${installed(g.id) ? `<div><dt>Installed</dt><dd class="${updateAvail(g) ? 'upd-text' : ''}">${esc(state.installed[g.id].version || 'Unknown')}${updateAvail(g) ? ' · update available' : ''}</dd></div>` : ''}
           <div><dt>Release</dt><dd>${fmtDate(g.released)}</dd></div>
           <div><dt>Size</dt><dd>${fmtBytes(g.sizeBytes)}</dd></div>
           <div><dt>Time played</dt><dd>${fmtTime(state.playtime[g.id])}</dd></div>
@@ -463,7 +496,7 @@
       return `<div class="dl-row ${isActive ? 'active' : ''}">
         <div data-game="${g.id}">${cover(g, isActive ? 'md' : 'xs')}</div>
         <div class="dl-info">
-          <div class="row between"><b>${esc(g.title)}</b><span class="muted small">${isActive ? (d.paused ? 'Paused' : d.started ? 'Downloading' : 'Starting…') : 'Queued'}</span></div>
+          <div class="row between"><b>${esc(g.title)}</b><span class="muted small">${d.update ? `Update to v${esc(g.version)} · ` : ''}${isActive ? (d.paused ? 'Paused' : d.started ? 'Downloading' : 'Starting…') : 'Queued'}</span></div>
           ${isActive ? `<div class="bar"><i style="width:${pct}%"></i></div>
           <div class="row between small muted"><span>${fmtBytes(d.received)} / ${fmtBytes(d.total)}</span><span>${d.paused ? '—' : fmtBytes(d.speed) + '/s'} · ${eta ? fmtTime(Math.ceil(eta)) + ' left' : '—'}</span></div>` : `<span class="muted small">${fmtBytes(d.total || g.sizeBytes)}</span>`}
         </div>
@@ -478,7 +511,7 @@
     ${active ? `<div class="card dl-card">${row(active, true)}</div>` : `<div class="card empty-state slim">${icon.dl}<h3>Nothing downloading</h3><p class="muted">Games you install show up here.</p></div>`}
     ${queued.length ? `<div class="sec-head"><h2>Up next</h2></div><div class="card">${queued.map((d) => row(d, false)).join('')}</div>` : ''}
     ${state.completed.length ? `<div class="sec-head"><h2>Completed</h2><a data-action="clear-completed">Clear</a></div>
-      <div class="card">${state.completed.slice().reverse().map((c) => { const g = byId[c.id]; return g ? `<div class="dl-row"><div data-game="${g.id}">${cover(g, 'xs')}</div><div class="dl-info"><b>${esc(g.title)}</b><span class="muted small">Installed ${fmtAgo(c.at)} · ${fmtBytes(g.sizeBytes)}</span></div>${installed(g.id) ? primaryBtn(g, 'sm') : '<span class="muted small">Uninstalled</span>'}</div>` : ''; }).join('')}</div>` : ''}`;
+      <div class="card">${state.completed.slice().reverse().map((c) => { const g = byId[c.id]; return g ? `<div class="dl-row"><div data-game="${g.id}">${cover(g, 'xs')}</div><div class="dl-info"><b>${esc(g.title)}</b><span class="muted small">${c.update ? `Updated to v${esc(c.version || '')}` : 'Installed'} ${fmtAgo(c.at)} · ${fmtBytes(g.sizeBytes)}</span></div>${installed(g.id) ? primaryBtn(g, 'sm') : '<span class="muted small">Uninstalled</span>'}</div>` : ''; }).join('')}</div>` : ''}`;
   };
 
   views.settings = () => {
@@ -563,7 +596,7 @@
     document.body.classList.toggle('reduce-motion', !!state.settings.reduceMotion);
     const quick = state.owned.filter(installed).map((id) => byId[id]).filter(Boolean);
     $('#quickLaunch').innerHTML = quick.length
-      ? quick.map((g) => `<a class="quick-item" data-game="${g.id}">${cover(g, 'q')}<span>${esc(g.title)}</span>${rt.running.has(g.id) ? '<i class="live"></i>' : `<button class="q-play" data-action="play" data-id="${g.id}" title="Play">${icon.play}</button>`}</a>`).join('')
+      ? quick.map((g) => `<a class="quick-item" data-game="${g.id}">${cover(g, 'q')}<span>${esc(g.title)}</span>${updateAvail(g) && !dlOf(g.id) ? '<i class="upd-dot" title="Update available"></i>' : ''}${rt.running.has(g.id) ? '<i class="live"></i>' : `<button class="q-play" data-action="play" data-id="${g.id}" title="Play">${icon.play}</button>`}</a>`).join('')
       : '<p class="muted small side-empty">Installed games appear here.</p>';
     const b = $('#dlBadge');
     b.hidden = !rt.queue.length; b.textContent = rt.queue.length;
@@ -614,15 +647,27 @@
     $('#notifPanel').hidden = true;
     $('#searchResults').hidden = true;
   }
-  function openMenu(anchor, items) {
+  // items: { label, icon, run, danger, disabled, hint } or '-' for a divider.
+  // `where` is an element (menu opens under it) or a point { x, y } (right-click).
+  function openMenu(where, items) {
     const m = $('#ctxMenu');
-    m.innerHTML = items.map((it, i) => (it === '-' ? '<hr>' : `<button data-mi="${i}" class="${it.danger ? 'danger' : ''}">${it.icon || ''}<span>${esc(it.label)}</span></button>`)).join('');
+    items = items.filter(Boolean).filter((it, i, a) => !(it === '-' && (i === 0 || a[i - 1] === '-' || i === a.length - 1)));
+    m.innerHTML = items.map((it, i) => (it === '-' ? '<hr>' : `<button data-mi="${i}" class="${it.danger ? 'danger' : ''}" ${it.disabled ? 'disabled' : ''}>${it.icon || '<i class="sp"></i>'}<span>${esc(it.label)}</span>${it.hint ? `<kbd>${esc(it.hint)}</kbd>` : ''}</button>`)).join('');
     m.hidden = false;
-    const r = anchor.getBoundingClientRect();
-    const mw = 220;
-    m.style.left = Math.min(window.innerWidth - mw - 8, r.right - mw) + 'px';
-    m.style.top = Math.min(window.innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px';
-    m.onclick = (e) => { const b = e.target.closest('[data-mi]'); if (!b) return; m.hidden = true; items[+b.dataset.mi].run(); };
+    const mw = m.offsetWidth || 220, mh = m.offsetHeight;
+    let x, y;
+    if (where instanceof Element) {
+      const r = where.getBoundingClientRect();
+      x = r.right - mw; y = r.bottom + 6;
+      if (y + mh > window.innerHeight - 8) y = r.top - mh - 6;
+    } else {
+      x = where.x; y = where.y;
+      if (x + mw > window.innerWidth - 8) x = where.x - mw;
+      if (y + mh > window.innerHeight - 8) y = where.y - mh;
+    }
+    m.style.left = Math.max(8, Math.min(window.innerWidth - mw - 8, x)) + 'px';
+    m.style.top = Math.max(8, Math.min(window.innerHeight - mh - 8, y)) + 'px';
+    m.onclick = (e) => { const b = e.target.closest('[data-mi]'); if (!b || b.disabled) return; m.hidden = true; items[+b.dataset.mi].run(); };
   }
   function confirmModal({ title, body, ok = 'Confirm', danger = false }) {
     return new Promise((res) => {
@@ -633,21 +678,123 @@
     });
   }
 
-  function gameMenu(anchor, g) {
+  function gameMenu(where, g) {
     const items = [];
-    if (installed(g.id)) items.push({ label: rt.running.has(g.id) ? 'Stop' : 'Play', icon: rt.running.has(g.id) ? icon.stop : icon.play, run: () => (rt.running.has(g.id) ? stopGame(g.id) : play(g.id)) });
-    else if (playable(g) && !dlOf(g.id)) items.push({ label: 'Install', icon: icon.dl, run: () => install(g.id) });
-    items.push({ label: state.favorites.includes(g.id) ? 'Remove from favorites' : 'Add to favorites', icon: icon.star, run: () => toggleFav(g.id) });
-    items.push({ label: 'View game page', icon: icon.grid, run: () => go('game', { id: g.id }) });
-    if (installed(g.id) && api.isDesktop && !state.installed[g.id].simulated) items.push({ label: 'Open install folder', icon: icon.folder, run: () => api.openPath(state.installed[g.id].dir) });
-    if (installed(g.id)) items.push('-', { label: 'Uninstall', icon: icon.trash, danger: true, run: () => uninstall(g.id) });
-    openMenu(anchor, items);
+    const d = dlOf(g.id), running = rt.running.has(g.id), inst = installed(g.id);
+    if (running) items.push({ label: 'Stop', icon: icon.stop, run: () => stopGame(g.id) });
+    else if (d) items.push({ label: d.update ? 'Cancel update' : 'Cancel install', icon: icon.x, run: () => cancel(g.id) }, { label: 'Show in downloads', icon: icon.dl, run: () => go('downloads') });
+    else if (inst) items.push({ label: 'Play', icon: icon.play, run: () => play(g.id) });
+    else if (playable(g) && !owned(g.id)) items.push({ label: 'Get for free', icon: icon.plus, run: () => get(g.id) });
+    else if (playable(g)) items.push({ label: 'Install', icon: icon.dl, run: () => install(g.id) });
+    else items.push({ label: state.wishlist.includes(g.id) ? 'Remove from wishlist' : 'Add to wishlist', icon: state.wishlist.includes(g.id) ? icon.check : icon.plus, run: () => toggleWish(g.id) });
+    if (updateAvail(g) && !d) items.push({ label: `Update to v${g.version}`, icon: icon.dl, disabled: running, run: () => updateGame(g.id) });
+    items.push('-');
+    if (owned(g.id)) items.push({ label: state.favorites.includes(g.id) ? 'Remove from favorites' : 'Add to favorites', icon: icon.star, run: () => toggleFav(g.id) });
+    if (rt.route.name !== 'game' || rt.route.id !== g.id) items.push({ label: 'View game page', icon: icon.grid, run: () => go('game', { id: g.id }) });
+    if (g.achievements.length) items.push({ label: `Achievements (${achCount(g)}/${g.achievements.length})`, icon: icon.trophy, run: () => { go('game', { id: g.id }); rt.gameTab = 'achievements'; rerender(); } });
+    if (g.patchNotes.length) items.push({ label: 'Patch notes', icon: icon.list, run: () => { go('game', { id: g.id }); rt.gameTab = 'patch'; rerender(); } });
+    if (inst && api.isDesktop && !state.installed[g.id].simulated) items.push('-', { label: 'Open install folder', icon: icon.folder, run: () => api.openPath(state.installed[g.id].dir) });
+    items.push('-', { label: 'Copy game name', icon: icon.copy, run: () => copyText(g.title, 'Game name copied') });
+    if (inst) items.push('-', { label: 'Uninstall', icon: icon.trash, danger: true, disabled: running || !!d, run: () => uninstall(g.id) });
+    openMenu(where, items);
   }
+
+  // ---------------- right-click menus ----------------
+  function copyText(text, msg = 'Copied') {
+    navigator.clipboard.writeText(text).then(() => toast(msg), () => toast("Couldn't copy", 'err'));
+  }
+
+  function textFieldMenu(pt, el) {
+    const sel = el.selectionEnd > el.selectionStart;
+    const editable = !el.readOnly && !el.disabled;
+    const run = (cmd) => () => { el.focus(); document.execCommand(cmd); };
+    openMenu(pt, [
+      { label: 'Cut', icon: icon.cut, hint: 'Ctrl+X', disabled: !sel || !editable, run: run('cut') },
+      { label: 'Copy', icon: icon.copy, hint: 'Ctrl+C', disabled: !sel, run: run('copy') },
+      { label: 'Paste', icon: icon.paste, hint: 'Ctrl+V', disabled: !editable, run: async () => {
+        el.focus();
+        try { const txt = await navigator.clipboard.readText(); if (txt) document.execCommand('insertText', false, txt); } catch { document.execCommand('paste'); }
+      } },
+      '-',
+      { label: 'Select all', hint: 'Ctrl+A', disabled: !el.value, run: () => { el.focus(); el.select(); } },
+      el.value && editable ? { label: 'Clear', icon: icon.x, run: () => { el.focus(); el.select(); document.execCommand('delete'); } } : null,
+    ]);
+  }
+
+  async function refreshGames() {
+    await loadCatalog();
+    rerender();
+    toast(rt.catalogError ? "Couldn't reach the game server" : `Catalogue updated · ${GAMES.length} game${GAMES.length === 1 ? '' : 's'}`, rt.catalogError ? 'err' : '');
+  }
+
+  function pageMenu(pt) {
+    const ups = updatesList().length;
+    openMenu(pt, [
+      { label: 'Back', icon: icon.back, hint: 'Alt+←', disabled: !rt.back.length, run: navBack },
+      { label: 'Forward', icon: icon.fwd, hint: 'Alt+→', disabled: !rt.fwd.length, run: navFwd },
+      { label: 'Refresh games', icon: icon.refresh, run: refreshGames },
+      '-',
+      ups ? { label: `Update all games (${ups})`, icon: icon.dl, run: updateAll } : null,
+      { label: 'Library', icon: icon.grid, run: () => go('library') },
+      { label: 'Downloads', icon: icon.dl, run: () => go('downloads') },
+      { label: 'Settings', icon: icon.gear, run: () => go('settings') },
+    ]);
+  }
+
+  const NAV_LABELS = { home: 'Home', store: 'Store', library: 'Library', downloads: 'Downloads', settings: 'Settings' };
+  function navMenu(pt, r) {
+    const items = [{ label: `Open ${NAV_LABELS[r]}`, icon: icon.fwd, run: () => go(r) }];
+    const openTab = (tab) => () => { state.ui.libTab = tab; save(); go('library'); };
+    if (r === 'library') {
+      const ups = updatesList().length;
+      items.push('-', ...['all', 'favorites', 'installed'].map((tab) => ({ label: tab[0].toUpperCase() + tab.slice(1), icon: state.ui.libTab === tab ? icon.check : '', run: openTab(tab) })));
+      if (ups) items.push({ label: `Updates (${ups})`, icon: state.ui.libTab === 'updates' ? icon.check : '', run: openTab('updates') }, '-', { label: 'Update all games', icon: icon.dl, run: updateAll });
+    }
+    if (r === 'store' || r === 'home') items.push({ label: 'Refresh games', icon: icon.refresh, run: refreshGames });
+    if (r === 'downloads' && rt.queue.length) items.push('-', { label: 'Cancel all downloads', icon: icon.x, danger: true, run: async () => { for (const d of [...rt.queue]) await cancel(d.id); } });
+    if (r === 'settings') items.push({ label: 'Check for launcher updates', icon: icon.refresh, disabled: rt.update?.state === 'dev', run: async () => { rt.update = await api.update.check(); go('settings'); } });
+    openMenu(pt, items);
+  }
+
+  document.addEventListener('contextmenu', (e) => {
+    const t = e.target;
+    e.preventDefault(); // no browser-style menu anywhere in the launcher
+    closePopups();
+    if (t.closest('#ctxMenu, .modal-back')) return;
+    const pt = { x: e.clientX, y: e.clientY };
+
+    // text boxes: cut / copy / paste
+    const field = t.closest('input:not([type]), input[type="text"], input[type="search"], textarea');
+    if (field) return textFieldMenu(pt, field);
+
+    // a game anywhere: tiles, list rows, store cards, sidebar, search results, hero, news, downloads
+    const gEl = t.closest('[data-game], [data-id]');
+    const gid = gEl && (gEl.dataset.game || gEl.dataset.id);
+    if (gid && byId[gid]) return gameMenu(pt, byId[gid]);
+
+    // selected text
+    const selText = String(window.getSelection() || '').trim();
+    if (selText) return openMenu(pt, [{ label: 'Copy', icon: icon.copy, hint: 'Ctrl+C', run: () => copyText(selText) }]);
+
+    // sidebar links
+    const nav = t.closest('[data-route]');
+    if (nav && NAV_LABELS[nav.dataset.route]) return navMenu(pt, nav.dataset.route);
+
+    // window buttons: nothing to offer
+    if (t.closest('#winControls')) return;
+    pageMenu(pt);
+  });
 
   // ---------------- actions ----------------
   function toggleFav(id) {
     const i = state.favorites.indexOf(id);
     if (i >= 0) state.favorites.splice(i, 1); else state.favorites.push(id);
+    save(); rerender();
+  }
+
+  function toggleWish(id) {
+    const i = state.wishlist.indexOf(id);
+    if (i >= 0) state.wishlist.splice(i, 1); else { state.wishlist.push(id); toast(`We'll let you know when ${byId[id].title} is out`, 'ok'); }
     save(); rerender();
   }
 
@@ -672,6 +819,34 @@
     rerender();
   }
 
+  // Download the newer build and swap it in (the main process keeps the old one until the new one is ready).
+  function updateGame(id, quiet = false) {
+    const g = byId[id];
+    if (!updateAvail(g) || dlOf(id)) return false;
+    if (rt.running.has(id)) { toast(`Close ${g.title} before updating it`, 'err'); return false; }
+    const inst = state.installed[id];
+    const real = api.isDesktop && !inst.simulated;
+    rt.queue.push({ id, received: 0, total: g.sizeBytes || 0, speed: 0, paused: false, real, started: false, update: true, from: inst.version });
+    if (!quiet) toast(`${rt.queue.length > 1 ? 'Queued update for' : 'Updating'} ${g.title} to v${g.version}`);
+    pumpQueue();
+    rerender();
+    return true;
+  }
+  function updateAll() {
+    const n = updatesList().filter((g) => updateGame(g.id, true)).length;
+    if (n) toast(`Updating ${n} game${n === 1 ? '' : 's'}`);
+  }
+
+  // Tell the player once per new version when the catalogue lists an update for one of their games.
+  function announceUpdates() {
+    state.updateSeen = state.updateSeen || {};
+    const fresh = updatesList().filter((g) => state.updateSeen[g.id] !== g.version);
+    if (!fresh.length) return;
+    fresh.forEach((g) => { state.updateSeen[g.id] = g.version; notify(`${g.title} v${g.version} is available. Open your library to update.`); });
+    toast(fresh.length === 1 ? `Update available: ${fresh[0].title} v${fresh[0].version}` : `${fresh.length} game updates available`, 'ok');
+    save();
+  }
+
   async function pumpQueue() {
     const d = rt.queue[0];
     if (!d || d.started) return;
@@ -681,7 +856,12 @@
       const r = await api.install({ id: g.id, url: g.download, root: state.settings.installRoot || rt.info.defaultInstallRoot });
       if (!rt.queue.includes(d)) return; // cancelled
       if (r.ok) finishInstall(d, { dir: r.dir });
-      else { rt.queue.shift(); toast(`${g.title} failed to install: ${r.error}`, 'err'); notify(`${g.title} failed to install: ${r.error}`); rerender(); pumpQueue(); }
+      else {
+        rt.queue = rt.queue.filter((x) => x !== d);
+        const what = d.update ? 'update' : 'install';
+        toast(`${g.title} failed to ${what}: ${r.error}`, 'err'); notify(`${g.title} failed to ${what}: ${r.error}`);
+        rerender(); pumpQueue();
+      }
     }
     // simulated downloads progress via the ticker below
   }
@@ -732,11 +912,16 @@
     rt.queue = rt.queue.filter((x) => x !== d);
     const g = byId[d.id];
     state.installed[g.id] = { version: g.version, at: Date.now(), ...extra };
-    state.completed.push({ id: g.id, at: Date.now() });
+    state.completed.push({ id: g.id, at: Date.now(), update: !!d.update, version: g.version });
     state.completed = state.completed.slice(-20);
     save();
-    toast(`${g.title} is ready to play`, 'ok');
-    notify(`${g.title} finished installing.`);
+    if (d.update) {
+      toast(`${g.title} updated to v${g.version}`, 'ok');
+      notify(`${g.title} updated${d.from ? ` from v${d.from}` : ''} to v${g.version}.`);
+    } else {
+      toast(`${g.title} is ready to play`, 'ok');
+      notify(`${g.title} finished installing.`);
+    }
     rerender();
     pumpQueue();
   }
@@ -765,6 +950,7 @@
   async function play(id) {
     const g = byId[id];
     if (rt.running.has(id)) return;
+    if (dlOf(id)) { toast(`${g.title} is updating. It'll be ready in a moment`, 'err'); return; }
     if (state.installed[id]?.simulated) {
       toast('This is the browser preview — games can only be launched from the desktop app', 'err');
       return;
@@ -853,14 +1039,12 @@
         case 'play': return play(id);
         case 'stop': return stopGame(id);
         case 'install': return install(id);
+        case 'update-game': return updateGame(id);
+        case 'update-all': return updateAll();
         case 'get': return get(id);
         case 'cancel': return cancel(id);
         case 'pause': case 'resume': { const d = dlOf(id); if (d) d.paused = a === 'pause'; return rerender(); }
-        case 'wishlist': {
-          const i = state.wishlist.indexOf(id);
-          if (i >= 0) state.wishlist.splice(i, 1); else { state.wishlist.push(id); toast(`We'll let you know when ${byId[id].title} is out`, 'ok'); }
-          save(); return rerender();
-        }
+        case 'wishlist': return toggleWish(id);
         case 'fav': return toggleFav(id);
         case 'menu': return gameMenu(act, byId[id]);
         case 'hero': rt.heroIdx = +act.dataset.i; resetHero(); return rerender();
@@ -868,7 +1052,7 @@
         case 'libtab': state.ui.libTab = act.dataset.tab; save(); return rerender();
         case 'libview': state.ui.libView = act.dataset.view; save(); return rerender();
         case 'gametab': rt.gameTab = act.dataset.tab; return rerender();
-        case 'refresh': await loadCatalog(); rerender(); return toast(rt.catalogError ? "Couldn't reach the game server" : `Catalogue updated · ${GAMES.length} game${GAMES.length === 1 ? '' : 's'}`, rt.catalogError ? 'err' : '');
+        case 'refresh': return refreshGames();
         case 'save-server': {
           state.settings.catalogUrl = $('#setServer').value.trim(); save();
           await loadCatalog(); rerender();
@@ -954,6 +1138,7 @@
       setCatalog(c);
       state.catalogCache = c;
       save();
+      announceUpdates();
     } catch (err) {
       rt.catalogError = err.message || String(err);
       setCatalog(state.catalogCache); // keep showing the cached library when offline
@@ -982,5 +1167,11 @@
     syncAchievements();
     if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {});
     resetHero();
+    // look for new games and game updates every 15 minutes
+    setInterval(async () => {
+      if (document.activeElement?.matches('input, textarea')) return;
+      await loadCatalog();
+      rerender();
+    }, 15 * 60 * 1000);
   })();
 })();
