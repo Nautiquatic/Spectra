@@ -452,3 +452,12 @@ a.mini-act:hover { color: var(--accent); }
 .ach-ico img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 .ach-ico { overflow: hidden; flex-shrink: 0; }
 .ach-date { font-size: 11px; color: var(--ok); text-align: right; line-height: 1.4; white-space: nowrap; }
+
+/* launcher update pill */
+.update-pill { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px; border-radius: 30px; font-size: 12px; font-weight: 650; background: rgba(255, 255, 255, .06); border: 1px solid var(--line-2); color: #c3c3d4; }
+.update-pill svg { width: 14px; height: 14px; }
+.update-pill.ready { background: var(--ok); color: #06140d; border-color: transparent; box-shadow: 0 0 18px rgba(94, 232, 164, .35); }
+.update-pill.ready:hover { filter: brightness(1.08); }
+.update-pill:disabled { cursor: default; }
+.pre { white-space: pre-line; }
+.btn:disabled { opacity: .45; pointer-events: none; }

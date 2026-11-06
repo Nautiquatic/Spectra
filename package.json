@@ -1,13 +1,13 @@
 {
   "name": "spectra-launcher",
   "productName": "Spectra Launcher",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Spectra Launcher — home for Spectra games",
   "author": "Spectra",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win nsis",
+    "dist": "electron-builder --win nsis --publish never",
     "preview": "python -m http.server 5190"
   },
   "devDependencies": {
@@ -24,6 +24,7 @@
     "files": [
       "main.js",
       "preload.js",
+      "updater.js",
       "src/**/*",
       "Assets/**/*",
       "package.json"
@@ -40,6 +41,16 @@
       "createStartMenuShortcut": true,
       "shortcutName": "Spectra Launcher",
       "runAfterFinish": true
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Nautiquatic",
+        "repo": "Spectra"
+      }
+    ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.11"
   }
 }

@@ -17,12 +17,22 @@ npm run dist
 
 This creates `dist/SpectraLauncherSetup.exe`, a normal Windows setup wizard with a desktop shortcut, a Start menu entry and an uninstaller.
 
-To release a new launcher version:
-1. Bump `version` in `package.json` and `launcherVersion` in `docs/config.js`.
-2. Run `npm run dist`.
-3. On GitHub, go to **Releases → Draft a new release**, tag it (e.g. `v0.2.0`) and attach `dist/SpectraLauncherSetup.exe`.
+## Releasing a launcher update (auto-update)
 
-The website's Download button links to `releases/latest/download/SpectraLauncherSetup.exe`, so it always serves the newest release with no website change.
+Installed launchers check GitHub for updates when they start and every 4 hours. A newer version downloads in the background, and a green **Restart to update** button appears in the title bar. If the player ignores it, the update installs the next time they close the launcher. It never restarts while a game is running or a download is in progress.
+
+1. Bump `version` in `package.json` (e.g. `0.2.0` → `0.3.0`) and `launcherVersion` in `docs/config.js`.
+2. Run `npm run dist`.
+3. On GitHub, go to **Releases → Draft a new release**:
+   - Tag: `v0.3.0` (must match the version)
+   - Attach **all three** files from `dist/`: `SpectraLauncherSetup.exe`, `SpectraLauncherSetup.exe.blockmap` and `latest.yml`
+   - Leave **Set as the latest release** ticked, then click **Publish release**
+
+Launchers find the update through the release marked **Latest**, and so does the website's Download button (`releases/latest/download/SpectraLauncherSetup.exe`).
+
+> **Game releases must not be "Latest".** When you make a release for a game zip (like Prismfall), **untick "Set as the latest release"** (or tick "Set as a pre-release"). Otherwise launchers look for `latest.yml` in the game's release, can't find it, and stop updating. The website's Download button would break too. If it happens, open the launcher release on GitHub, click **Edit** and tick **Set as the latest release** again.
+
+Updates only run in the installed app. When you use `npm start`, Settings shows that updates are off.
 
 The installer isn't code-signed, so Windows SmartScreen will show "Windows protected your PC" the first time. Players click **More info → Run anyway**. Removing that warning needs a paid code-signing certificate.
 

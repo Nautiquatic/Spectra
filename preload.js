@@ -22,6 +22,12 @@ contextBridge.exposeInMainWorld('spectra', {
   stop: (id) => ipcRenderer.invoke('game:stop', id),
   readAllAchievements: () => ipcRenderer.invoke('achievements:readAll'),
   onAchievements: on('achievements:update'),
+  update: {
+    get: () => ipcRenderer.invoke('update:get'),
+    check: () => ipcRenderer.invoke('update:check'),
+    install: () => ipcRenderer.invoke('update:install'),
+    onStatus: on('update:status'),
+  },
   onInstallProgress: on('install:progress'),
   onGameExited: on('game:exited'),
   onMaximized: on('win:maximized'),

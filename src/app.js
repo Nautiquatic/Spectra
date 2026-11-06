@@ -492,6 +492,14 @@
         <div class="set-row"><div><b>Display name</b><p class="muted">Shown in the title bar and on your profile.</p></div><input class="input" id="setName" maxlength="24" value="${esc(state.profile.name)}"></div>
       </section>
       <section class="card">
+        <h3>Updates</h3>
+        <div class="set-row"><div><b>Spectra Launcher v${esc(rt.info.version)}</b><p class="muted">${updateText()}</p></div>
+          <div class="row gap">${rt.update?.state === 'ready'
+            ? '<button class="btn primary" data-action="update-install">Restart to update</button>'
+            : `<button class="btn secondary" data-action="update-check" ${['checking', 'downloading', 'dev'].includes(rt.update?.state) ? 'disabled' : ''}>Check for updates</button>`}</div></div>
+        ${rt.update?.notes && ['ready', 'downloading'].includes(rt.update.state) ? `<div class="set-row"><div><b>What's new in v${esc(rt.update.version)}</b><p class="muted pre">${esc(rt.update.notes)}</p></div></div>` : ''}
+      </section>
+      <section class="card">
         <h3>Game server</h3>
         <div class="set-row"><div><b>Catalogue URL</b><p class="muted">Where the launcher gets the list of Spectra games. ${rt.catalogError ? `<span class="err-text">Error: ${esc(rt.catalogError)}</span>` : catalogUrl() ? `<span class="ok-text">Connected · ${GAMES.length} game${GAMES.length === 1 ? '' : 's'}</span>` : 'Not set.'}</p></div>
           <div class="row gap"><input class="input wide" id="setServer" placeholder="https://your-server.com/catalog.json" value="${esc(state.settings.catalogUrl || CONFIG.catalogUrl || '')}"><button class="btn secondary" data-action="save-server">Save</button></div></div>
@@ -517,6 +525,18 @@
       <p class="muted small about"><img src="../Assets/icon.png" alt=""> Spectra Launcher v${esc(rt.info.version)} · ${api.isDesktop ? 'Desktop' : 'Browser preview'}</p>
     </div>`;
   };
+  function updateText() {
+    const u = rt.update || {};
+    switch (u.state) {
+      case 'dev': return 'Updates are checked in the installed app (not when running with npm start).';
+      case 'checking': return 'Checking for updates…';
+      case 'downloading': return `Downloading v${esc(u.version || '')}… ${u.percent || 0}%`;
+      case 'ready': return `<span class="ok-text">v${esc(u.version)} is ready.</span> Restart to install it, or it installs next time you close the launcher.`;
+      case 'none': return `<span class="ok-text">You're up to date.</span> Checked ${fmtAgo(u.checkedAt)}.`;
+      case 'error': return `<span class="err-text">${esc(u.error)}</span>`;
+      default: return 'Updates install automatically.';
+    }
+  }
   const toggle = (k) => `<label class="toggle"><input type="checkbox" data-action="toggle" data-k="${k}" ${state.settings[k] ? 'checked' : ''}><i></i></label>`;
 
   // ---------------- render ----------------
@@ -553,6 +573,12 @@
       m.hidden = false;
       m.innerHTML = `<a data-route="downloads"><div class="row between small"><b>${esc(byId[a.id].title)}</b><span>${Math.floor(pct)}%</span></div><div class="bar thin"><i style="width:${pct}%"></i></div></a>`;
     } else m.hidden = true;
+    const pill = $('#updatePill'), u = rt.update || {};
+    pill.hidden = !(u.state === 'ready' || u.state === 'downloading');
+    pill.disabled = u.state !== 'ready';
+    pill.classList.toggle('ready', u.state === 'ready');
+    pill.innerHTML = u.state === 'ready' ? `${icon.refresh}<span>Restart to update</span>` : `${icon.dl}<span>Updating ${u.percent || 0}%</span>`;
+    pill.title = u.state === 'ready' ? `Install Spectra Launcher v${u.version}` : `Downloading v${u.version || ''}`;
     const unread = state.notifications.some((n) => !n.read);
     $('#notifDot').hidden = !unread;
   }
@@ -853,6 +879,12 @@
           const opts = [['recent', 'Recently Played'], ['az', 'Alphabetical A–Z'], ['playtime', 'Time Played'], ['size', 'Size']];
           return openMenu(act, opts.map(([k, l]) => ({ label: l, icon: state.ui.libSort === k ? icon.check : '<i class="sp"></i>', run: () => { state.ui.libSort = k; save(); rerender(); } })));
         }
+        case 'update-check': rt.update = await api.update.check(); return rerender();
+        case 'update-install': {
+          const r = await api.update.install();
+          if (!r.ok) toast(r.error || "Couldn't start the update", 'err');
+          return;
+        }
         case 'clear-completed': state.completed = []; save(); return rerender();
         case 'accent': state.settings.accent = act.dataset.c; save(); return rerender();
         case 'choose-folder': {
@@ -931,6 +963,13 @@
   // ---------------- boot ----------------
   (async function boot() {
     rt.info = await api.info();
+    rt.update = await api.update.get();
+    api.update.onStatus((u) => {
+      const was = rt.update?.state;
+      rt.update = u;
+      if (u.state === 'ready' && was !== 'ready') { toast(`Launcher update v${u.version} is ready — restart to install`, 'ok'); notify(`Spectra Launcher v${u.version} is ready to install.`); }
+      if (rt.route.name === 'settings') rerender(); else renderChrome();
+    });
     const saved = await api.loadState();
     state = Object.assign(structuredClone(DEFAULT), saved || {});
     state.settings = Object.assign({}, DEFAULT.settings, state.settings);

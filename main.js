@@ -39,7 +39,11 @@ function createWindow() {
   win.on('unmaximize', () => win.webContents.send('win:maximized', false));
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  // self-update from GitHub Releases; never restart mid-game or mid-download
+  require('./updater').setup({ win: () => win, busy: () => running.size > 0 || downloads.size > 0 });
+});
 app.on('window-all-closed', () => app.quit());
 
 // ---------- window controls ----------

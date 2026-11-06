@@ -21,7 +21,7 @@
       "platforms": ["Windows"],
       "featured": true,
 
-      "download": "https://your-server.com/spectra/prismfall/1.0.0.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.0.0.zip",
       "exe": "Prismfall.exe",
       "sizeBytes": 263127,
 

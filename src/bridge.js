@@ -26,6 +26,7 @@
     stop: async () => true,
     readAllAchievements: async () => ({}),
     onAchievements: () => () => {},
+    update: { get: async () => ({ state: 'dev', current: '0.0.0' }), check: async () => ({ state: 'dev' }), install: async () => ({ ok: false }), onStatus: () => () => {} },
     onInstallProgress: () => () => {},
     onGameExited: (cb) => { listeners.exited.push(cb); return () => {}; },
     onMaximized: () => () => {},

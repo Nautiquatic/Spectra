@@ -1,3 +1,4 @@
 node_modules/
 dist/
 games/*/dist/
+games/*.zip
