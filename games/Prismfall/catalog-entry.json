@@ -42,6 +42,8 @@
       "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.2.0.zip",
       "exe": "Prismfall.exe",
       "sizeBytes": 267836,
+      "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
+      "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png",
       "art": {
         "from": "#1a0c3a",
         "to": "#050111",
