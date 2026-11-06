@@ -1,0 +1,37 @@
+{
+  "news": [
+    {
+      "tag": "Update",
+      "title": "My First Game 1.0 is out",
+      "body": "Short description shown on the Home page.",
+      "date": "2026-11-06",
+      "game": "my-first-game"
+    }
+  ],
+  "games": [
+    {
+      "id": "my-first-game",
+      "title": "My First Game",
+      "tagline": "One-line hook shown under the title.",
+      "description": "Longer description shown on the game page.",
+      "status": "available",
+      "version": "1.0.0",
+      "released": "2026-11-06",
+      "genres": ["Arcade"],
+      "platforms": ["Windows"],
+      "featured": true,
+
+      "download": "https://your-server.com/spectra/my-first-game/1.0.0.zip",
+      "exe": "MyFirstGame.exe",
+      "sizeBytes": 52428800,
+
+      "cover": "https://your-server.com/spectra/my-first-game/cover.jpg",
+      "banner": "https://your-server.com/spectra/my-first-game/banner.jpg",
+      "art": { "from": "#2a1458", "to": "#0b0b1a", "glow": "#927dff", "motif": "prism" },
+
+      "features": ["Feature one", "Feature two"],
+      "achievements": [{ "id": "first-win", "name": "First Win", "desc": "Win a round." }],
+      "patchNotes": [{ "version": "1.0.0", "date": "2026-11-06", "notes": ["Initial release"] }]
+    }
+  ]
+}

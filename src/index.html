@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https: http:; connect-src 'self' https: http:; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+  <title>Spectra Launcher</title>
+  <link rel="icon" href="../Assets/icon.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Title bar -->
+    <header class="titlebar">
+      <div class="tb-left">
+        <button class="icon-btn nav-arrow" id="navBack" title="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button class="icon-btn nav-arrow" id="navFwd" title="Forward"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <label class="search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+          <input id="globalSearch" type="text" placeholder="Search Spectra games" autocomplete="off" />
+          <kbd>Ctrl K</kbd>
+        </label>
+        <div class="search-results" id="searchResults" hidden></div>
+      </div>
+      <div class="tb-right">
+        <button class="icon-btn" id="btnNotif" title="Notifications"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1112 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="dot" id="notifDot"></span></button>
+        <button class="profile-chip" id="profileChip">
+          <span class="avatar" id="avatar">P</span>
+          <span class="profile-name" id="profileName">Player</span>
+          <span class="status-dot"></span>
+        </button>
+        <div class="win-controls" id="winControls">
+          <button title="Minimize" data-win="minimize"><svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg></button>
+          <button title="Maximize" data-win="maximize"><svg viewBox="0 0 12 12"><rect x="2.5" y="2.5" width="7" height="7" rx="1"/></svg></button>
+          <button title="Close" data-win="close" class="close"><svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
+        </div>
+      </div>
+      <div class="notif-panel" id="notifPanel" hidden></div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <a class="brand" data-route="home">
+        <img src="../Assets/spectra-logo.svg" alt="" />
+        <div>
+          <div class="brand-name">Spectra</div>
+          <div class="brand-sub">Launcher</div>
+        </div>
+      </a>
+      <nav class="nav">
+        <a data-route="home"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 01-1 1h-4v-6h-6v6H5a1 1 0 01-1-1z"/></svg>Home</a>
+        <a data-route="store"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>Store</a>
+        <a data-route="library"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="4" height="16" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><path d="M16.5 5l3.5 14"/></svg>Library</a>
+        <a data-route="downloads"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 19h14"/></svg>Downloads<span class="badge" id="dlBadge" hidden>0</span></a>
+      </nav>
+      <div class="side-label">Quick launch</div>
+      <div class="quick" id="quickLaunch"></div>
+      <div class="side-bottom">
+        <a data-route="settings" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4L5.3 5.3"/></svg>Settings</a>
+        <div class="mini-dl" id="miniDl" hidden></div>
+      </div>
+    </aside>
+
+    <!-- Main view -->
+    <main class="main" id="main"></main>
+  </div>
+
+  <div class="toasts" id="toasts"></div>
+  <div class="menu" id="ctxMenu" hidden></div>
+  <div class="modal-back" id="modal" hidden></div>
+
+  <script src="catalog.js"></script>
+  <script src="bridge.js"></script>
+  <script src="art.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
