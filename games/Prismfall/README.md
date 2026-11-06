@@ -2,8 +2,8 @@
 
 A neon arena survival shooter from Spectra Games.
 
-You are the last light in a collapsing rift. Your hull auto-fires at the nearest hostile;
-move, dash and grow stronger as the swarm closes in. Bosses breach the rift every 70 seconds.
+You are the last light in a collapsing rift. Steer your hull, aim and fire by hand,
+dash and grow stronger as the swarm closes in. Bosses breach the rift every 70 seconds.
 
 ## Play
 
@@ -20,17 +20,21 @@ Windows 11 and almost all Windows 10 PCs). If it is missing, the game shows a do
 
 | Action | Input |
 | --- | --- |
-| Move | `WASD` / arrow keys |
-| Dash (brief invulnerability) | `Shift` or `Space` |
+| Thrust forward / back | `W` / `S` (or arrow keys) |
+| Turn left / right | `A` / `D` (or arrow keys) |
+| Fire (hold) | Left click or `Space` |
+| Dash (brief invulnerability) | `Shift` |
 | Choose upgrade | `1` `2` `3` or click a card |
 | Pause | `Esc` / `P` |
 | Mute | `M` |
 
-Touch: drag anywhere to move, use the on-screen **DASH** button.
+Touch: hold a finger down to steer toward it and fire; use the on-screen **DASH** button.
 
 ## How it plays
 
-- Your prism cannon fires automatically at the nearest enemy.
+- Your prism cannon fires where your hull points. Hold left click or Space to fire.
+- Up to 10 hostiles can be alive at once; the cap rises by 1 every 30 seconds.
+- Upgrades escalate: each time you take one again it's stronger (Thruster +8%, +9%, +10%...).
 - Enemies drop light shards. Collect them to level up and pick one of three augmentations.
 - **Wisps** chase, **Runners** are fast, **Seers** shoot from range, **Brutes** are tanky.
 - A **Prism Wraith** boss breaches every ~70 seconds. Drop its hull to seal the rift and get a big score bonus.
@@ -81,7 +85,7 @@ For testing, the API is exposed in the page: `SpectraAchievements.unlock('first-
 
 ## Adding it to Spectra Launcher
 
-1. Zip this folder's files (at the top level of the zip) as `Prismfall-1.0.0.zip` and attach it to a GitHub release.
+1. Zip this folder's files (at the top level of the zip) as `Prismfall-1.1.0.zip` and attach it to a GitHub release.
 2. Put the URL in `catalog-entry.json` → `games[0].download`.
 3. Merge the game (and optional news item) into your launcher `catalog.json`.
 
@@ -101,4 +105,4 @@ Everything is procedural — no image, font or audio files. Sound is synthesised
 
 ---
 
-© Spectra Games · v1.0.0 · 2026-11-06
+© Spectra Games · v1.1.0 · 2026-11-06

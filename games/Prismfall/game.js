@@ -1,6 +1,6 @@
 /* ============================================================
    PRISMFALL — Spectra Games
-   A neon arena survival shooter. Auto-fire, dash, level up.
+   A neon arena survival shooter. Steer, aim, fire, dash, level up.
 
    No build step, no dependencies. Open index.html to play.
    ============================================================ */
@@ -244,32 +244,37 @@
 
   if (localStorage.getItem(STORE_SOUND) === '0') Sfx.enabled = false;
 
-  const xpFor = (level) => Math.floor(3 + level * 3 + level * level * 0.55);
+  // XP needed for the next level. Level 8 ≈ 32 (was 62), level 15 ≈ 69 (was 172).
+  const xpFor = (level) => Math.floor(5 + level * 2.5 + level * level * 0.12);
 
   // -----------------------------------------------------------
   // Content
   // -----------------------------------------------------------
   const ENEMY_TYPES = {
     wisp: { hp: 16, speed: 64, dmg: 8, r: 13, xp: 1, color: C.magenta, score: 10, shape: 'diamond' },
-    runner: { hp: 10, speed: 142, dmg: 6, r: 10, xp: 1, color: C.gold, score: 12, shape: 'tri' },
+    runner: { hp: 10, speed: 128, dmg: 6, r: 10, xp: 1, color: C.gold, score: 12, shape: 'tri' },
     seer: { hp: 42, speed: 56, dmg: 9, r: 16, xp: 3, color: C.cyan, score: 25, shape: 'orb', ranged: true },
     brute: { hp: 105, speed: 45, dmg: 18, r: 27, xp: 5, color: C.violet, score: 45, shape: 'hex' },
   };
 
+  // Escalating upgrades: every time you take one again it's stronger than the last.
+  // v(n) = base + step * n, where n = times already taken (0 for the first pick).
+  // e.g. Thruster gives +8%, then +9%, +10%, +11%...
   const UPGRADES = [
-    { id: 'dmg', name: 'Overcharge', icon: '✦', max: 7, desc: '+22% shot damage', apply: (p) => { p.damage *= 1.22; } },
-    { id: 'rate', name: 'Rapid Fire', icon: '⟫', max: 7, desc: '+18% fire rate', apply: (p) => { p.fireRate *= 1.18; } },
-    { id: 'split', name: 'Split Beam', icon: '⋔', max: 5, desc: '+1 bolt per volley', apply: (p) => { p.bulletCount += 1; } },
-    { id: 'pierce', name: 'Piercing Light', icon: '→', max: 4, desc: 'Bolts pierce +1 enemy', apply: (p) => { p.pierce += 1; } },
-    { id: 'speed', name: 'Thruster', icon: '➤', max: 5, desc: '+8% move speed', apply: (p) => { p.speed *= 1.08; } },
-    { id: 'hp', name: 'Aegis', icon: '✚', max: 5, desc: '+25 max hull, heal 25', apply: (p) => { p.maxHp += 25; p.hp = Math.min(p.maxHp, p.hp + 25); } },
-    { id: 'magnet', name: 'Magnet Field', icon: '◎', max: 4, desc: '+35% pickup radius', apply: (p) => { p.pickup *= 1.35; } },
-    { id: 'crit', name: 'Focus Lens', icon: '✷', max: 5, desc: '+7% crit chance', apply: (p) => { p.crit += 0.07; } },
-    { id: 'regen', name: 'Regeneration', icon: '♥', max: 4, desc: 'Regenerate +1.2 hull/s', apply: (p) => { p.regen += 1.2; } },
-    { id: 'dash', name: 'Dash Core', icon: '»', max: 3, desc: '-18% dash cooldown', apply: (p) => { p.dashCd *= 0.82; } },
-    { id: 'siphon', name: 'Siphon', icon: '⤓', max: 4, desc: 'Heal 1.5 hull per kill', apply: (p) => { p.lifesteal += 1.5; } },
-    { id: 'heavy', name: 'Heavy Light', icon: '●', max: 3, desc: '+25% bolt size, +10% damage', apply: (p) => { p.bulletSize *= 1.25; p.damage *= 1.1; } },
+    { id: 'dmg', name: 'Overcharge', icon: '✦', max: 10, base: 20, step: 3, desc: (v) => '+' + v + '% shot damage', apply: (p, v) => { p.damage *= 1 + v / 100; } },
+    { id: 'rate', name: 'Rapid Fire', icon: '⟫', max: 8, base: 15, step: 2, desc: (v) => '+' + v + '% fire rate', apply: (p, v) => { p.fireRate *= 1 + v / 100; } },
+    { id: 'split', name: 'Split Beam', icon: '⋔', max: 5, base: 1, step: 0, desc: () => '+1 bolt per volley', apply: (p) => { p.bulletCount += 1; } },
+    { id: 'pierce', name: 'Piercing Light', icon: '→', max: 4, base: 1, step: 0, desc: () => 'Bolts pierce +1 enemy', apply: (p) => { p.pierce += 1; } },
+    { id: 'speed', name: 'Thruster', icon: '➤', max: 6, base: 8, step: 1, desc: (v) => '+' + v + '% move and turn speed', apply: (p, v) => { p.speed *= 1 + v / 100; p.turn *= 1 + v / 100; } },
+    { id: 'hp', name: 'Aegis', icon: '✚', max: 6, base: 25, step: 5, desc: (v) => '+' + v + ' max hull, heal ' + v, apply: (p, v) => { p.maxHp += v; p.hp = Math.min(p.maxHp, p.hp + v); } },
+    { id: 'magnet', name: 'Magnet Field', icon: '◎', max: 4, base: 30, step: 5, desc: (v) => '+' + v + '% pickup radius', apply: (p, v) => { p.pickup *= 1 + v / 100; } },
+    { id: 'crit', name: 'Focus Lens', icon: '✷', max: 5, base: 7, step: 1, desc: (v) => '+' + v + '% crit chance', apply: (p, v) => { p.crit += v / 100; } },
+    { id: 'regen', name: 'Regeneration', icon: '♥', max: 5, base: 1.2, step: 0.4, desc: (v) => 'Regenerate +' + v.toFixed(1) + ' hull/s', apply: (p, v) => { p.regen += v; } },
+    { id: 'dash', name: 'Dash Core', icon: '»', max: 4, base: 15, step: 2, desc: (v) => '-' + v + '% dash cooldown', apply: (p, v) => { p.dashCd *= 1 - v / 100; } },
+    { id: 'siphon', name: 'Siphon', icon: '⤓', max: 4, base: 1.5, step: 0.5, desc: (v) => 'Heal ' + v.toFixed(1) + ' hull per kill', apply: (p, v) => { p.lifesteal += v; } },
+    { id: 'heavy', name: 'Heavy Light', icon: '●', max: 4, base: 10, step: 3, desc: (v) => '+25% bolt size, +' + v + '% damage', apply: (p, v) => { p.bulletSize *= 1.25; p.damage *= 1 + v / 100; } },
   ];
+  const upgradeValue = (u, taken) => Math.round((u.base + u.step * taken) * 10) / 10;
 
   const CARD_COLORS = [C.cyan, C.magenta, C.gold];
 
@@ -389,6 +394,7 @@
       y: H / 2,
       r: 13,
       speed: 220,
+      turn: 3.6, // radians per second
       hp: 120,
       maxHp: 120,
       invuln: 0,
@@ -417,49 +423,47 @@
   // -----------------------------------------------------------
   // Input
   // -----------------------------------------------------------
+  // Tank-style controls: W/S thrust forward/back along the hull's heading,
+  // A/D rotate it. The cannon fires where the hull points (left click or Space).
   const keys = new Set();
   const pointer = { active: false, x: 0, y: 0 };
+  let mouseFiring = false;
+  const REVERSE_MULT = 0.6;
 
   function inputDir() {
-    let mx = 0;
-    let my = 0;
-    if (keys.has('d') || keys.has('arrowright')) mx += 1;
-    if (keys.has('a') || keys.has('arrowleft')) mx -= 1;
-    if (keys.has('s') || keys.has('arrowdown')) my += 1;
-    if (keys.has('w') || keys.has('arrowup')) my -= 1;
+    let turn = 0;
+    let thrust = 0;
+    if (keys.has('d') || keys.has('arrowright')) turn += 1;
+    if (keys.has('a') || keys.has('arrowleft')) turn -= 1;
+    if (keys.has('w') || keys.has('arrowup')) thrust += 1;
+    if (keys.has('s') || keys.has('arrowdown')) thrust -= 1;
 
-    if (mx === 0 && my === 0 && pointer.active && game.player) {
+    // Touch: steer the hull toward the finger and drive forward.
+    if (turn === 0 && thrust === 0 && pointer.active && game.player) {
       const p = game.player;
       const dx = pointer.x - p.x;
       const dy = pointer.y - p.y;
-      const d = Math.hypot(dx, dy);
-      if (d > 14) {
-        mx = dx / d;
-        my = dy / d;
+      if (Math.hypot(dx, dy) > 24) {
+        const diff = ((Math.atan2(dy, dx) - p.aim + Math.PI * 3) % TAU) - Math.PI;
+        turn = clamp(diff * 3, -1, 1);
+        thrust = Math.abs(diff) < 1.2 ? 1 : 0;
       }
     }
+    return { turn, thrust };
+  }
 
-    const len = Math.hypot(mx, my);
-    if (len > 1) {
-      mx /= len;
-      my /= len;
-    }
-    return { mx, my };
+  function wantsFire() {
+    return mouseFiring || keys.has(' ') || pointer.active;
   }
 
   function tryDash() {
     const p = game.player;
     if (!p || game.mode !== 'playing' || p.dashLeft > 0 || p.dashTime > 0) return;
 
-    const dir = inputDir();
-    let mx = dir.mx;
-    let my = dir.my;
-    if (mx === 0 && my === 0) {
-      mx = Math.cos(p.aim);
-      my = Math.sin(p.aim);
-    }
-    p.dashX = mx;
-    p.dashY = my;
+    // Dash along the heading, or backwards if reversing.
+    const back = inputDir().thrust < 0 ? -1 : 1;
+    p.dashX = Math.cos(p.aim) * back;
+    p.dashY = Math.sin(p.aim) * back;
     p.dashTime = 0.18;
     p.dashLeft = p.dashCd;
     p.invuln = Math.max(p.invuln, 0.3);
@@ -541,6 +545,7 @@
 
   function startGame() {
     Sfx.init();
+    mouseFiring = false;
     resetGame();
     game.mode = 'playing';
     hud.classList.remove('hidden');
@@ -629,7 +634,7 @@
         '<span class="card-key">' + (i + 1) + '</span>' +
         '<span class="card-icon">' + u.icon + '</span>' +
         '<span class="card-name">' + u.name + '</span>' +
-        '<span class="card-desc">' + u.desc + '</span>' +
+        '<span class="card-desc">' + u.desc(upgradeValue(u, lvl)) + '</span>' +
         '<span class="card-stack">' + stack + '</span>' +
         '</button>';
     }).join('');
@@ -644,8 +649,9 @@
     const u = currentChoices[i];
     if (!u) return;
 
-    game.upgrades[u.id] = (game.upgrades[u.id] || 0) + 1;
-    u.apply(game.player);
+    const taken = game.upgrades[u.id] || 0;
+    u.apply(game.player, upgradeValue(u, taken));
+    game.upgrades[u.id] = taken + 1;
     Sfx.play('click');
 
     const p = game.player;
@@ -689,6 +695,14 @@
     return r < 0.27 ? 'wisp' : r < 0.57 ? 'runner' : r < 0.8 ? 'seer' : 'brute';
   }
 
+  // Max hostiles alive at once (boss not counted): starts at 10, +1 every 30 seconds.
+  const enemyCap = () => 10 + Math.floor(game.time / 30);
+  const aliveEnemies = () => {
+    let n = 0;
+    for (const e of game.enemies) if (!e.dead && !e.boss) n++;
+    return n;
+  };
+
   function spawnWave() {
     const t = game.time;
     let count = 1 + Math.floor(t / 45);
@@ -698,10 +712,11 @@
   }
 
   function spawnEnemy(type) {
-    if (game.enemies.length > 170) return;
+    if (aliveEnemies() >= enemyCap()) return;
     const def = ENEMY_TYPES[type];
     const t = game.time;
-    const hp = def.hp * (1 + t * 0.025 + Math.pow(t, 1.65) * 0.0008);
+    // Gentle growth: about x2 hull at 2.5 min, x4 at 5 min.
+    const hp = def.hp * (1 + t * 0.008 + Math.pow(t, 1.5) * 0.00012);
 
     const edge = randInt(0, 3);
     const pad = 50;
@@ -728,7 +743,7 @@
       dmg: def.dmg,
       xp: def.xp,
       score: def.score,
-      speed: def.speed * (1 + Math.min(t * 0.0035, 0.55)),
+      speed: def.speed * (1 + Math.min(t * 0.0008, 0.25)), // max +25%, reached after ~5 min
       ranged: !!def.ranged,
       rot: rand(0, TAU),
       spin: rand(-1.8, 1.8),
@@ -884,7 +899,9 @@
     }
 
     const gemCount = e.boss ? 26 : e.type === 'brute' ? 5 : e.type === 'seer' ? 2 : 1;
-    const value = e.boss ? 8 : Math.max(1, Math.round(e.xp / gemCount));
+    // Shards get richer the longer you survive (x2 at 3 min, x3 at 6 min).
+    const xpMult = 1 + game.time / 180;
+    const value = e.boss ? Math.round(8 * xpMult) : Math.max(1, Math.round((e.xp * xpMult) / gemCount));
 
     for (let i = 0; i < gemCount; i++) {
       const a = rand(0, TAU);
@@ -1000,8 +1017,10 @@
         });
       }
     } else {
-      p.x += dir.mx * p.speed * dt;
-      p.y += dir.my * p.speed * dt;
+      p.aim += dir.turn * p.turn * dt;
+      const sp = p.speed * (dir.thrust < 0 ? REVERSE_MULT : 1) * dir.thrust;
+      p.x += Math.cos(p.aim) * sp * dt;
+      p.y += Math.sin(p.aim) * sp * dt;
     }
 
     p.x = clamp(p.x, p.r + 4, W - p.r - 4);
@@ -1012,34 +1031,15 @@
     for (const t of p.trail) t.life -= dt;
     p.trail = p.trail.filter((t) => t.life > 0);
 
-    let target = null;
-    let best = Infinity;
-    for (const e of game.enemies) {
-      if (e.dead) continue;
-      const d = dist2(p.x, p.y, e.x, e.y);
-      if (d < best) {
-        best = d;
-        target = e;
-      }
-    }
-
-    if (target) {
-      const desired = Math.atan2(target.y - p.y, target.x - p.x);
-      let diff = ((desired - p.aim + Math.PI * 3) % TAU) - Math.PI;
-      p.aim += clamp(diff, -12 * dt, 12 * dt);
-
-      p.fireTimer -= dt;
+    // Manual fire: hold left click or Space.
+    p.fireTimer -= dt;
+    if (wantsFire()) {
       if (p.fireTimer <= 0) {
         fire();
         p.fireTimer += 1 / p.fireRate;
       }
     } else {
-      if (dir.mx !== 0 || dir.my !== 0) {
-        const desired = Math.atan2(dir.my, dir.mx);
-        let diff = ((desired - p.aim + Math.PI * 3) % TAU) - Math.PI;
-        p.aim += clamp(diff, -8 * dt, 8 * dt);
-      }
-      p.fireTimer = Math.min(p.fireTimer, 0.1);
+      p.fireTimer = Math.max(p.fireTimer, 0);
     }
   }
 
@@ -1110,8 +1110,48 @@
       e.x = clamp(e.x, -140, W + 140);
       e.y = clamp(e.y, -140, H + 140);
 
-      if (d < e.r + p.r - 2) {
+      // Hostiles are solid: they hit you on contact but can't sit inside your hull.
+      const cx = e.x - p.x;
+      const cy = e.y - p.y;
+      const cd = Math.hypot(cx, cy) || 0.001;
+      const touch = e.r + p.r;
+      if (cd < touch) {
         damagePlayer(e.dmg);
+        e.x = p.x + (cx / cd) * touch;
+        e.y = p.y + (cy / cd) * touch;
+      }
+    }
+
+    separateEnemies();
+  }
+
+  // Push overlapping hostiles apart. Bigger ones (by area) shove smaller ones.
+  function separateEnemies() {
+    const list = game.enemies;
+    for (let pass = 0; pass < 2; pass++) {
+      for (let i = 0; i < list.length; i++) {
+        const a = list[i];
+        if (a.dead) continue;
+        for (let j = i + 1; j < list.length; j++) {
+          const b = list[j];
+          if (b.dead) continue;
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const min = a.r + b.r;
+          const d2v = dx * dx + dy * dy;
+          if (d2v >= min * min) continue;
+          const d = Math.sqrt(d2v) || 0.001;
+          const nx = d2v > 0 ? dx / d : Math.cos(i + j);
+          const ny = d2v > 0 ? dy / d : Math.sin(i + j);
+          const overlap = min - d;
+          const ma = a.r * a.r * (a.boss ? 20 : 1);
+          const mb = b.r * b.r * (b.boss ? 20 : 1);
+          const ta = mb / (ma + mb);
+          a.x -= nx * overlap * ta;
+          a.y -= ny * overlap * ta;
+          b.x += nx * overlap * (1 - ta);
+          b.y += ny * overlap * (1 - ta);
+        }
       }
     }
   }
@@ -1644,7 +1684,7 @@
       return;
     }
 
-    if (game.mode === 'playing' && (k === ' ' || k === 'shift') && !e.repeat) {
+    if (game.mode === 'playing' && k === 'shift' && !e.repeat) {
       tryDash();
     }
   });
@@ -1656,7 +1696,16 @@
   window.addEventListener('blur', () => {
     keys.clear();
     pointer.active = false;
+    mouseFiring = false;
   });
+
+  canvas.addEventListener('mousedown', (e) => {
+    if (e.button === 0 && game.mode === 'playing') mouseFiring = true;
+  });
+  window.addEventListener('mouseup', (e) => {
+    if (e.button === 0) mouseFiring = false;
+  });
+  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
   canvas.addEventListener('pointerdown', (e) => {
     if (e.pointerType !== 'touch' || game.mode !== 'playing') return;

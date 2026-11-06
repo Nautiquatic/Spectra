@@ -1,6 +1,13 @@
 {
   "news": [
     {
+      "tag": "Update",
+      "title": "Prismfall 1.1: take the controls",
+      "body": "Manual aiming and firing, solid enemies, an enemy cap, escalating upgrades and much faster levelling.",
+      "date": "2026-11-06",
+      "game": "prismfall"
+    },
+    {
       "tag": "Release",
       "title": "Prismfall 1.0 is live",
       "body": "One hull. Endless light. Dash, level up and seal the rift in Spectra Games' neon survival shooter.",
@@ -13,35 +20,74 @@
       "id": "prismfall",
       "title": "Prismfall",
       "tagline": "One hull. Endless light. Survive the rift.",
-      "description": "A neon arena survival shooter. Your prism cannon auto-fires at the nearest hostile while you move, dash and harvest light shards to level up. Survive escalating swarms, then break the Prism Wraith that breaches the rift every seventy seconds.",
+      "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Survive escalating swarms, then break the Prism Wraith that breaches the rift every seventy seconds.",
       "status": "available",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "released": "2026-11-06",
-      "genres": ["Arcade", "Survival"],
-      "platforms": ["Windows"],
+      "genres": [
+        "Arcade",
+        "Survival"
+      ],
+      "platforms": [
+        "Windows"
+      ],
       "featured": true,
-
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.0.0.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.1.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 263127,
-
-      "art": { "from": "#1a0c3a", "to": "#050111", "glow": "#6ef2ff", "motif": "prism" },
-
+      "sizeBytes": 264499,
+      "art": {
+        "from": "#1a0c3a",
+        "to": "#050111",
+        "glow": "#6ef2ff",
+        "motif": "prism"
+      },
       "features": [
-        "Auto-firing prism cannon with 12 stackable augmentations",
-        "Four enemy types and a boss that breaches every 70 seconds",
+        "Hands-on tank controls: thrust, turn, aim and fire yourself",
+        "12 escalating augmentations that get stronger every time you take them",
+        "Four solid enemy types and a boss that breaches every 70 seconds",
         "Dash with invulnerability and a risk/reward pickup loop",
-        "Mouse-free controls, keyboard and touch support",
-        "WebAudio soundtrack-free synth effects — no asset files"
+        "WebAudio synth effects, no asset files"
       ],
       "achievements": [
-        { "id": "first-blood", "name": "First Light", "desc": "Destroy your first hostile." },
-        { "id": "level-ten", "name": "Resonant", "desc": "Reach level 10 in a single run." },
-        { "id": "rift-sealed", "name": "Rift Sealed", "desc": "Defeat a Prism Wraith." },
-        { "id": "survive-five", "name": "Last Light", "desc": "Survive for five minutes." },
-        { "id": "score-five-k", "name": "Overcharge", "desc": "Score 5,000 points in one run." }
+        {
+          "id": "first-blood",
+          "name": "First Light",
+          "desc": "Destroy your first hostile."
+        },
+        {
+          "id": "level-ten",
+          "name": "Resonant",
+          "desc": "Reach level 10 in a single run."
+        },
+        {
+          "id": "rift-sealed",
+          "name": "Rift Sealed",
+          "desc": "Defeat a Prism Wraith."
+        },
+        {
+          "id": "survive-five",
+          "name": "Last Light",
+          "desc": "Survive for five minutes."
+        },
+        {
+          "id": "score-five-k",
+          "name": "Overcharge",
+          "desc": "Score 5,000 points in one run."
+        }
       ],
       "patchNotes": [
+        {
+          "version": "1.1.0",
+          "date": "2026-11-06",
+          "notes": [
+            "Manual controls: W/S thrust forward and back, A/D turn, left click or Space to fire, Shift to dash",
+            "Enemy cap: up to 10 hostiles at once, rising by 1 every 30 seconds",
+            "Escalating upgrades: each repeat pick is stronger than the last (e.g. Thruster +8%, +9%, +10%...)",
+            "Enemies are solid: they collide with each other and can no longer sit inside your hull",
+            "Enemy hull and speed now grow much more slowly; Runners are a little slower",
+            "Levelling is much faster: level 8 needs about half the XP, and shards are worth more the longer you survive"
+          ]
+        },
         {
           "version": "1.0.0",
           "date": "2026-11-06",
