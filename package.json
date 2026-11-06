@@ -8,8 +8,7 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win nsis",
-    "preview": "python -m http.server 5190",
-    "postdist": "node -e \"const fs=require('fs');fs.mkdirSync('website/downloads',{recursive:true});fs.copyFileSync('dist/SpectraLauncherSetup.exe','website/downloads/SpectraLauncherSetup.exe');console.log('Copied installer to website/downloads/SpectraLauncherSetup.exe')\""
+    "preview": "python -m http.server 5190"
   },
   "devDependencies": {
     "electron": "^33.0.0",

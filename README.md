@@ -15,7 +15,14 @@ npm start
 npm run dist
 ```
 
-This creates `dist/SpectraLauncherSetup.exe`, a normal Windows setup wizard with a desktop shortcut, a Start menu entry and an uninstaller. It also copies the build to `website/downloads/SpectraLauncherSetup.exe`, which the website's Download button links to. For a new release, bump `version` in `package.json` (and `launcherVersion` in `website/config.js`), then run it again.
+This creates `dist/SpectraLauncherSetup.exe`, a normal Windows setup wizard with a desktop shortcut, a Start menu entry and an uninstaller.
+
+To release a new launcher version:
+1. Bump `version` in `package.json` and `launcherVersion` in `docs/config.js`.
+2. Run `npm run dist`.
+3. On GitHub, go to **Releases → Draft a new release**, tag it (e.g. `v0.2.0`) and attach `dist/SpectraLauncherSetup.exe`.
+
+The website's Download button links to `releases/latest/download/SpectraLauncherSetup.exe`, so it always serves the newest release with no website change.
 
 The installer isn't code-signed, so Windows SmartScreen will show "Windows protected your PC" the first time. Players click **More info → Run anyway**. Removing that warning needs a paid code-signing certificate.
 
@@ -44,11 +51,11 @@ The launcher caches the last catalogue it loaded, so the library still works off
 
 ## Website
 
-`website/` is the public site: Home, Games, a page for each game, Launcher info with an FAQ, and Download. It's plain static files, so it works on any static host (GitHub Pages, Netlify, Cloudflare Pages). Upload the contents of the `website` folder.
+`docs/` is the public site: Home, Games, a page for each game, Launcher info with an FAQ, and Download. It's plain static files. To host it on GitHub Pages: repo **Settings → Pages → Deploy from a branch → `main` / `/docs`**. It will be live at `https://nautiquatic.github.io/Spectra/`.
 
-Set things up in `website/config.js`:
+Set things up in `docs/config.js`:
 - `catalogUrl`: the **same** `catalog.json` the launcher uses, so the site always lists the same games. Your catalogue host must allow cross-origin requests (CORS) if it's on a different domain from the site. Putting `catalog.json` next to the site avoids that.
-- `downloadUrl`: link to the launcher installer. Until it's set, Download shows "Coming soon".
+- `downloadUrl`: link to the launcher installer. It's already set to the latest GitHub release.
 
 To test with a catalogue without editing config, add `?catalog=<url>` to the page address.
 
