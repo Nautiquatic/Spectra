@@ -7,8 +7,8 @@ dash and grow stronger as the swarm closes in. Bosses breach the rift every 70 s
 
 ## Play
 
-Double-click **`Prismfall.exe`**. It opens the game in its own window and stays running until
-you close that window, so the Spectra Launcher's playtime tracking is accurate.
+Double-click **`Prismfall.exe`**. It opens the game fullscreen (press `F11` for a window) and stays running until
+you close it, so the Spectra Launcher's playtime tracking is accurate.
 
 Prefer a browser? Open **`index.html`** directly. No install, build step or internet connection
 required either way.
@@ -24,6 +24,7 @@ Windows 11 and almost all Windows 10 PCs). If it is missing, the game shows a do
 | Turn left / right | `A` / `D` (or arrow keys) |
 | Fire (hold) | Left click or `Space` |
 | Dash (brief invulnerability) | `Shift` |
+| Fullscreen on/off | `F11` (or `F`, or `Alt+Enter` in Prismfall.exe) |
 | Choose upgrade | `1` `2` `3` or click a card |
 | Pause | `Esc` / `P` |
 | Mute | `M` |
@@ -33,6 +34,8 @@ Touch: hold a finger down to steer toward it and fire; use the on-screen **DASH*
 ## How it plays
 
 - Your prism cannon fires where your hull points. Hold left click or Space to fire.
+- The arena is bigger than your screen and the camera follows you, looking slightly ahead.
+- The arena has a **red border**. You can fly past it, but you then have **3 seconds** to get back in or you die. A dashed wall further out stops you completely.
 - Up to 10 hostiles can be alive at once; the cap rises by 1 every 30 seconds.
 - Upgrades escalate: each time you take one again it's stronger (Thruster +8%, +9%, +10%...).
 - Enemies drop light shards. Collect them to level up and pick one of three augmentations.
@@ -85,7 +88,7 @@ For testing, the API is exposed in the page: `SpectraAchievements.unlock('first-
 
 ## Adding it to Spectra Launcher
 
-1. Zip this folder's files (at the top level of the zip) as `Prismfall-1.1.0.zip` and attach it to a GitHub release.
+1. Zip this folder's files (at the top level of the zip) as `Prismfall-1.2.0.zip` and attach it to a GitHub release.
 2. Put the URL in `catalog-entry.json` → `games[0].download`.
 3. Merge the game (and optional news item) into your launcher `catalog.json`.
 
@@ -100,9 +103,13 @@ wipe it.
 
 ## Development
 
+`Prismfall.exe` is built from `host/Prismfall.cs` (a WinForms + WebView2 window). Rebuild it with
+`powershell -ExecutionPolicy Bypass -File host\build.ps1`; it only needs the .NET Framework C# compiler that ships with Windows.
+The `host/` folder is not included in the game zip.
+
 Plain HTML/CSS/JavaScript with no dependencies. Edit `game.js` and refresh.
 Everything is procedural — no image, font or audio files. Sound is synthesised with WebAudio.
 
 ---
 
-© Spectra Games · v1.1.0 · 2026-11-06
+© Spectra Games · v1.2.0 · 2026-11-06

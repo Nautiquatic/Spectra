@@ -44,6 +44,11 @@
 
 <div id="announce" aria-live="polite"></div>
 
+<div id="zone-warn" class="zone-warn hidden" role="alert">
+  <div class="zw-title">RETURN TO THE ZONE</div>
+  <div id="zone-count" class="zw-count">3.0</div>
+</div>
+
 <div id="ach-toast" class="ach-toast" role="status" aria-live="polite">
   <div class="ach-icon" aria-hidden="true">🏆</div>
   <div class="ach-copy">
@@ -67,13 +72,17 @@
         <div><kbd>SHIFT</kbd><span>Dash</span></div>
         <div><kbd>1 2 3</kbd><span>Upgrade</span></div>
         <div><kbd>ESC</kbd><span>Pause</span></div>
+        <div><kbd>F11</kbd><span>Fullscreen</span></div>
       </div>
 
       <button id="btn-play" class="btn primary">ENTER THE RIFT</button>
 
       <div class="start-foot">
         <button id="btn-sound" class="btn ghost small"><span class="sound-label">SOUND: ON</span></button>
-        <span class="hint">Your cannon fires where your hull points.</span>
+        <button class="btn ghost small btn-fullscreen"><span class="fs-label">FULLSCREEN: ON</span></button>
+      </div>
+      <div class="start-foot">
+        <span class="hint">Your cannon fires where your hull points. Stay inside the red border.</span>
       </div>
     </div>
   </section>
@@ -96,6 +105,7 @@
       <button id="btn-resume" class="btn primary">RESUME</button>
       <div class="start-foot">
         <button id="btn-sound-pause" class="btn ghost small"><span class="sound-label">SOUND: ON</span></button>
+        <button class="btn ghost small btn-fullscreen"><span class="fs-label">FULLSCREEN: ON</span></button>
         <span class="hint">Press <kbd>ESC</kbd> to resume</span>
       </div>
     </div>
@@ -103,7 +113,7 @@
 
   <section id="screen-gameover" class="screen">
     <div class="panel">
-      <div class="eyebrow">HULL INTEGRITY LOST</div>
+      <div class="eyebrow" id="go-reason">HULL INTEGRITY LOST</div>
       <h2 class="title small-title">RIFT <span>CLAIMED YOU</span></h2>
 
       <div class="stats">

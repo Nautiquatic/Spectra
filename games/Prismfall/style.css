@@ -567,3 +567,26 @@ kbd {
   .cards { max-height: 46vh; }
   .panel { padding: 18px 22px; }
 }
+
+/* ---------- Out-of-zone warning ---------- */
+
+.zone-warn {
+  position: fixed;
+  top: 34%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 6;
+  color: #ff5470;
+  text-shadow: 0 0 24px rgba(255, 84, 112, 0.9);
+  font-family: var(--font);
+  animation: zoneBlink 0.5s ease-in-out infinite alternate;
+}
+
+.zw-title { font-weight: 700; font-size: clamp(16px, 2.6vw, 26px); letter-spacing: 0.3em; }
+.zw-count { font-weight: 700; font-size: clamp(48px, 9vw, 96px); letter-spacing: 0.05em; font-variant-numeric: tabular-nums; }
+
+@keyframes zoneBlink { from { opacity: 1; } to { opacity: 0.55; } }
+
+.start-foot + .start-foot { margin-top: 12px; }

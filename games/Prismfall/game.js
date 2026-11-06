@@ -42,6 +42,16 @@
 
   const STORE_BEST = 'prismfall.best';
   const STORE_SOUND = 'prismfall.sound';
+  const STORE_FULLSCREEN = 'prismfall.fullscreen';
+
+  // The arena is bigger than the screen; the camera follows the player.
+  // Leaving the red border starts a 3 second countdown; OUTER is a hard wall beyond it.
+  const ZONE_TIME = 3;
+  const OUTER = 600;
+  const CAM_LEAD = 70; // camera looks slightly ahead of the hull
+  const arena = { w: 2600, h: 1800 };
+  const cam = { x: 1300, y: 900 };
+  const inZone = (x, y) => x >= 0 && y >= 0 && x <= arena.w && y <= arena.h;
 
   // -----------------------------------------------------------
   // Canvas + starfield
@@ -78,10 +88,6 @@
     canvas.style.height = H + 'px';
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     makeStars();
-    if (game && game.player) {
-      game.player.x = clamp(game.player.x, 30, W - 30);
-      game.player.y = clamp(game.player.y, 30, H - 30);
-    }
   }
 
   // -----------------------------------------------------------
@@ -171,6 +177,10 @@
         case 'click':
           this.tone(620, 0.05, 'sine', 0.12);
           break;
+        case 'warn':
+          this.tone(880, 0.12, 'square', 0.14, 660);
+          this.tone(660, 0.18, 'square', 0.1, 440);
+          break;
         default:
           break;
       }
@@ -197,6 +207,8 @@
   const achToastEl = $('ach-toast');
   const achNameEl = $('ach-name');
   const achDescEl = $('ach-desc');
+  const zoneWarn = $('zone-warn');
+  const zoneCount = $('zone-count');
 
   const screens = {
     start: $('screen-start'),
@@ -210,6 +222,7 @@
   const goLevel = $('go-level');
   const goScore = $('go-score');
   const goBest = $('go-best');
+  const goReason = $('go-reason');
 
   // -----------------------------------------------------------
   // Game state
@@ -390,11 +403,11 @@
   // -----------------------------------------------------------
   function makePlayer() {
     return {
-      x: W / 2,
-      y: H / 2,
+      x: arena.w / 2,
+      y: arena.h / 2,
       r: 13,
       speed: 220,
-      turn: 3.6, // radians per second
+      turn: 4.3, // radians per second
       hp: 120,
       maxHp: 120,
       invuln: 0,
@@ -441,8 +454,8 @@
     // Touch: steer the hull toward the finger and drive forward.
     if (turn === 0 && thrust === 0 && pointer.active && game.player) {
       const p = game.player;
-      const dx = pointer.x - p.x;
-      const dy = pointer.y - p.y;
+      const dx = pointer.x + cam.x - W / 2 - p.x;
+      const dy = pointer.y + cam.y - H / 2 - p.y;
       if (Math.hypot(dx, dy) > 24) {
         const diff = ((Math.atan2(dy, dx) - p.aim + Math.PI * 3) % TAU) - Math.PI;
         turn = clamp(diff * 3, -1, 1);
@@ -500,6 +513,35 @@
     announceEl.classList.add('show');
   }
 
+  // Fullscreen. Inside Prismfall.exe the host window does it (borderless, covers the screen);
+  // in a browser it uses the Fullscreen API.
+  const isHost = () => !!window.SPECTRA_HOST && !!(window.chrome && window.chrome.webview);
+  function isFullscreen() {
+    return isHost() ? !!window.SPECTRA_FULLSCREEN : !!document.fullscreenElement;
+  }
+  function setFullscreen(on) {
+    localStorage.setItem(STORE_FULLSCREEN, on ? '1' : '0');
+    if (isHost()) {
+      try { window.chrome.webview.postMessage('spectra-window|fullscreen-' + (on ? 'on' : 'off')); } catch (e) { /* ignore */ }
+    } else if (on && !document.fullscreenElement && document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else if (!on && document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+    setTimeout(updateFullscreenLabels, 50);
+  }
+  function toggleFullscreen() {
+    setFullscreen(!isFullscreen());
+  }
+  function updateFullscreenLabels() {
+    const label = 'FULLSCREEN: ' + (isFullscreen() ? 'ON' : 'OFF');
+    document.querySelectorAll('.fs-label').forEach((el) => {
+      el.textContent = label;
+    });
+  }
+  window.addEventListener('spectra-fullscreen', updateFullscreenLabels);
+  document.addEventListener('fullscreenchange', updateFullscreenLabels);
+
   function updateSoundLabels() {
     const label = 'SOUND: ' + (Sfx.enabled ? 'ON' : 'OFF');
     document.querySelectorAll('.sound-label').forEach((el) => {
@@ -525,7 +567,12 @@
     game.xp = 0;
     game.xpNext = xpFor(1);
     game.pendingLevels = 0;
+    arena.w = Math.max(2600, Math.round(W * 1.5));
+    arena.h = Math.max(1800, Math.round(H * 1.5));
     game.player = makePlayer();
+    game.outTimer = 0;
+    cam.x = game.player.x;
+    cam.y = game.player.y;
     game.enemies = [];
     game.bullets = [];
     game.eBullets = [];
@@ -545,6 +592,8 @@
 
   function startGame() {
     Sfx.init();
+    // browsers only allow fullscreen from a click/key press, so enter it when a run starts
+    if (!isHost() && localStorage.getItem(STORE_FULLSCREEN) !== '0' && !document.fullscreenElement) setFullscreen(true);
     mouseFiring = false;
     resetGame();
     game.mode = 'playing';
@@ -566,9 +615,11 @@
     }
   }
 
-  function die() {
+  function die(cause) {
     const p = game.player;
     game.mode = 'gameover';
+    zoneWarn.classList.add('hidden');
+    goReason.textContent = cause === 'zone' ? 'LOST OUTSIDE THE ZONE' : 'HULL INTEGRITY LOST';
     game.shake = 26;
     game.flash = 1;
     game.flashColor = '255,84,112';
@@ -711,6 +762,33 @@
     for (let i = 0; i < count; i++) spawnEnemy(pickType(t));
   }
 
+  // A point just outside the camera view that is still inside the arena.
+  function spawnPoint(pad) {
+    const vx = cam.x - W / 2;
+    const vy = cam.y - H / 2;
+    for (let i = 0; i < 12; i++) {
+      const edge = randInt(0, 3);
+      let x;
+      let y;
+      if (edge === 0) {
+        x = rand(vx - pad, vx + W + pad); y = vy - pad;
+      } else if (edge === 1) {
+        x = vx + W + pad; y = rand(vy - pad, vy + H + pad);
+      } else if (edge === 2) {
+        x = rand(vx - pad, vx + W + pad); y = vy + H + pad;
+      } else {
+        x = vx - pad; y = rand(vy - pad, vy + H + pad);
+      }
+      if (x >= -30 && y >= -30 && x <= arena.w + 30 && y <= arena.h + 30) return { x, y };
+    }
+    // The view covers most of the arena: use the far side of it.
+    const p = game.player;
+    return {
+      x: p.x < arena.w / 2 ? rand(arena.w * 0.8, arena.w) : rand(0, arena.w * 0.2),
+      y: p.y < arena.h / 2 ? rand(arena.h * 0.8, arena.h) : rand(0, arena.h * 0.2),
+    };
+  }
+
   function spawnEnemy(type) {
     if (aliveEnemies() >= enemyCap()) return;
     const def = ENEMY_TYPES[type];
@@ -718,19 +796,7 @@
     // Gentle growth: about x2 hull at 2.5 min, x4 at 5 min.
     const hp = def.hp * (1 + t * 0.008 + Math.pow(t, 1.5) * 0.00012);
 
-    const edge = randInt(0, 3);
-    const pad = 50;
-    let x;
-    let y;
-    if (edge === 0) {
-      x = rand(-pad, W + pad); y = -pad;
-    } else if (edge === 1) {
-      x = W + pad; y = rand(-pad, H + pad);
-    } else if (edge === 2) {
-      x = rand(-pad, W + pad); y = H + pad;
-    } else {
-      x = -pad; y = rand(-pad, H + pad);
-    }
+    const { x, y } = spawnPoint(50);
 
     game.enemies.push({
       type,
@@ -756,18 +822,7 @@
   function spawnBoss() {
     game.bossCount += 1;
     const hp = Math.round((850 + game.bossCount * 800) * (1 + game.time * 0.003));
-    const edge = randInt(0, 3);
-    let x;
-    let y;
-    if (edge === 0) {
-      x = rand(0, W); y = -80;
-    } else if (edge === 1) {
-      x = W + 80; y = rand(0, H);
-    } else if (edge === 2) {
-      x = rand(0, W); y = H + 80;
-    } else {
-      x = -80; y = rand(0, H);
-    }
+    const { x, y } = spawnPoint(90);
 
     const boss = {
       type: 'boss',
@@ -1023,8 +1078,21 @@
       p.y += Math.sin(p.aim) * sp * dt;
     }
 
-    p.x = clamp(p.x, p.r + 4, W - p.r - 4);
-    p.y = clamp(p.y, p.r + 4, H - p.r - 4);
+    // Free to cross the red border, but there is a hard wall OUTER px beyond it.
+    p.x = clamp(p.x, -OUTER, arena.w + OUTER);
+    p.y = clamp(p.y, -OUTER, arena.h + OUTER);
+
+    if (inZone(p.x, p.y)) {
+      game.outTimer = 0;
+    } else {
+      if (game.outTimer === 0) Sfx.play('warn');
+      game.outTimer += dt;
+      if (game.outTimer >= ZONE_TIME) {
+        p.hp = 0;
+        die('zone');
+        return;
+      }
+    }
 
     p.trail.push({ x: p.x, y: p.y, life: 0.35 });
     if (p.trail.length > 16) p.trail.shift();
@@ -1041,6 +1109,15 @@
     } else {
       p.fireTimer = Math.max(p.fireTimer, 0);
     }
+  }
+
+  function updateCamera(dt) {
+    const p = game.player;
+    const tx = p.x + Math.cos(p.aim) * CAM_LEAD;
+    const ty = p.y + Math.sin(p.aim) * CAM_LEAD;
+    const k = 1 - Math.exp(-6 * dt);
+    cam.x += (tx - cam.x) * k;
+    cam.y += (ty - cam.y) * k;
   }
 
   function updateSpawning(dt) {
@@ -1107,8 +1184,8 @@
         e.y += ny * e.speed * dt;
       }
 
-      e.x = clamp(e.x, -140, W + 140);
-      e.y = clamp(e.y, -140, H + 140);
+      e.x = clamp(e.x, -OUTER - 140, arena.w + OUTER + 140);
+      e.y = clamp(e.y, -OUTER - 140, arena.h + OUTER + 140);
 
       // Hostiles are solid: they hit you on contact but can't sit inside your hull.
       const cx = e.x - p.x;
@@ -1156,6 +1233,8 @@
     }
   }
 
+  const offView = (x, y, m) => x < cam.x - W / 2 - m || x > cam.x + W / 2 + m || y < cam.y - H / 2 - m || y > cam.y + H / 2 + m;
+
   function updateBullets(dt) {
     for (let i = game.bullets.length - 1; i >= 0; i--) {
       const b = game.bullets[i];
@@ -1163,7 +1242,7 @@
       b.y += b.vy * dt;
       b.life -= dt;
 
-      let remove = b.life <= 0 || b.x < -40 || b.x > W + 40 || b.y < -40 || b.y > H + 40;
+      let remove = b.life <= 0 || offView(b.x, b.y, 80);
 
       if (!remove) {
         for (const e of game.enemies) {
@@ -1194,7 +1273,7 @@
       b.y += b.vy * dt;
       b.life -= dt;
 
-      let remove = b.life <= 0 || b.x < -60 || b.x > W + 60 || b.y < -60 || b.y > H + 60;
+      let remove = b.life <= 0 || offView(b.x, b.y, 160);
 
       if (!remove) {
         const rr = b.r + p.r;
@@ -1284,6 +1363,8 @@
     if (game.time >= 300) unlockAchievement('survive-five');
 
     updatePlayer(dt);
+    if (game.mode !== 'playing') return;
+    updateCamera(dt);
     updateSpawning(dt);
     updateEnemies(dt);
     updateBullets(dt);
@@ -1326,6 +1407,10 @@
     dashFill.style.width = dashPct + '%';
     dashFill.classList.toggle('ready', dashPct >= 100);
 
+    const out = game.outTimer > 0 && game.mode === 'playing';
+    zoneWarn.classList.toggle('hidden', !out);
+    if (out) zoneCount.textContent = Math.max(0, ZONE_TIME - game.outTimer).toFixed(1);
+
     if (game.boss && !game.boss.dead) {
       bossWrap.classList.remove('hidden');
       bossFill.style.width = clamp((game.boss.hp / game.boss.maxHp) * 100, 0, 100) + '%';
@@ -1345,11 +1430,8 @@
     ctx.fillStyle = grd;
     ctx.fillRect(0, 0, W, H);
 
-    const p = game.player;
-    const px = p ? p.x : W / 2;
-    const py = p ? p.y : H / 2;
-    const ox = (px - W / 2) * 0.12;
-    const oy = (py - H / 2) * 0.12;
+    const ox = cam.x * 0.12;
+    const oy = cam.y * 0.12;
 
     for (const s of stars) {
       let x = (s.x - ox * s.z) % W;
@@ -1361,22 +1443,66 @@
       ctx.fillRect(x, y, s.s, s.s);
     }
     ctx.globalAlpha = 1;
+  }
 
+  // Grid floor inside the arena, red-tinted danger area outside it, and the red border.
+  function drawArena() {
+    const vx = cam.x - W / 2;
+    const vy = cam.y - H / 2;
     const grid = 64;
-    const gox = (px * 0.2) % grid;
-    const goy = (py * 0.2) % grid;
-    ctx.strokeStyle = 'rgba(110,242,255,0.035)';
+
+    ctx.strokeStyle = 'rgba(110,242,255,0.045)';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    for (let x = -gox; x < W; x += grid) {
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, H);
+    const x0 = Math.max(0, Math.floor(vx / grid) * grid);
+    const x1 = Math.min(arena.w, vx + W);
+    const y0 = Math.max(0, Math.floor(vy / grid) * grid);
+    const y1 = Math.min(arena.h, vy + H);
+    for (let x = x0; x <= x1; x += grid) {
+      ctx.moveTo(x, Math.max(0, vy));
+      ctx.lineTo(x, y1);
     }
-    for (let y = -goy; y < H; y += grid) {
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
+    for (let y = y0; y <= y1; y += grid) {
+      ctx.moveTo(Math.max(0, vx), y);
+      ctx.lineTo(x1, y);
     }
     ctx.stroke();
+
+    // outside the zone
+    ctx.fillStyle = 'rgba(255,40,70,0.075)';
+    ctx.beginPath();
+    ctx.rect(vx - 20, vy - 20, W + 40, H + 40);
+    ctx.rect(0, 0, arena.w, arena.h);
+    ctx.fill('evenodd');
+
+    // hard wall
+    ctx.strokeStyle = 'rgba(255,84,112,0.18)';
+    ctx.setLineDash([10, 14]);
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-OUTER, -OUTER, arena.w + OUTER * 2, arena.h + OUTER * 2);
+    ctx.setLineDash([]);
+
+    // the red border
+    const pulse = 0.75 + Math.sin(performance.now() / 260) * 0.25;
+    ctx.save();
+    ctx.strokeStyle = C.red;
+    ctx.shadowColor = C.red;
+    ctx.shadowBlur = 22;
+    ctx.globalAlpha = pulse;
+    ctx.lineWidth = 6;
+    ctx.strokeRect(0, 0, arena.w, arena.h);
+    ctx.restore();
+  }
+
+  function drawZoneWarning() {
+    if (!(game.outTimer > 0) || game.mode !== 'playing') return;
+    const k = clamp(game.outTimer / ZONE_TIME, 0, 1);
+    const beat = 0.6 + Math.sin(performance.now() / (120 - k * 60)) * 0.4;
+    const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.25, W / 2, H / 2, Math.max(W, H) * 0.7);
+    g.addColorStop(0, 'rgba(255,40,70,0)');
+    g.addColorStop(1, 'rgba(255,40,70,' + (0.25 + k * 0.45) * beat + ')');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
   }
 
   function drawRings() {
@@ -1612,7 +1738,10 @@
     if (game.shake > 0.3) {
       ctx.translate(rand(-1, 1) * game.shake, rand(-1, 1) * game.shake);
     }
+    // world -> screen: centre the camera
+    ctx.translate(Math.round(W / 2 - cam.x), Math.round(H / 2 - cam.y));
 
+    drawArena();
     drawRings();
     drawGems();
     drawEnemyBullets();
@@ -1623,6 +1752,8 @@
     drawTexts();
 
     ctx.restore();
+
+    drawZoneWarning();
 
     if (game.flash > 0) {
       ctx.fillStyle = 'rgba(' + game.flashColor + ',' + (game.flash * 0.32) + ')';
@@ -1657,6 +1788,12 @@
 
     keys.add(k);
 
+    if (k === 'f11') {
+      e.preventDefault();
+      toggleFullscreen();
+      return;
+    }
+
     if (game.mode === 'start' && (k === 'enter' || k === ' ')) {
       startGame();
       return;
@@ -1681,6 +1818,12 @@
 
     if (k === 'm') {
       toggleSound();
+      return;
+    }
+
+    if (k === 'f11' || k === 'f') {
+      e.preventDefault();
+      toggleFullscreen();
       return;
     }
 
@@ -1750,6 +1893,7 @@
   });
 
   $('btn-sound').addEventListener('click', toggleSound);
+  document.querySelectorAll('.btn-fullscreen').forEach((b) => b.addEventListener('click', toggleFullscreen));
   $('btn-sound-pause').addEventListener('click', toggleSound);
   $('btn-dash').addEventListener('click', () => {
     tryDash();
@@ -1760,6 +1904,9 @@
   // -----------------------------------------------------------
   resize();
   updateSoundLabels();
+  // the exe starts fullscreen; respect a player who turned it off
+  if (isHost() && localStorage.getItem(STORE_FULLSCREEN) === '0' && window.SPECTRA_FULLSCREEN) setFullscreen(false);
+  updateFullscreenLabels();
   bestEl.textContent = game.best.toLocaleString();
   showScreen('start');
 

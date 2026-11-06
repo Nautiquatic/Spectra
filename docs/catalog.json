@@ -2,6 +2,13 @@
   "news": [
     {
       "tag": "Update",
+      "title": "Prismfall 1.2: into the rift",
+      "body": "Fullscreen, a bigger arena with a follow camera, a deadly red border and faster turning.",
+      "date": "2026-11-06",
+      "game": "prismfall"
+    },
+    {
+      "tag": "Update",
       "title": "Prismfall 1.1: take the controls",
       "body": "Manual aiming and firing, solid enemies, an enemy cap, escalating upgrades and much faster levelling.",
       "date": "2026-11-06",
@@ -20,9 +27,9 @@
       "id": "prismfall",
       "title": "Prismfall",
       "tagline": "One hull. Endless light. Survive the rift.",
-      "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Survive escalating swarms, then break the Prism Wraith that breaches the rift every seventy seconds.",
+      "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, then break the Prism Wraith that breaches every seventy seconds.",
       "status": "available",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -32,9 +39,9 @@
         "Windows"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.1.0.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.2.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 264499,
+      "sizeBytes": 267836,
       "art": {
         "from": "#1a0c3a",
         "to": "#050111",
@@ -43,10 +50,10 @@
       },
       "features": [
         "Hands-on tank controls: thrust, turn, aim and fire yourself",
+        "A big arena with a follow camera, and a deadly red border",
         "12 escalating augmentations that get stronger every time you take them",
         "Four solid enemy types and a boss that breaches every 70 seconds",
-        "Dash with invulnerability and a risk/reward pickup loop",
-        "WebAudio synth effects, no asset files"
+        "Fullscreen, with WebAudio synth effects and no asset files"
       ],
       "achievements": [
         {
@@ -76,6 +83,16 @@
         }
       ],
       "patchNotes": [
+        {
+          "version": "1.2.0",
+          "date": "2026-11-06",
+          "notes": [
+            "Fullscreen: the game now opens fullscreen. Press F11 (or F, or Alt+Enter) to switch to a window",
+            "Bigger arena with a camera that follows your hull, looking slightly ahead",
+            "Red arena border: fly outside it and you have 3 seconds to get back before you are lost",
+            "Turning is about 20% faster"
+          ]
+        },
         {
           "version": "1.1.0",
           "date": "2026-11-06",
