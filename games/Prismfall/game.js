@@ -98,6 +98,8 @@
   // The arena is bigger than the screen; the camera follows the player.
   // Leaving the red border starts a 3 second countdown; OUTER is a hard wall beyond it.
   const ZONE_TIME = 3;
+  const FIRST_BOSS_AT = 110; // first Prism Wraith at 1:50
+  const BOSS_GAP = 80;       // then 80s after the previous one appears/dies
   const OUTER = 600;
   const CAM_LEAD = 70; // camera looks slightly ahead of the hull
   const arena = { w: 2600, h: 1800 };
@@ -305,7 +307,7 @@
     texts: [],
     rings: [],
     spawnTimer: 1,
-    nextBossAt: 75,
+    nextBossAt: FIRST_BOSS_AT,
     boss: null,
     bossCount: 0,
     shake: 0,
@@ -345,6 +347,7 @@
     { id: 'regen', name: 'Regeneration', icon: '♥', max: 5, base: 1.2, step: 0.4, desc: (v) => 'Regenerate +' + v.toFixed(1) + ' hull/s', apply: (p, v) => { p.regen += v; } },
     { id: 'dash', name: 'Dash Core', icon: '»', max: 4, base: 15, step: 2, desc: (v) => '-' + v + '% dash cooldown', apply: (p, v) => { p.dashCd *= 1 - v / 100; } },
     { id: 'siphon', name: 'Siphon', icon: '⤓', max: 4, base: 1.5, step: 0.5, desc: (v) => 'Heal ' + v.toFixed(1) + ' hull per kill', apply: (p, v) => { p.lifesteal += v; } },
+    { id: 'seeker', name: 'Seeker Lens', icon: '⌖', max: 5, base: 70, step: 20, desc: (v) => '+' + v + '% bolt homing', apply: (p, v) => { p.homing += 0.9 * v / 100; } },
     { id: 'heavy', name: 'Heavy Light', icon: '●', max: 4, base: 10, step: 3, desc: (v) => '+25% bolt size, +' + v + '% damage', apply: (p, v) => { p.bulletSize *= 1.25; p.damage *= 1 + v / 100; } },
   ];
   const upgradeValue = (u, taken) => Math.round((u.base + u.step * taken) * 10) / 10;
@@ -488,6 +491,7 @@
       dashY: -1,
       regen: 0,
       lifesteal: 0,
+      homing: 0.9, // radians/second a bolt can turn toward a target (small on purpose)
       aim: -Math.PI / 2,
       trail: [],
     };
@@ -644,7 +648,7 @@
     game.texts = [];
     game.rings = [];
     game.spawnTimer = 1.1;
-    game.nextBossAt = 75;
+    game.nextBossAt = FIRST_BOSS_AT;
     game.boss = null;
     game.bossCount = 0;
     game.shake = 0;
@@ -1041,7 +1045,7 @@
 
     game.enemies.push(boss);
     game.boss = boss;
-    game.nextBossAt = game.time + 70;
+    game.nextBossAt = game.time + BOSS_GAP;
     game.shake = 16;
     announce('RIFT BREACH', C.magenta);
     Sfx.play('boss');
@@ -1081,6 +1085,7 @@
         dmg: p.damage * (crit ? p.critMult : 1),
         crit,
         pierceLeft: p.pierce,
+        homing: p.homing,
         life: 1.35,
         hit: new Set(),
       });
@@ -1178,7 +1183,7 @@
 
     if (e.boss) {
       game.boss = null;
-      game.nextBossAt = game.time + 70;
+      game.nextBossAt = game.time + BOSS_GAP;
       game.score += 500;
       unlockAchievement('rift-sealed');
       if (game.score >= 5000) unlockAchievement('score-five-k');
@@ -1485,9 +1490,40 @@
 
   const offView = (x, y, m) => x < cam.x - W / 2 - m || x > cam.x + W / 2 + m || y < cam.y - H / 2 - m || y > cam.y + H / 2 + m;
 
+  // Gently bend a bolt toward the nearest hostile in front of it (within ~75 degrees and HOMING_RANGE).
+  const HOMING_RANGE = 460;
+  const HOMING_CONE = Math.cos((75 * Math.PI) / 180);
+  function steerBolt(b, dt) {
+    if (!(b.homing > 0)) return;
+    const sp = Math.hypot(b.vx, b.vy) || 1;
+    const fx = b.vx / sp;
+    const fy = b.vy / sp;
+    let best = null;
+    let bestD = HOMING_RANGE * HOMING_RANGE;
+    for (const e of game.enemies) {
+      if (e.dead || b.hit.has(e)) continue;
+      const dx = e.x - b.x;
+      const dy = e.y - b.y;
+      const d2 = dx * dx + dy * dy;
+      if (d2 >= bestD) continue;
+      const d = Math.sqrt(d2) || 1;
+      if ((dx * fx + dy * fy) / d < HOMING_CONE) continue;
+      best = e;
+      bestD = d2;
+    }
+    if (!best) return;
+    const cur = Math.atan2(b.vy, b.vx);
+    const want = Math.atan2(best.y - b.y, best.x - b.x);
+    const diff = ((want - cur + Math.PI * 3) % TAU) - Math.PI;
+    const a = cur + clamp(diff, -b.homing * dt, b.homing * dt);
+    b.vx = Math.cos(a) * sp;
+    b.vy = Math.sin(a) * sp;
+  }
+
   function updateBullets(dt) {
     for (let i = game.bullets.length - 1; i >= 0; i--) {
       const b = game.bullets[i];
+      steerBolt(b, dt);
       b.x += b.vx * dt;
       b.y += b.vy * dt;
       b.life -= dt;

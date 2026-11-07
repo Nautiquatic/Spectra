@@ -124,12 +124,17 @@
     }
     return 0;
   }
-  // An installed game has an update when the server lists a newer version than the one installed.
+  // An installed game needs updating when the server's build differs from the installed one.
+  // `build` (optional) lets a game ship new builds without changing its version, e.g. several
+  // 1.0.0 builds before launch. Without it, a different version means an update.
   const updateAvail = (g) => {
     const inst = g && state.installed[g.id];
-    if (!inst || !g.version || !playable(g) || (api.isDesktop && !g.download)) return false;
-    return !inst.version || cmpVer(g.version, inst.version) > 0;
+    if (!inst || !playable(g) || (api.isDesktop && !g.download)) return false;
+    if (g.build != null && g.build !== '') return String(inst.build ?? '') !== String(g.build);
+    if (!g.version) return false;
+    return !inst.version || cmpVer(g.version, inst.version) !== 0;
   };
+  const updateLabel = (g) => (g.build != null && g.build !== '' && state.installed[g.id]?.version === g.version ? `v${g.version} (build ${g.build})` : `v${g.version}`);
   const updatesList = () => state.owned.map((id) => byId[id]).filter(updateAvail);
   // state.achievements[gameId] = { achievementId: unlockedAt (ms) }
   const achMap = (id) => { const m = state.achievements?.[id]; return m && typeof m === 'object' && !Array.isArray(m) ? m : {}; };
@@ -187,7 +192,7 @@
       const pct = d.total ? Math.floor((d.received / d.total) * 100) : 0;
       return `<button class="btn progress ${size}" data-route="downloads" style="--p:${pct}%"><span>${d.paused ? 'Paused' : d.started ? (d.update ? 'Updating' : 'Installing') : 'Queued'} ${d.started ? pct + '%' : ''}</span></button>`;
     }
-    if (updateAvail(g)) return `<button class="btn update ${size}" data-action="update-game" data-id="${g.id}" title="Update to v${esc(g.version)}">${icon.dl}<span>Update</span></button>`;
+    if (updateAvail(g)) return `<button class="btn update ${size}" data-action="update-game" data-id="${g.id}" title="Update to ${esc(updateLabel(g))}">${icon.dl}<span>Update</span></button>`;
     if (installed(g.id)) return `<button class="btn primary ${size}" data-action="play" data-id="${g.id}">${icon.play}<span>Play</span></button>`;
     if (!playable(g)) {
       const w = state.wishlist.includes(g.id);
@@ -287,7 +292,7 @@
       ${d ? `<div class="tile-bar"><i style="width:${pct}%"></i></div>` : ''}
       <div class="tile-hover">${installed(g.id) && !rt.running.has(g.id) ? `<button class="round-play" data-action="play" data-id="${g.id}">${icon.play}</button>` : ''}</div>
       ${updateAvail(g) && !d ? '<span class="upd-badge">Update</span>' : ''}
-      <div class="tile-meta"><b>${esc(g.title)}</b><span>${rt.running.has(g.id) ? '<i class="live"></i>Running' : d?.update ? 'Updating…' : updateAvail(g) ? `<em class="upd-text">v${esc(g.version)} available</em>` : installed(g.id) ? fmtTime(state.playtime[g.id]) === '—' ? 'Ready to play' : fmtTime(state.playtime[g.id]) + ' played' : d ? 'Installing…' : owned(g.id) ? 'Not installed' : STATUS[g.status].label}</span></div>
+      <div class="tile-meta"><b>${esc(g.title)}</b><span>${rt.running.has(g.id) ? '<i class="live"></i>Running' : d?.update ? 'Updating…' : updateAvail(g) ? `<em class="upd-text">${esc(updateLabel(g))} available</em>` : installed(g.id) ? fmtTime(state.playtime[g.id]) === '—' ? 'Ready to play' : fmtTime(state.playtime[g.id]) + ' played' : d ? 'Installing…' : owned(g.id) ? 'Not installed' : STATUS[g.status].label}</span></div>
     </div>`;
   }
 
@@ -410,7 +415,7 @@
   function libAction(g) {
     if (rt.running.has(g.id)) return `<a class="mini-act" data-action="stop" data-id="${g.id}">${icon.stop} Stop</a>`;
     if (dlOf(g.id)) return `<a class="mini-act" data-route="downloads">${icon.dl} ${dlOf(g.id).update ? 'Updating' : 'Installing'}</a>`;
-    if (updateAvail(g)) return `<a class="mini-act upd-text" data-action="update-game" data-id="${g.id}">${icon.dl} Update to v${esc(g.version)}</a>`;
+    if (updateAvail(g)) return `<a class="mini-act upd-text" data-action="update-game" data-id="${g.id}">${icon.dl} Update to ${esc(updateLabel(g))}</a>`;
     if (installed(g.id)) return `<a class="mini-act" data-action="play" data-id="${g.id}">${icon.play} Launch</a>`;
     if (playable(g)) return `<a class="mini-act" data-action="install" data-id="${g.id}">${icon.dl} Install</a>`;
     return `<span class="mini-act muted">${STATUS[g.status].label}</span>`;
@@ -496,7 +501,7 @@
       return `<div class="dl-row ${isActive ? 'active' : ''}">
         <div data-game="${g.id}">${cover(g, isActive ? 'md' : 'xs')}</div>
         <div class="dl-info">
-          <div class="row between"><b>${esc(g.title)}</b><span class="muted small">${d.update ? `Update to v${esc(g.version)} · ` : ''}${isActive ? (d.paused ? 'Paused' : d.started ? 'Downloading' : 'Starting…') : 'Queued'}</span></div>
+          <div class="row between"><b>${esc(g.title)}</b><span class="muted small">${d.update ? `Update to ${esc(updateLabel(g))} · ` : ''}${isActive ? (d.paused ? 'Paused' : d.started ? 'Downloading' : 'Starting…') : 'Queued'}</span></div>
           ${isActive ? `<div class="bar"><i style="width:${pct}%"></i></div>
           <div class="row between small muted"><span>${fmtBytes(d.received)} / ${fmtBytes(d.total)}</span><span>${d.paused ? '—' : fmtBytes(d.speed) + '/s'} · ${eta ? fmtTime(Math.ceil(eta)) + ' left' : '—'}</span></div>` : `<span class="muted small">${fmtBytes(d.total || g.sizeBytes)}</span>`}
         </div>
@@ -687,7 +692,7 @@
     else if (playable(g) && !owned(g.id)) items.push({ label: 'Get for free', icon: icon.plus, run: () => get(g.id) });
     else if (playable(g)) items.push({ label: 'Install', icon: icon.dl, run: () => install(g.id) });
     else items.push({ label: state.wishlist.includes(g.id) ? 'Remove from wishlist' : 'Add to wishlist', icon: state.wishlist.includes(g.id) ? icon.check : icon.plus, run: () => toggleWish(g.id) });
-    if (updateAvail(g) && !d) items.push({ label: `Update to v${g.version}`, icon: icon.dl, disabled: running, run: () => updateGame(g.id) });
+    if (updateAvail(g) && !d) items.push({ label: `Update to ${updateLabel(g)}`, icon: icon.dl, disabled: running, run: () => updateGame(g.id) });
     items.push('-');
     if (owned(g.id)) items.push({ label: state.favorites.includes(g.id) ? 'Remove from favorites' : 'Add to favorites', icon: icon.star, run: () => toggleFav(g.id) });
     if (rt.route.name !== 'game' || rt.route.id !== g.id) items.push({ label: 'View game page', icon: icon.grid, run: () => go('game', { id: g.id }) });
@@ -840,10 +845,11 @@
   // Tell the player once per new version when the catalogue lists an update for one of their games.
   function announceUpdates() {
     state.updateSeen = state.updateSeen || {};
-    const fresh = updatesList().filter((g) => state.updateSeen[g.id] !== g.version);
+    const key = (g) => `${g.version}#${g.build ?? ''}`;
+    const fresh = updatesList().filter((g) => state.updateSeen[g.id] !== key(g));
     if (!fresh.length) return;
-    fresh.forEach((g) => { state.updateSeen[g.id] = g.version; notify(`${g.title} v${g.version} is available. Open your library to update.`); });
-    toast(fresh.length === 1 ? `Update available: ${fresh[0].title} v${fresh[0].version}` : `${fresh.length} game updates available`, 'ok');
+    fresh.forEach((g) => { state.updateSeen[g.id] = key(g); notify(`${g.title} ${updateLabel(g)} is available. Open your library to update.`); });
+    toast(fresh.length === 1 ? `Update available: ${fresh[0].title} ${updateLabel(fresh[0])}` : `${fresh.length} game updates available`, 'ok');
     save();
   }
 
@@ -911,7 +917,7 @@
   function finishInstall(d, extra = {}) {
     rt.queue = rt.queue.filter((x) => x !== d);
     const g = byId[d.id];
-    state.installed[g.id] = { version: g.version, at: Date.now(), ...extra };
+    state.installed[g.id] = { version: g.version, build: g.build ?? null, at: Date.now(), ...extra };
     state.completed.push({ id: g.id, at: Date.now(), update: !!d.update, version: g.version });
     state.completed = state.completed.slice(-20);
     save();

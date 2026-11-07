@@ -54,6 +54,7 @@ The launcher caches the last catalogue it loaded, so the library still works off
 | `title` | yes | |
 | `status` | | `available`, `early-access`, `coming-soon` or `in-development`. Only the first two can be installed; the others show a Wishlist button |
 | `download`, `exe`, `sizeBytes` | to be installable | |
+| `build` | | a number you bump every time you upload a new zip. Installed copies with a different build get an **Update** button, even if `version` stays the same (handy for pre-launch builds). Without it, a different `version` triggers the update |
 | `cover` (3:4), `banner` (wide) | | image URLs. Without them (or if they fail to load), art is generated from `art` |
 | `tagline`, `description`, `version`, `released`, `genres`, `platforms`, `featured`, `features`, `achievements`, `patchNotes` | | shown on the store and game pages |
 

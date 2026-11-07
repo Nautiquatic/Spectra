@@ -3,7 +3,7 @@
 A neon arena survival shooter from Spectra Games.
 
 You are the last light in a collapsing rift. Steer your hull, aim and fire by hand,
-dash and grow stronger as the swarm closes in. Bosses breach the rift every 70 seconds.
+dash and grow stronger as the swarm closes in. A Prism Wraith boss breaches the rift at 1:50, then every 80 seconds.
 
 ## Play
 
@@ -42,14 +42,14 @@ Use the mouse, or `W`/`S` / arrow keys and `Enter`. `Esc` closes a panel. From t
 
 ## How it plays
 
-- Your prism cannon fires where your hull points. Hold left click or Space to fire.
+- Your prism cannon fires where your hull points. Hold left click or Space to fire. Bolts curve slightly toward hostiles in front of them; the **Seeker Lens** upgrade makes them home harder.
 - The arena is bigger than your screen and the camera follows you, looking slightly ahead.
 - The arena has a **red border**. You can fly past it, but you then have **3 seconds** to get back in or you die. A dashed wall further out stops you completely.
 - Up to 10 hostiles can be alive at once; the cap rises by 1 every 30 seconds.
 - Upgrades escalate: each time you take one again it's stronger (Thruster +8%, +9%, +10%...).
 - Enemies drop light shards. Collect them to level up and pick one of three augmentations.
 - **Wisps** chase, **Runners** are fast, **Seers** shoot from range, **Brutes** are tanky.
-- A **Prism Wraith** boss breaches every ~70 seconds. Drop its hull to seal the rift and get a big score bonus.
+- A **Prism Wraith** boss breaches at 1:50, then about every 80 seconds. Drop its hull to seal the rift and get a big score bonus.
 - Dashing grants a moment of invulnerability — save it for emergencies.
 
 ## Achievements
@@ -97,7 +97,7 @@ For testing, the API is exposed in the page: `SpectraAchievements.unlock('first-
 
 ## Adding it to Spectra Launcher
 
-1. Zip this folder's files (at the top level of the zip) as `Prismfall-1.3.0.zip` and attach it to a GitHub release.
+1. Zip this folder's files (at the top level of the zip) as `Prismfall-1.0.0.zip` and attach it to a GitHub release.
 2. Put the URL in `catalog-entry.json` → `games[0].download`.
 3. Merge the game (and optional news item) into your launcher `catalog.json`.
 
@@ -121,4 +121,4 @@ Everything is procedural — no image, font or audio files. Sound is synthesised
 
 ---
 
-© Spectra Games · v1.3.0 · 2026-11-07
+© Spectra Games · v1.0.0 · 2026-11-07

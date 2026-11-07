@@ -11,7 +11,7 @@
 window.SPECTRA_SITE = {
   catalogUrl: 'catalog.json',
   downloadUrl: 'https://github.com/Nautiquatic/Spectra/releases/download/Launcher/SpectraLauncherSetup.exe',
-  launcherVersion: '0.3.1',
+  launcherVersion: '0.3.2',
   launcherSize: '78 MB',
   contactEmail: '',
 };
