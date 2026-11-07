@@ -98,6 +98,7 @@
   // The arena is bigger than the screen; the camera follows the player.
   // Leaving the red border starts a 3 second countdown; OUTER is a hard wall beyond it.
   const ZONE_TIME = 3;
+  const PARTICLE_BUDGET = 400; // max sparks alive at once
   const FIRST_BOSS_AT = 110; // first Prism Wraith at 1:50
   const BOSS_GAP = 80;       // then 80s after the previous one appears/dies
   const OUTER = 600;
@@ -140,6 +141,7 @@
     canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    if (typeof clearSprites === 'function') clearSprites();
     makeStars();
   }
 
@@ -157,6 +159,7 @@
     enabled: true,
     lastShoot: 0,
     lastGem: 0,
+    lastHit: 0,
 
     init() {
       if (this.ac) return;
@@ -197,6 +200,8 @@
           this.tone(760, 0.055, 'square', 0.1, 430);
           break;
         case 'hit':
+          if (now - this.lastHit < 0.04) return; // dozens of hits per second at max fire rate
+          this.lastHit = now;
           this.tone(300, 0.035, 'triangle', 0.09, 170);
           break;
         case 'hurt':
@@ -1093,7 +1098,8 @@
 
     Sfx.play('shoot');
 
-    for (let i = 0; i < 3; i++) {
+    const muzzle = game.particles.length < PARTICLE_BUDGET * 0.6 ? 2 : 1;
+    for (let i = 0; i < muzzle; i++) {
       const a = p.aim + rand(-0.35, 0.35);
       game.particles.push({
         x: p.x + Math.cos(p.aim) * 20,
@@ -1111,7 +1117,8 @@
     e.hp -= dmg;
     e.flash = 0.12;
 
-    for (let i = 0; i < 3; i++) {
+    const sparks = game.particles.length < PARTICLE_BUDGET * 0.8 ? 2 : 0;
+    for (let i = 0; i < sparks; i++) {
       const a = rand(0, TAU);
       const sp = rand(30, 140);
       game.particles.push({
@@ -1547,7 +1554,10 @@
         }
       }
 
-      if (remove) game.bullets.splice(i, 1);
+      if (remove) {
+        const last = game.bullets.pop();
+        if (i < game.bullets.length) game.bullets[i] = last;
+      }
     }
   }
 
@@ -1610,17 +1620,21 @@
   }
 
   function updateParticles(dt) {
-    if (game.particles.length > 650) {
-      game.particles.splice(0, game.particles.length - 650);
-    }
-    for (const pt of game.particles) {
+    const list = game.particles;
+    if (list.length > PARTICLE_BUDGET) list.splice(0, list.length - PARTICLE_BUDGET);
+    const drag = Math.exp(-2.6 * dt);
+    let n = 0;
+    for (let i = 0; i < list.length; i++) {
+      const pt = list[i];
+      pt.life -= dt;
+      if (pt.life <= 0) continue;
       pt.x += pt.vx * dt;
       pt.y += pt.vy * dt;
-      pt.vx *= Math.exp(-2.6 * dt);
-      pt.vy *= Math.exp(-2.6 * dt);
-      pt.life -= dt;
+      pt.vx *= drag;
+      pt.vy *= drag;
+      list[n++] = pt;
     }
-    game.particles = game.particles.filter((pt) => pt.life > 0);
+    list.length = n;
   }
 
   function updateTexts(dt) {
@@ -1809,66 +1823,166 @@
   }
 
   function drawGems() {
+    if (!game.gems.length) return;
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
     const t = game.time;
+    const groups = new Map();
     for (const g of game.gems) {
-      ctx.save();
-      ctx.translate(g.x, g.y);
-      ctx.rotate(t * 2.4 + g.phase);
-      ctx.shadowColor = g.color;
-      ctx.shadowBlur = 14;
-      ctx.fillStyle = g.color;
-      ctx.beginPath();
-      ctx.moveTo(0, -g.r * 1.4);
-      ctx.lineTo(g.r, 0);
-      ctx.lineTo(0, g.r * 1.4);
-      ctx.lineTo(-g.r, 0);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
-      ctx.beginPath();
-      ctx.arc(0, 0, g.r * 0.35, 0, TAU);
-      ctx.fill();
-      ctx.restore();
+      const glow = glowSprite(g.color, 14);
+      ctx.drawImage(glow.c, g.x - glow.half, g.y - glow.half, glow.size, glow.size);
+      let list = groups.get(g.color);
+      if (!list) groups.set(g.color, (list = []));
+      list.push(g);
     }
+    // all shards of one colour in a single path
+    for (const [color, list] of groups) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      for (const g of list) {
+        const a = t * 2.4 + g.phase;
+        const cs = Math.cos(a);
+        const sn = Math.sin(a);
+        const r = g.r;
+        const ry = r * 1.4;
+        ctx.moveTo(g.x + sn * ry, g.y - cs * ry);
+        ctx.lineTo(g.x + cs * r, g.y + sn * r);
+        ctx.lineTo(g.x - sn * ry, g.y + cs * ry);
+        ctx.lineTo(g.x - cs * r, g.y - sn * r);
+        ctx.closePath();
+      }
+      ctx.fill();
+    }
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.beginPath();
+    for (const g of game.gems) {
+      const cr = g.r * 0.35;
+      ctx.moveTo(g.x + cr, g.y);
+      ctx.arc(g.x, g.y, cr, 0, TAU);
+    }
+    ctx.fill();
     ctx.restore();
   }
 
   function drawEnemyBullets() {
+    if (!game.eBullets.length) return;
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
+    const groups = new Map();
     for (const b of game.eBullets) {
-      ctx.shadowColor = b.color;
-      ctx.shadowBlur = 16;
-      ctx.fillStyle = b.color;
+      const glow = glowSprite(b.color, Math.round(b.r * 2.8));
+      ctx.drawImage(glow.c, b.x - glow.half, b.y - glow.half, glow.size, glow.size);
+      let list = groups.get(b.color);
+      if (!list) groups.set(b.color, (list = []));
+      list.push(b);
+    }
+    for (const [color, list] of groups) {
+      ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.arc(b.x, b.y, b.r, 0, TAU);
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.r * 0.4, 0, TAU);
+      for (const b of list) { ctx.moveTo(b.x + b.r, b.y); ctx.arc(b.x, b.y, b.r, 0, TAU); }
       ctx.fill();
     }
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    for (const b of game.eBullets) { const r = b.r * 0.4; ctx.moveTo(b.x + r, b.y); ctx.arc(b.x, b.y, r, 0, TAU); }
+    ctx.fill();
     ctx.restore();
   }
 
-  function polygon(sides, radius) {
-    ctx.beginPath();
+  // ---------- Pre-rendered glow sprites ----------
+  // shadowBlur is very expensive when used on hundreds of objects per frame, so glows are drawn
+  // once into small offscreen canvases and stamped with drawImage.
+  const spriteCache = new Map();
+  function makeCanvas(size) {
+    const c = document.createElement('canvas');
+    c.width = c.height = Math.max(1, Math.ceil(size * DPR));
+    const g = c.getContext('2d');
+    g.scale(DPR, DPR);
+    return { c, g, size };
+  }
+  // Soft radial glow of `color`, `radius` px.
+  function glowSprite(color, radius) {
+    const key = 'glow|' + color + '|' + radius + '|' + DPR;
+    let spr = spriteCache.get(key);
+    if (!spr) {
+      const { c, g, size } = makeCanvas(radius * 2);
+      const gr = g.createRadialGradient(radius, radius, 0, radius, radius, radius);
+      gr.addColorStop(0, rgba(color, 0.55));
+      gr.addColorStop(0.35, rgba(color, 0.2));
+      gr.addColorStop(1, rgba(color, 0));
+      g.fillStyle = gr;
+      g.fillRect(0, 0, size, size);
+      spr = { c, size, half: radius };
+      spriteCache.set(key, spr);
+    }
+    return spr;
+  }
+  // A regular enemy (not the boss) with its neon glow baked in, drawn unrotated.
+  function enemySprite(shape, color, r, flash) {
+    const key = 'enemy|' + shape + '|' + color + '|' + r + '|' + (flash ? 1 : 0) + '|' + DPR;
+    let spr = spriteCache.get(key);
+    if (!spr) {
+      const pad = 16;
+      const half = r + pad;
+      const { c, g } = makeCanvas(half * 2);
+      g.translate(half, half);
+      g.shadowColor = color;
+      g.shadowBlur = 12;
+      g.lineWidth = 2;
+      g.strokeStyle = color;
+      g.fillStyle = rgba(color, flash ? 0.85 : 0.14);
+      if (shape === 'orb') {
+        g.beginPath(); g.arc(0, 0, r, 0, TAU); g.fill(); g.stroke();
+        g.beginPath(); g.arc(0, 0, r * 0.5, 0, TAU); g.stroke();
+      } else {
+        const sides = shape === 'diamond' ? 4 : shape === 'tri' ? 3 : 6;
+        polygon(sides, r, g); g.fill(); g.stroke();
+        g.globalAlpha = 0.55;
+        polygon(sides, r * 0.5, g); g.stroke();
+      }
+      spr = { c, size: half * 2, half };
+      spriteCache.set(key, spr);
+    }
+    return spr;
+  }
+  function clearSprites() { spriteCache.clear(); }
+
+  function polygon(sides, radius, g) {
+    const c = g || ctx;
+    c.beginPath();
     for (let i = 0; i < sides; i++) {
       const a = -Math.PI / 2 + (i / sides) * TAU;
       const x = Math.cos(a) * radius;
       const y = Math.sin(a) * radius;
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
+      if (i === 0) c.moveTo(x, y);
+      else c.lineTo(x, y);
     }
-    ctx.closePath();
+    c.closePath();
   }
 
   function drawEnemies() {
     for (const e of game.enemies) {
       if (e.dead) continue;
       const col = e.flash > 0 ? '#ffffff' : e.color;
+
+      if (!e.boss) {
+        const spr = enemySprite(e.shape, col, e.r, e.flash > 0);
+        ctx.save();
+        ctx.translate(e.x, e.y);
+        ctx.rotate(e.rot);
+        ctx.drawImage(spr.c, -spr.half, -spr.half, spr.size, spr.size);
+        ctx.restore();
+        if (e.type === 'brute' && e.hp < e.maxHp) {
+          const w = e.r * 2;
+          const x = e.x - e.r;
+          const y = e.y - e.r - 12;
+          ctx.fillStyle = 'rgba(10,10,20,0.7)';
+          ctx.fillRect(x, y, w, 4);
+          ctx.fillStyle = C.violet;
+          ctx.fillRect(x, y, w * clamp(e.hp / e.maxHp, 0, 1), 4);
+        }
+        continue;
+      }
 
       ctx.save();
       ctx.translate(e.x, e.y);
@@ -1923,24 +2037,43 @@
   }
 
   function drawBullets() {
+    if (!game.bullets.length) return;
     const shotCol = skinColor();
+    const critCol = skin.color === 'gold' ? '#ffffff' : C.gold;
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
     ctx.lineCap = 'round';
-    for (const b of game.bullets) {
-      const col = b.crit ? (skin.color === 'gold' ? '#ffffff' : C.gold) : shotCol;
-      ctx.strokeStyle = col;
-      ctx.shadowColor = col;
-      ctx.shadowBlur = 14;
-      ctx.lineWidth = b.r * 1.5;
+    // two groups (normal / crit); each drawn with 3 calls total instead of 2 per bolt
+    for (const crit of [false, true]) {
+      let r = 0;
+      let any = false;
       ctx.beginPath();
-      ctx.moveTo(b.x, b.y);
-      ctx.lineTo(b.x - b.vx * 0.018, b.y - b.vy * 0.018);
+      for (const b of game.bullets) {
+        if (b.crit !== crit) continue;
+        any = true;
+        if (b.r > r) r = b.r;
+        ctx.moveTo(b.x, b.y);
+        ctx.lineTo(b.x - b.vx * 0.022, b.y - b.vy * 0.022);
+      }
+      if (!any) continue;
+      const col = crit ? critCol : shotCol;
+      ctx.strokeStyle = rgba(col, 0.07); // soft outer glow, two faint layers so it fades out
+      ctx.lineWidth = r * 4.4;
       ctx.stroke();
-
-      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = rgba(col, 0.13);
+      ctx.lineWidth = r * 2.8;
+      ctx.stroke();
+      ctx.strokeStyle = col;             // bright streak
+      ctx.lineWidth = r * 1.5;
+      ctx.stroke();
+      ctx.fillStyle = '#ffffff';         // hot core
       ctx.beginPath();
-      ctx.arc(b.x, b.y, b.r * 0.65, 0, TAU);
+      for (const b of game.bullets) {
+        if (b.crit !== crit) continue;
+        const cr = b.r * 0.65;
+        ctx.moveTo(b.x + cr, b.y);
+        ctx.arc(b.x, b.y, cr, 0, TAU);
+      }
       ctx.fill();
     }
     ctx.restore();
@@ -1982,17 +2115,34 @@
   }
 
   function drawParticles() {
+    if (!game.particles.length) return;
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
     for (const pt of game.particles) {
       const a = clamp(pt.life / pt.max, 0, 1);
+      const spr = dotSprite(pt.color);
+      const d = pt.size * (0.5 + a * 0.5) * 2.6; // sprite has a soft edge, so draw it a bit larger
       ctx.globalAlpha = a;
-      ctx.fillStyle = pt.color;
-      ctx.beginPath();
-      ctx.arc(pt.x, pt.y, pt.size * (0.5 + a * 0.5), 0, TAU);
-      ctx.fill();
+      ctx.drawImage(spr.c, pt.x - d / 2, pt.y - d / 2, d, d);
     }
     ctx.restore();
+  }
+
+  function dotSprite(color) {
+    const key = 'dot|' + color + '|' + DPR;
+    let spr = spriteCache.get(key);
+    if (!spr) {
+      const { c, g } = makeCanvas(16);
+      const gr = g.createRadialGradient(8, 8, 0, 8, 8, 8);
+      gr.addColorStop(0, color);
+      gr.addColorStop(0.45, color);
+      gr.addColorStop(1, rgba(color, 0));
+      g.fillStyle = gr;
+      g.fillRect(0, 0, 16, 16);
+      spr = { c, size: 16, half: 8 };
+      spriteCache.set(key, spr);
+    }
+    return spr;
   }
 
   function drawTexts() {
@@ -2002,8 +2152,6 @@
     for (const t of game.texts) {
       ctx.globalAlpha = clamp(t.life / t.max, 0, 1);
       ctx.fillStyle = t.color;
-      ctx.shadowColor = t.color;
-      ctx.shadowBlur = 10;
       ctx.fillText(t.text, t.x, t.y);
     }
     ctx.restore();

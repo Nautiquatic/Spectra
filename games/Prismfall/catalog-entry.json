@@ -16,7 +16,7 @@
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
       "version": "1.0.0",
-      "build": 1,
+      "build": 2,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -28,7 +28,7 @@
       "featured": true,
       "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.0.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 273169,
+      "sizeBytes": 275256,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
