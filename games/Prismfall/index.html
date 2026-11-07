@@ -59,13 +59,42 @@
 </div>
 
 <div id="screens">
-  <section id="screen-start" class="screen">
-    <div class="panel start-panel">
-      <div class="eyebrow">SPECTRA GAMES PRESENTS</div>
-      <h1 class="title">PRISM<span>FALL</span></h1>
-      <p class="tagline">One hull. Endless light. Survive the rift.</p>
+  <section id="screen-start" class="screen menu-screen">
+    <nav class="main-menu" aria-label="Main menu">
+      <div class="menu-eyebrow">SPECTRA GAMES</div>
+      <h1 class="menu-title">PRISMFALL</h1>
+      <div class="menu-items" id="menu-items">
+        <button class="menu-item" data-menu="play">Play</button>
+        <button class="menu-item" data-menu="kit">Icon Kit</button>
+        <button class="menu-item" data-menu="settings">Settings</button>
+        <button class="menu-item" data-menu="exit" id="menu-exit">Exit</button>
+      </div>
+      <div class="menu-foot"><span>BEST <strong id="menu-best">0</strong></span><span>v1.3.0</span></div>
+    </nav>
 
-      <div class="controls">
+    <aside class="menu-panel hidden" id="panel-kit" aria-label="Icon kit">
+      <div class="eyebrow">ICON KIT</div>
+      <h2 class="panel-title">Your hull</h2>
+      <canvas id="kit-preview" class="kit-preview" width="520" height="220"></canvas>
+      <div class="kit-label">SHAPE</div>
+      <div class="kit-grid" id="kit-hulls"></div>
+      <div class="kit-label">COLOUR</div>
+      <div class="kit-grid colors" id="kit-colors"></div>
+      <p class="kit-note" id="kit-note">Locked items unlock with achievements.</p>
+      <button class="btn ghost small" data-back>BACK</button>
+    </aside>
+
+    <aside class="menu-panel hidden" id="panel-settings" aria-label="Settings">
+      <div class="eyebrow">SETTINGS</div>
+      <h2 class="panel-title">Settings</h2>
+      <div class="set-list">
+        <div class="set-row"><span>Sound</span><button class="switch" id="set-sound" aria-label="Sound"></button></div>
+        <div class="set-row"><span>Volume</span><input type="range" id="set-volume" min="0" max="100" step="5" aria-label="Volume"></div>
+        <div class="set-row"><span>Fullscreen</span><button class="switch" id="set-fullscreen" aria-label="Fullscreen"></button></div>
+        <div class="set-row"><span>Screen shake</span><button class="switch" id="set-shake" aria-label="Screen shake"></button></div>
+      </div>
+      <div class="kit-label">CONTROLS</div>
+      <div class="controls left">
         <div><kbd>W S</kbd><span>Thrust</span></div>
         <div><kbd>A D</kbd><span>Turn</span></div>
         <div><kbd>CLICK / SPACE</kbd><span>Fire</span></div>
@@ -73,18 +102,10 @@
         <div><kbd>1 2 3</kbd><span>Upgrade</span></div>
         <div><kbd>ESC</kbd><span>Pause</span></div>
         <div><kbd>F11</kbd><span>Fullscreen</span></div>
+        <div><kbd>M</kbd><span>Mute</span></div>
       </div>
-
-      <button id="btn-play" class="btn primary">ENTER THE RIFT</button>
-
-      <div class="start-foot">
-        <button id="btn-sound" class="btn ghost small"><span class="sound-label">SOUND: ON</span></button>
-        <button class="btn ghost small btn-fullscreen"><span class="fs-label">FULLSCREEN: ON</span></button>
-      </div>
-      <div class="start-foot">
-        <span class="hint">Your cannon fires where your hull points. Stay inside the red border.</span>
-      </div>
-    </div>
+      <button class="btn ghost small" data-back>BACK</button>
+    </aside>
   </section>
 
   <section id="screen-levelup" class="screen">
@@ -102,7 +123,10 @@
       <div class="eyebrow">SYSTEM HOLD</div>
       <h2 class="title small-title">PAUSED</h2>
       <p class="tagline">The rift waits.</p>
-      <button id="btn-resume" class="btn primary">RESUME</button>
+      <div class="btn-row">
+        <button id="btn-resume" class="btn primary">RESUME</button>
+        <button class="btn ghost btn-menu">MAIN MENU</button>
+      </div>
       <div class="start-foot">
         <button id="btn-sound-pause" class="btn ghost small"><span class="sound-label">SOUND: ON</span></button>
         <button class="btn ghost small btn-fullscreen"><span class="fs-label">FULLSCREEN: ON</span></button>
@@ -124,9 +148,12 @@
       </div>
 
       <p class="best-line">BEST SCORE <strong id="go-best">0</strong></p>
-      <button id="btn-restart" class="btn primary">RE-ENTER</button>
+      <div class="btn-row">
+        <button id="btn-restart" class="btn primary">RE-ENTER</button>
+        <button class="btn ghost btn-menu">MAIN MENU</button>
+      </div>
       <div class="start-foot">
-        <span class="hint">Press <kbd>R</kbd> or <kbd>ENTER</kbd></span>
+        <span class="hint">Press <kbd>R</kbd> or <kbd>ENTER</kbd> to retry, <kbd>ESC</kbd> for the menu</span>
       </div>
     </div>
   </section>

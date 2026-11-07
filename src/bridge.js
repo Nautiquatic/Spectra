@@ -29,6 +29,8 @@
     update: { get: async () => ({ state: 'dev', current: '0.0.0' }), check: async () => ({ state: 'dev' }), install: async () => ({ ok: false }), onStatus: () => () => {} },
     onInstallProgress: () => () => {},
     onGameExited: (cb) => { listeners.exited.push(cb); return () => {}; },
+    onClosing: () => () => {},
+    closeReady: () => {},
     onMaximized: () => () => {},
     win: { minimize() {}, maximize() {}, close() {}, restore() {} },
   };

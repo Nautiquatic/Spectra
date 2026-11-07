@@ -7,6 +7,7 @@
 //  - Page -> host messages:
 //      "spectra-unlock|<id>"          append the achievement id to the launcher's achievements file
 //      "spectra-window|fullscreen-on" / "spectra-window|fullscreen-off"
+//      "spectra-window|exit"          close the game (main menu Exit)
 //  - Host -> page: window.SPECTRA_FULLSCREEN is updated and a "spectra-fullscreen" event is fired.
 //  - Saves (localStorage) live in %LOCALAPPDATA%\Spectra Games\Prismfall\WebView2.
 //
@@ -219,6 +220,7 @@ namespace Prismfall
                 if (cmd == "fullscreen-on") SetFullscreen(true);
                 else if (cmd == "fullscreen-off") SetFullscreen(false);
                 else if (cmd == "fullscreen-toggle") SetFullscreen(!fullscreen);
+                else if (cmd == "exit") BeginInvoke(new Action(Close));
                 return;
             }
 

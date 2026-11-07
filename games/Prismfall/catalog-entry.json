@@ -2,6 +2,13 @@
   "news": [
     {
       "tag": "Update",
+      "title": "Prismfall 1.3: main menu and Icon Kit",
+      "body": "A proper main menu, an Icon Kit with unlockable hulls and colours, and new settings.",
+      "date": "2026-11-07",
+      "game": "prismfall"
+    },
+    {
+      "tag": "Update",
       "title": "Prismfall 1.2: into the rift",
       "body": "Fullscreen, a bigger arena with a follow camera, a deadly red border and faster turning.",
       "date": "2026-11-06",
@@ -29,7 +36,7 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, then break the Prism Wraith that breaches every seventy seconds.",
       "status": "available",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -39,9 +46,9 @@
         "Windows"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.2.0.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.3.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 267836,
+      "sizeBytes": 273169,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -53,6 +60,7 @@
       "features": [
         "Hands-on tank controls: thrust, turn, aim and fire yourself",
         "A big arena with a follow camera, and a deadly red border",
+        "Icon Kit: unlockable hull shapes and colours",
         "12 escalating augmentations that get stronger every time you take them",
         "Four solid enemy types and a boss that breaches every 70 seconds",
         "Fullscreen, with WebAudio synth effects and no asset files"
@@ -85,6 +93,16 @@
         }
       ],
       "patchNotes": [
+        {
+          "version": "1.3.0",
+          "date": "2026-11-07",
+          "notes": [
+            "New main menu: Play, Icon Kit, Settings and Exit",
+            "Icon Kit: 5 hull shapes and 8 colours, some unlocked by achievements",
+            "Settings: sound, volume, fullscreen and screen shake",
+            "Pause and game-over screens can return to the main menu"
+          ]
+        },
         {
           "version": "1.2.0",
           "date": "2026-11-06",

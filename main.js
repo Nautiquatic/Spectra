@@ -35,6 +35,21 @@ function createWindow() {
     },
   });
   win.loadFile(path.join(__dirname, 'src', 'index.html'));
+  // Games keep running when the launcher closes. Before the window goes, hand the UI the
+  // playtime of any running game so it's saved (the launcher can't see those games exit).
+  let closeHandled = false;
+  win.on('close', (e) => {
+    if (closeHandled || running.size === 0) return;
+    e.preventDefault();
+    closeHandled = true;
+    const sessions = [...running].map(([id, r]) => ({ id, seconds: Math.round((Date.now() - r.started) / 1000) }));
+    for (const r of running.values()) r.unwatch?.();
+    running.clear();
+    const done = () => { if (win && !win.isDestroyed()) win.destroy(); };
+    ipcMain.once('app:close-ready', done);
+    setTimeout(done, 2000); // never hang the close
+    win.webContents.send('app:closing', sessions);
+  });
   win.on('maximize', () => win.webContents.send('win:maximized', true));
   win.on('unmaximize', () => win.webContents.send('win:maximized', false));
 }
@@ -207,7 +222,9 @@ ipcMain.handle('game:launch', (_e, { id, exe, root }) => {
   if (!exe || !fs.existsSync(exePath)) return { ok: false, error: `Executable not found: ${exePath}` };
   fs.mkdirSync(achDir(), { recursive: true });
   const env = { ...process.env, SPECTRA_LAUNCHER: '1', SPECTRA_GAME_ID: id, SPECTRA_ACHIEVEMENTS_FILE: achFile(id) };
-  const child = spawn(exePath, [], { cwd: dir, detached: false, stdio: 'ignore', env });
+  // detached: on Windows a non-detached child is put in a job object that is killed with the
+  // launcher, so closing the launcher would close the game too.
+  const child = spawn(exePath, [], { cwd: dir, detached: true, stdio: 'ignore', env });
   running.set(id, { started: Date.now(), kill: () => child.kill(), unwatch: watchAchievements(id) });
   child.on('exit', () => finished(id));
   child.on('error', () => finished(id));

@@ -43,6 +43,57 @@
   const STORE_BEST = 'prismfall.best';
   const STORE_SOUND = 'prismfall.sound';
   const STORE_FULLSCREEN = 'prismfall.fullscreen';
+  const STORE_SKIN = 'prismfall.skin';
+  const STORE_VOLUME = 'prismfall.volume';
+  const STORE_SHAKE = 'prismfall.shake';
+
+  // ---------- Icon Kit: hull shapes and colours (cosmetic only) ----------
+  // Points are in hull space with the nose pointing along +x. `core` is the white light.
+  const HULLS = [
+    { id: 'arrow', name: 'Arrow', pts: [[20, 0], [-12, -12], [-5, 0], [-12, 12]], core: [4, 0] },
+    { id: 'dart', name: 'Dart', pts: [[23, 0], [-9, -8], [-14, 0], [-9, 8]], core: [5, 0] },
+    { id: 'delta', name: 'Delta', pts: [[19, 0], [-13, -14], [-13, 14]], core: [0, 0] },
+    { id: 'wing', name: 'Wing', pts: [[17, 0], [-3, -6], [-14, -16], [-8, 0], [-14, 16], [-3, 6]], core: [3, 0], unlock: 'level-ten' },
+    { id: 'needle', name: 'Needle', pts: [[25, 0], [-5, -5], [-14, -9], [-10, 0], [-14, 9], [-5, 5]], core: [6, 0], unlock: 'rift-sealed' },
+  ];
+  const COLORS = [
+    { id: 'cyan', name: 'Cyan', c: '#6ef2ff' },
+    { id: 'magenta', name: 'Magenta', c: '#ff5cc8' },
+    { id: 'gold', name: 'Gold', c: '#ffd166' },
+    { id: 'green', name: 'Green', c: '#7dffb0' },
+    { id: 'violet', name: 'Violet', c: '#927dff' },
+    { id: 'red', name: 'Crimson', c: '#ff5470', unlock: 'survive-five' },
+    { id: 'orange', name: 'Ember', c: '#ff9f5c', unlock: 'score-five-k' },
+    { id: 'white', name: 'Starlight', c: '#eef4ff', unlock: 'first-blood' },
+  ];
+  const skin = { hull: 'arrow', color: 'cyan' };
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_SKIN) || '{}');
+    if (HULLS.some((h) => h.id === saved.hull)) skin.hull = saved.hull;
+    if (COLORS.some((c) => c.id === saved.color)) skin.color = saved.color;
+  } catch (e) { /* keep defaults */ }
+  const hullDef = () => HULLS.find((h) => h.id === skin.hull) || HULLS[0];
+  const skinColor = () => (COLORS.find((c) => c.id === skin.color) || COLORS[0]).c;
+  function lighten(hex, t) {
+    const n = parseInt(hex.slice(1), 16);
+    const mix = (v) => Math.round(v + (255 - v) * t);
+    return 'rgb(' + mix((n >> 16) & 255) + ',' + mix((n >> 8) & 255) + ',' + mix(n & 255) + ')';
+  }
+  // Draws a hull centred at the current origin, nose along +x.
+  function drawHull(g, hull, color, opts) {
+    const o = opts || {};
+    g.shadowColor = color;
+    g.shadowBlur = o.glow == null ? 24 : o.glow;
+    g.fillStyle = o.blink ? '#ffffff' : lighten(color, 0.35);
+    g.beginPath();
+    hull.pts.forEach((pt, i) => (i ? g.lineTo(pt[0], pt[1]) : g.moveTo(pt[0], pt[1])));
+    g.closePath();
+    g.fill();
+    g.fillStyle = '#ffffff';
+    g.beginPath();
+    g.arc(hull.core[0], hull.core[1], 3.2, 0, TAU);
+    g.fill();
+  }
 
   // The arena is bigger than the screen; the camera follows the player.
   // Leaving the red border starts a 3 second countdown; OUTER is a hard wall beyond it.
@@ -93,6 +144,11 @@
   // -----------------------------------------------------------
   // Sound (tiny WebAudio synth — no files)
   // -----------------------------------------------------------
+  const settings = {
+    volume: clamp(Number(localStorage.getItem(STORE_VOLUME) ?? 100) / 100, 0, 1),
+    shake: localStorage.getItem(STORE_SHAKE) !== '0',
+  };
+
   const Sfx = {
     ac: null,
     master: null,
@@ -106,7 +162,7 @@
       if (!AC) return;
       this.ac = new AC();
       this.master = this.ac.createGain();
-      this.master.gain.value = 0.16;
+      this.master.gain.value = 0.16 * settings.volume;
       this.master.connect(this.ac.destination);
     },
 
@@ -177,6 +233,9 @@
         case 'click':
           this.tone(620, 0.05, 'sine', 0.12);
           break;
+        case 'tick':
+          this.tone(980, 0.03, 'sine', 0.06);
+          break;
         case 'warn':
           this.tone(880, 0.12, 'square', 0.14, 660);
           this.tone(660, 0.18, 'square', 0.1, 440);
@@ -208,6 +267,7 @@
   const achNameEl = $('ach-name');
   const achDescEl = $('ach-desc');
   const zoneWarn = $('zone-warn');
+  const menuBest = $('menu-best');
   const zoneCount = $('zone-count');
 
   const screens = {
@@ -482,6 +542,7 @@
     p.invuln = Math.max(p.invuln, 0.3);
     game.shake = Math.max(game.shake, 5);
     Sfx.play('dash');
+    const dashCol = skinColor();
 
     for (let i = 0; i < 14; i++) {
       const a = rand(0, TAU);
@@ -490,7 +551,7 @@
         x: p.x, y: p.y,
         vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
         life: rand(0.2, 0.45), max: 0.45,
-        size: rand(2, 5), color: C.cyan,
+        size: rand(2, 5), color: dashCol,
       });
     }
   }
@@ -538,6 +599,7 @@
     document.querySelectorAll('.fs-label').forEach((el) => {
       el.textContent = label;
     });
+    if (typeof updateSettingsUI === 'function' && openPanel === 'settings') updateSettingsUI();
   }
   window.addEventListener('spectra-fullscreen', updateFullscreenLabels);
   document.addEventListener('fullscreenchange', updateFullscreenLabels);
@@ -547,6 +609,7 @@
     document.querySelectorAll('.sound-label').forEach((el) => {
       el.textContent = label;
     });
+    if (typeof updateSettingsUI === 'function' && openPanel === 'settings') updateSettingsUI();
   }
 
   function toggleSound() {
@@ -588,6 +651,136 @@
     game.flash = 0;
     game.upgrades = {};
     updateHud();
+  }
+
+  // ---------- Main menu ----------
+  const menuItems = Array.from(document.querySelectorAll('.menu-item'));
+  const panels = { kit: $('panel-kit'), settings: $('panel-settings') };
+  let menuSel = 0;
+  let openPanel = null;
+
+  function selectMenu(i, silent) {
+    const visible = menuItems.filter((b) => !b.classList.contains('hidden'));
+    menuSel = (i + visible.length) % visible.length;
+    menuItems.forEach((b) => b.classList.toggle('sel', b === visible[menuSel]));
+    if (!silent) Sfx.play('tick');
+  }
+
+  function setPanel(name) {
+    openPanel = name;
+    for (const k in panels) panels[k].classList.toggle('hidden', k !== name);
+    menuItems.forEach((b) => b.classList.toggle('open', b.dataset.menu === name));
+    if (name === 'kit') renderKit();
+    if (name === 'settings') updateSettingsUI();
+  }
+
+  function activateMenu(action) {
+    Sfx.init();
+    if (action === 'play') {
+      Sfx.play('click');
+      setPanel(null);
+      startGame();
+    } else if (action === 'kit' || action === 'settings') {
+      Sfx.play('click');
+      setPanel(openPanel === action ? null : action);
+    } else if (action === 'exit') {
+      exitGame();
+    }
+  }
+
+  function exitGame() {
+    if (isHost()) {
+      try { window.chrome.webview.postMessage('spectra-window|exit'); } catch (e) { /* ignore */ }
+    } else {
+      window.close();
+    }
+  }
+
+  function goToMenu() {
+    game.mode = 'start';
+    game.player = null;
+    game.boss = null;
+    game.bullets = [];
+    game.eBullets = [];
+    game.gems = [];
+    game.texts = [];
+    game.rings = [];
+    game.outTimer = 0;
+    game.enemies = makeAttract();
+    mouseFiring = false;
+    hud.classList.add('hidden');
+    zoneWarn.classList.add('hidden');
+    menuBest.textContent = game.best.toLocaleString();
+    setPanel(null);
+    showScreen('start');
+    selectMenu(0, true);
+  }
+
+  // ---------- Icon Kit ----------
+  const kitHulls = $('kit-hulls');
+  const kitColors = $('kit-colors');
+  const kitNote = $('kit-note');
+  const kitPreview = $('kit-preview');
+  const achName = (id) => (ACHIEVEMENTS[id] ? ACHIEVEMENTS[id].name : id);
+  const isUnlocked = (item) => !item.unlock || unlockedAchievements.has(item.unlock);
+
+  function renderKit() {
+    kitHulls.innerHTML = HULLS.map((h) => '<button class="kit-opt' + (h.id === skin.hull ? ' on' : '') + (isUnlocked(h) ? '' : ' locked') +
+      '" data-hull="' + h.id + '" title="' + h.name + (isUnlocked(h) ? '' : ' (unlock: ' + achName(h.unlock) + ')') + '"><canvas width="96" height="96"></canvas></button>').join('');
+    kitHulls.querySelectorAll('canvas').forEach((cv, i) => {
+      const g = cv.getContext('2d');
+      g.translate(48, 50);
+      g.rotate(-Math.PI / 2);
+      g.scale(1.6, 1.6);
+      drawHull(g, HULLS[i], skinColor(), { glow: 10 });
+    });
+    kitColors.innerHTML = COLORS.map((c) => '<button class="kit-opt' + (c.id === skin.color ? ' on' : '') + (isUnlocked(c) ? '' : ' locked') +
+      '" data-color="' + c.id + '" style="--c:' + c.c + '" title="' + c.name + (isUnlocked(c) ? '' : ' (unlock: ' + achName(c.unlock) + ')') + '"><span class="swatch"></span></button>').join('');
+    kitNote.textContent = hullDef().name + ' · ' + (COLORS.find((c) => c.id === skin.color) || COLORS[0]).name;
+  }
+
+  function pickSkin(kind, id) {
+    const list = kind === 'hull' ? HULLS : COLORS;
+    const item = list.find((x) => x.id === id);
+    if (!item) return;
+    if (!isUnlocked(item)) {
+      kitNote.textContent = item.name + ' is locked. Unlock it with the "' + achName(item.unlock) + '" achievement (' + ACHIEVEMENTS[item.unlock].desc.replace(/\.$/, '') + ').';
+      return;
+    }
+    skin[kind] = id;
+    try { localStorage.setItem(STORE_SKIN, JSON.stringify(skin)); } catch (e) { /* ignore */ }
+    Sfx.play('click');
+    renderKit();
+  }
+
+  function drawKitPreview(now) {
+    if (openPanel !== 'kit') return;
+    const g = kitPreview.getContext('2d');
+    const w = kitPreview.width;
+    const h = kitPreview.height;
+    g.clearRect(0, 0, w, h);
+    const col = skinColor();
+    // little trail behind the hull
+    for (let i = 8; i > 0; i--) {
+      g.fillStyle = rgba(col, 0.03 * (9 - i));
+      g.beginPath();
+      g.arc(w / 2 - 70 - i * 10, h / 2 + Math.sin(now / 500 - i * 0.25) * 6, 10, 0, TAU);
+      g.fill();
+    }
+    g.save();
+    g.translate(w / 2, h / 2 + Math.sin(now / 500) * 6);
+    g.rotate(Math.sin(now / 900) * 0.18);
+    g.scale(3.2, 3.2);
+    drawHull(g, hullDef(), col, { glow: 30 });
+    g.restore();
+  }
+
+  // ---------- Settings ----------
+  function updateSettingsUI() {
+    $('set-sound').classList.toggle('on', Sfx.enabled);
+    $('set-fullscreen').classList.toggle('on', isFullscreen());
+    $('set-shake').classList.toggle('on', settings.shake);
+    $('set-volume').value = String(Math.round(settings.volume * 100));
   }
 
   function startGame() {
@@ -632,7 +825,7 @@
         x: p.x, y: p.y,
         vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
         life: rand(0.4, 1.1), max: 1.1,
-        size: rand(2, 6), color: Math.random() < 0.5 ? C.cyan : C.magenta,
+        size: rand(2, 6), color: Math.random() < 0.5 ? skinColor() : C.magenta,
       });
     }
 
@@ -903,7 +1096,7 @@
         vx: Math.cos(a) * rand(60, 180),
         vy: Math.sin(a) * rand(60, 180),
         life: rand(0.08, 0.2), max: 0.2,
-        size: rand(1.5, 3), color: C.cyan,
+        size: rand(1.5, 3), color: skinColor(),
       });
     }
   }
@@ -1068,7 +1261,7 @@
           x: p.x, y: p.y,
           vx: rand(-25, 25), vy: rand(-25, 25),
           life: 0.3, max: 0.3,
-          size: rand(4, 9), color: C.cyan,
+          size: rand(4, 9), color: skinColor(),
         });
       }
     } else {
@@ -1109,6 +1302,63 @@
     } else {
       p.fireTimer = Math.max(p.fireTimer, 0);
     }
+  }
+
+  // Big slow-drifting hostiles on the right side of the menu.
+  function makeAttract() {
+    const kinds = ['wisp', 'runner', 'seer', 'brute', 'wisp', 'runner', 'seer'];
+    const list = kinds.map((type, i) => {
+      const def = ENEMY_TYPES[type];
+      return {
+        type, shape: def.shape, color: def.color, r: def.r * 2.4,
+        hp: 1, maxHp: 1, flash: 0, dead: false,
+        sx: rand(0.6, 0.97), sy: (i + 0.5) / kinds.length + rand(-0.05, 0.05),
+        vx: rand(-14, 14), vy: rand(-22, -8),
+        rot: rand(0, TAU), spin: rand(-0.6, 0.6),
+      };
+    });
+    list.push({
+      type: 'boss', shape: 'boss', color: C.violet, r: 54 * 1.5, boss: true,
+      hp: 1, maxHp: 1, flash: 0, dead: false, sx: 0.74, sy: 0.5, vx: 0, vy: -6, rot: 0, spin: 0.25,
+    });
+    return list;
+  }
+
+  function updateAttract(dt) {
+    cam.x = arena.w / 2;
+    cam.y = arena.h / 2;
+    const list = game.enemies;
+    for (const e of list) {
+      e.sx += (e.vx * dt) / W;
+      e.sy += (e.vy * dt) / H;
+      e.rot += e.spin * dt;
+      if (e.sy < -0.12) { e.sy = 1.12; e.sx = rand(0.6, 0.97); }
+      if (e.sx < 0.6) e.vx = Math.abs(e.vx);
+      if (e.sx > 1.0) e.vx = -Math.abs(e.vx);
+    }
+    // keep the shapes from overlapping each other (screen space, gentle push)
+    for (let i = 0; i < list.length; i++) {
+      for (let j = i + 1; j < list.length; j++) {
+        const a = list[i];
+        const b = list[j];
+        const dx = (b.sx - a.sx) * W;
+        const dy = (b.sy - a.sy) * H;
+        const min = (a.r + b.r) * 1.35;
+        const d = Math.hypot(dx, dy) || 0.01;
+        if (d >= min) continue;
+        const push = Math.min(min - d, 120 * dt) / 2;
+        const wa = b.boss ? 1.8 : a.boss ? 0.2 : 1;
+        const wb = 2 - wa;
+        a.sx -= ((dx / d) * push * wa) / W; a.sy -= ((dy / d) * push * wa) / H;
+        b.sx += ((dx / d) * push * wb) / W; b.sy += ((dy / d) * push * wb) / H;
+      }
+    }
+    for (const e of list) {
+      e.sx = Math.max(0.56, e.sx);
+      e.x = cam.x - W / 2 + e.sx * W;
+      e.y = cam.y - H / 2 + e.sy * H;
+    }
+    updateParticles(dt);
   }
 
   function updateCamera(dt) {
@@ -1356,6 +1606,11 @@
   function update(dt) {
     game.shake *= Math.exp(-7 * dt);
     game.flash = Math.max(0, game.flash - dt * 2.5);
+
+    if (game.mode === 'start') {
+      updateAttract(dt);
+      return;
+    }
 
     if (game.mode !== 'playing') return;
 
@@ -1632,11 +1887,12 @@
   }
 
   function drawBullets() {
+    const shotCol = skinColor();
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
     ctx.lineCap = 'round';
     for (const b of game.bullets) {
-      const col = b.crit ? C.gold : C.cyan;
+      const col = b.crit ? (skin.color === 'gold' ? '#ffffff' : C.gold) : shotCol;
       ctx.strokeStyle = col;
       ctx.shadowColor = col;
       ctx.shadowBlur = 14;
@@ -1656,16 +1912,17 @@
 
   function drawPlayer() {
     const p = game.player;
+    const col = skinColor();
 
     for (const t of p.trail) {
       const a = (t.life / 0.35) * 0.16;
-      ctx.fillStyle = 'rgba(110,242,255,' + a + ')';
+      ctx.fillStyle = rgba(col, a);
       ctx.beginPath();
       ctx.arc(t.x, t.y, 9, 0, TAU);
       ctx.fill();
     }
 
-    ctx.strokeStyle = 'rgba(110,242,255,0.07)';
+    ctx.strokeStyle = rgba(col, 0.07);
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.pickup, 0, TAU);
@@ -1674,23 +1931,8 @@
     ctx.save();
     ctx.translate(p.x, p.y);
     ctx.rotate(p.aim);
-
     const blink = p.invuln > 0 && Math.floor(p.invuln * 24) % 2 === 0;
-    ctx.shadowColor = C.cyan;
-    ctx.shadowBlur = 24;
-    ctx.fillStyle = blink ? '#ffffff' : '#8ff8ff';
-    ctx.beginPath();
-    ctx.moveTo(20, 0);
-    ctx.lineTo(-12, -12);
-    ctx.lineTo(-5, 0);
-    ctx.lineTo(-12, 12);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(4, 0, 3.2, 0, TAU);
-    ctx.fill();
+    drawHull(ctx, hullDef(), col, { blink });
     ctx.restore();
 
     if (p.dashLeft > 0) {
@@ -1735,7 +1977,7 @@
     drawBackground();
 
     ctx.save();
-    if (game.shake > 0.3) {
+    if (game.shake > 0.3 && settings.shake) {
       ctx.translate(rand(-1, 1) * game.shake, rand(-1, 1) * game.shake);
     }
     // world -> screen: centre the camera
@@ -1771,6 +2013,7 @@
     lastTime = now;
     update(dt);
     render();
+    drawKitPreview(now);
     requestAnimationFrame(frame);
   }
 
@@ -1794,13 +2037,25 @@
       return;
     }
 
-    if (game.mode === 'start' && (k === 'enter' || k === ' ')) {
-      startGame();
-      return;
+    if (game.mode === 'start') {
+      if (k === 'escape' && openPanel) { setPanel(null); return; }
+      if (k === 'arrowdown' || k === 's') { e.preventDefault(); selectMenu(menuSel + 1); return; }
+      if (k === 'arrowup' || k === 'w') { e.preventDefault(); selectMenu(menuSel - 1); return; }
+      if (k === 'enter' || k === ' ') {
+        e.preventDefault();
+        const visible = menuItems.filter((b) => !b.classList.contains('hidden'));
+        if (visible[menuSel]) activateMenu(visible[menuSel].dataset.menu);
+        return;
+      }
     }
 
     if (game.mode === 'gameover' && (k === 'enter' || k === 'r')) {
       startGame();
+      return;
+    }
+
+    if (game.mode === 'gameover' && k === 'escape') {
+      goToMenu();
       return;
     }
 
@@ -1877,11 +2132,29 @@
     chooseByIndex(Number(btn.dataset.i));
   });
 
-  $('btn-play').addEventListener('click', () => {
-    Sfx.init();
-    Sfx.play('click');
-    startGame();
+  menuItems.forEach((b, i) => {
+    b.addEventListener('mouseenter', () => { if (!b.classList.contains('sel')) selectMenu(menuItems.filter((x) => !x.classList.contains('hidden')).indexOf(b)); });
+    b.addEventListener('click', () => activateMenu(b.dataset.menu));
   });
+  document.querySelectorAll('[data-back]').forEach((b) => b.addEventListener('click', () => { Sfx.play('click'); setPanel(null); }));
+  document.querySelectorAll('.btn-menu').forEach((b) => b.addEventListener('click', () => { Sfx.play('click'); goToMenu(); }));
+  kitHulls.addEventListener('click', (e) => { const b = e.target.closest('[data-hull]'); if (b) pickSkin('hull', b.dataset.hull); });
+  kitColors.addEventListener('click', (e) => { const b = e.target.closest('[data-color]'); if (b) pickSkin('color', b.dataset.color); });
+  $('set-sound').addEventListener('click', () => { Sfx.init(); toggleSound(); updateSettingsUI(); });
+  $('set-fullscreen').addEventListener('click', () => { toggleFullscreen(); setTimeout(updateSettingsUI, 120); });
+  $('set-shake').addEventListener('click', () => {
+    settings.shake = !settings.shake;
+    try { localStorage.setItem(STORE_SHAKE, settings.shake ? '1' : '0'); } catch (e) { /* ignore */ }
+    Sfx.play('click');
+    updateSettingsUI();
+  });
+  $('set-volume').addEventListener('input', (e) => {
+    settings.volume = clamp(Number(e.target.value) / 100, 0, 1);
+    try { localStorage.setItem(STORE_VOLUME, String(Math.round(settings.volume * 100))); } catch (err) { /* ignore */ }
+    Sfx.init();
+    if (Sfx.master) Sfx.master.gain.value = 0.16 * settings.volume;
+  });
+  $('set-volume').addEventListener('change', () => Sfx.play('tick'));
 
   $('btn-restart').addEventListener('click', () => {
     Sfx.init();
@@ -1892,7 +2165,6 @@
     togglePause();
   });
 
-  $('btn-sound').addEventListener('click', toggleSound);
   document.querySelectorAll('.btn-fullscreen').forEach((b) => b.addEventListener('click', toggleFullscreen));
   $('btn-sound-pause').addEventListener('click', toggleSound);
   $('btn-dash').addEventListener('click', () => {
@@ -1908,7 +2180,9 @@
   if (isHost() && localStorage.getItem(STORE_FULLSCREEN) === '0' && window.SPECTRA_FULLSCREEN) setFullscreen(false);
   updateFullscreenLabels();
   bestEl.textContent = game.best.toLocaleString();
-  showScreen('start');
+  // Exit only makes sense inside Prismfall.exe; a browser tab can't close itself
+  if (!isHost()) $('menu-exit').classList.add('hidden');
+  goToMenu();
 
   window.SpectraAchievements = {
     gameId: window.SPECTRA_GAME_ID || 'prismfall',

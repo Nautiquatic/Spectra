@@ -31,6 +31,15 @@ Windows 11 and almost all Windows 10 PCs). If it is missing, the game shows a do
 
 Touch: hold a finger down to steer toward it and fire; use the on-screen **DASH** button.
 
+## Main menu
+
+- **Play**: start a run.
+- **Icon Kit**: choose your hull shape and colour (cosmetic). Some unlock with achievements: Wing (Resonant), Needle (Rift Sealed), Crimson (Last Light), Ember (Overcharge), Starlight (First Light).
+- **Settings**: sound, volume, fullscreen, screen shake, and the controls list.
+- **Exit**: closes the game (only shown in `Prismfall.exe`).
+
+Use the mouse, or `W`/`S` / arrow keys and `Enter`. `Esc` closes a panel. From the pause and game-over screens, **Main menu** returns here.
+
 ## How it plays
 
 - Your prism cannon fires where your hull points. Hold left click or Space to fire.
@@ -88,7 +97,7 @@ For testing, the API is exposed in the page: `SpectraAchievements.unlock('first-
 
 ## Adding it to Spectra Launcher
 
-1. Zip this folder's files (at the top level of the zip) as `Prismfall-1.2.0.zip` and attach it to a GitHub release.
+1. Zip this folder's files (at the top level of the zip) as `Prismfall-1.3.0.zip` and attach it to a GitHub release.
 2. Put the URL in `catalog-entry.json` → `games[0].download`.
 3. Merge the game (and optional news item) into your launcher `catalog.json`.
 
@@ -112,4 +121,4 @@ Everything is procedural — no image, font or audio files. Sound is synthesised
 
 ---
 
-© Spectra Games · v1.2.0 · 2026-11-06
+© Spectra Games · v1.3.0 · 2026-11-07

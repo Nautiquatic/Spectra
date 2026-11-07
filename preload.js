@@ -30,6 +30,9 @@ contextBridge.exposeInMainWorld('spectra', {
   },
   onInstallProgress: on('install:progress'),
   onGameExited: on('game:exited'),
+  // launcher is closing while games keep running: record their playtime so far, then confirm
+  onClosing: on('app:closing'),
+  closeReady: () => ipcRenderer.send('app:close-ready'),
   onMaximized: on('win:maximized'),
   win: {
     minimize: () => ipcRenderer.send('win:minimize'),

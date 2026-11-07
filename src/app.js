@@ -978,6 +978,16 @@
     if (changed) rerender();
   }
 
+  // The launcher is closing but games stay open: save their playtime so far right away.
+  api.onClosing(async (sessions) => {
+    for (const { id, seconds } of sessions || []) {
+      state.playtime[id] = (state.playtime[id] || 0) + seconds;
+      state.lastPlayed[id] = Date.now();
+    }
+    clearTimeout(saveTimer);
+    try { await api.saveState(state); } finally { api.closeReady(); }
+  });
+
   api.onGameExited(({ id, seconds }) => {
     rt.running.delete(id);
     state.playtime[id] = (state.playtime[id] || 0) + seconds;
