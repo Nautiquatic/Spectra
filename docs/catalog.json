@@ -1,6 +1,13 @@
 {
   "news": [
     {
+      "tag": "Update",
+      "title": "Prismfall 1.2: elements, a shop and the Codex",
+      "body": "Burning, shocking and poisoning elements, new hostiles and bosses, evolved bosses on Insane and Nightmare, a Prism Shop, the Daily Rift, seeds and a much bigger Icon Creator.",
+      "date": "2026-11-14",
+      "game": "prismfall"
+    },
+    {
       "tag": "Android",
       "title": "Spectra is on Android",
       "body": "Get Spectra for Android from the download page: your library, friends and achievements on your phone, and Prismfall with touch controls.",
@@ -22,8 +29,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.1.0",
-      "build": 18,
+      "version": "1.2.0",
+      "build": 19,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -34,9 +41,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.1.0.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.2.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 425302,
+      "sizeBytes": 454403,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -267,6 +274,27 @@
       ],
       "patchNotes": [
         {
+          "version": "1.2.0",
+          "date": "2026-11-14",
+          "notes": [
+            "Lancer: with Seeker Lens the beam now bends toward hostiles instead of staying straight",
+            "Faster game: hostiles and shots use a collision grid, and the HUD only updates what changed",
+            "Elements: hits can leave hostiles (and you) Burning, Chilled, Shocked, Muddy, Rusted or Poisoned, shown on the ship",
+            "15 elemental upgrades (fire, frost, lightning, earth, metal, poison) and 8 basic upgrades for any class",
+            "5 elemental hostiles: Pyre, Volt Coil, Mud Golem, Ferrite Knight and Spore Pod",
+            "2 new bosses after the Rift Titan: the Storm Seraph and the Magma Leviathan",
+            "Insane: every boss learns an extra move; Nightmare: two, plus elite hostiles with an extra trait",
+            "Boss Rush reworked: more bosses, boss duos, and faster, tougher, smarter bosses on each difficulty",
+            "Prism Shop (also in the multiplayer lobby): trails, accessories, extra upgrades, evolutions, Creative tools and icon slots",
+            "Prisms from every run and match: kills and time survived now pay too",
+            "Codex: the story of the Rift, every hostile and boss you've met, and the elements",
+            "Daily Rift: an arcade run of the day with the same seeded map and modifiers for everyone",
+            "Seeds: type or replay a seed for the same obstacles, a new seeded Shattered map, and seeds for multiplayer rooms",
+            "Icon Creator: no part limit, 28 shapes, 10 presets, and colour, opacity, outline, glow, fill, detail and stretch for every part",
+            "Prism Echo drones now fly outside your whole hull"
+          ]
+        },
+        {
           "version": "1.1.0",
           "date": "2026-11-14",
           "notes": [
@@ -331,8 +359,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.1.0.zip",
-        "sizeBytes": 172111
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.2.0.zip",
+        "sizeBytes": 199451
       }
     }
   ],
