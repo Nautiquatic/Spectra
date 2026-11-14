@@ -23,7 +23,7 @@
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
       "version": "1.0.0",
-      "build": 13,
+      "build": 14,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -36,7 +36,7 @@
       "featured": true,
       "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.0.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 388713,
+      "sizeBytes": 393278,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -212,7 +212,7 @@
             "30 escalating upgrades in five rarities, picked from a hand of cards",
             "29 achievements, a main menu, Icon Kit and settings",
             "A live synthwave soundtrack that switches between menu, chase and boss themes",
-            "Online multiplayer (up to 4 players): co-op waves and versus rounds, with room codes and launcher invites",
+            "Online multiplayer (up to 10 players): co-op waves and versus rounds, with room codes and launcher invites",
             "Plays on Android in Spectra for Android, with twin-stick touch controls",
             "Fullscreen by default",
             "Multiplayer: levels are per player, and each level-up brings upgrade cards straight away, even mid-wave",
@@ -231,19 +231,24 @@
             "14 new achievements: one for each new boss, Pantheon, Rift Warden, Blitz and Flawless, plus five for Secret upgrades",
             "Upgrade cards are much easier to read, and the multiplayer card tray keeps full-size text",
             "PC: your cannon aims at the mouse (crosshair and a barrel on your ship), separate from the way you fly",
-            "Phones: twin thumbsticks, left to move and right to aim and fire"
+            "Phones: twin thumbsticks, left to move and right to aim and fire",
+            "Five difficulties: Easy, Medium, Hard, Insane and Nightmare (harder runs score more)",
+            "Multiplayer for up to 10 players, and everyone always flies a different colour",
+            "Invite friends straight from the lobby: they get a popup in Spectra Launcher or Prismfall",
+            "7 new hull shapes and 10 new colours in the Icon Kit",
+            "New upgrade cards stay locked for a moment so a stray click can't pick one"
           ]
         }
       ],
       "android": {
         "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.0.0.zip",
-        "sizeBytes": 138172
+        "sizeBytes": 142310
       }
     }
   ],
   "androidApp": {
-    "version": "0.1.0",
+    "version": "0.1.1",
     "url": "https://github.com/Nautiquatic/Spectra/releases/download/Android/SpectraAndroid.apk",
-    "sizeBytes": 4583222
+    "sizeBytes": 4583362
   }
 }
