@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reset password · Spectra</title>
+  <link rel="icon" href="../assets/icon.png" />
+  <link rel="stylesheet" href="account.css" />
+</head>
+<body>
+  <main class="box">
+    <div class="brand"><img src="../assets/spectra-logo.svg" alt="" />Spectra</div>
+    <div id="form" class="hidden">
+      <h1>Choose a new password</h1>
+      <p>Enter a new password for your Spectra account.</p>
+      <label for="pw">New password</label>
+      <input id="pw" type="password" autocomplete="new-password" minlength="6" placeholder="At least 6 characters" />
+      <label for="pw2">Confirm password</label>
+      <input id="pw2" type="password" autocomplete="new-password" minlength="6" />
+      <div class="msg" id="msg"></div>
+      <button id="save">Save password</button>
+    </div>
+    <div id="wait"><h1>Checking your link…</h1><p></p></div>
+    <div id="done" class="hidden"><h1>Password changed</h1><p>Go back to Spectra Launcher and sign in with your new password.</p></div>
+    <div id="bad" class="hidden"><h1>That link didn't work</h1><p>The reset link has expired or was already used. In the launcher, choose <b>Forgot password?</b> to get a new one.</p></div>
+  </main>
+  <script src="../config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+  <script>
+    (function () {
+      var $ = function (id) { return document.getElementById(id); };
+      var show = function (id) { ['form', 'wait', 'done', 'bad'].forEach(function (x) { $(x).classList.toggle('hidden', x !== id); }); };
+      var cfg = window.SPECTRA_SITE || {};
+      var hash = new URLSearchParams(location.hash.slice(1));
+      if (!cfg.supabaseUrl || !cfg.supabaseAnonKey || !window.supabase || hash.get('error')) { show('bad'); return; }
+
+      var sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+        auth: { persistSession: false, detectSessionInUrl: true, flowType: 'implicit' },
+      });
+      var ready = false;
+      sb.auth.onAuthStateChange(function (event, session) {
+        if (session && !ready) { ready = true; show('form'); $('pw').focus(); history.replaceState(null, '', location.pathname); }
+      });
+      setTimeout(function () { if (!ready) show('bad'); }, 6000);
+
+      $('save').onclick = async function () {
+        var msg = $('msg'), a = $('pw').value, b = $('pw2').value;
+        msg.className = 'msg err';
+        if (a.length < 6) { msg.textContent = 'Use at least 6 characters.'; return; }
+        if (a !== b) { msg.textContent = "The passwords don't match."; return; }
+        this.disabled = true; msg.textContent = '';
+        var res = await sb.auth.updateUser({ password: a });
+        this.disabled = false;
+        if (res.error) { msg.textContent = res.error.message; return; }
+        await sb.auth.signOut();
+        show('done');
+      };
+    })();
+  </script>
+</body>
+</html>

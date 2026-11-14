@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Email confirmed · Spectra</title>
+  <link rel="icon" href="../assets/icon.png" />
+  <link rel="stylesheet" href="account.css" />
+</head>
+<body>
+  <main class="box">
+    <div class="brand"><img src="../assets/spectra-logo.svg" alt="" />Spectra</div>
+    <div id="ok">
+      <h1>Your email is confirmed</h1>
+      <p>Your Spectra account is ready. Go back to Spectra Launcher and sign in.</p>
+    </div>
+    <div id="bad" class="hidden">
+      <h1>That link didn't work</h1>
+      <p id="why">The confirmation link has expired or was already used. Sign in from the launcher; if it says your email isn't confirmed, create the account again to get a new link.</p>
+    </div>
+  </main>
+  <script>
+    // Supabase puts errors in the URL hash, e.g. #error=access_denied&error_description=...
+    var h = new URLSearchParams(location.hash.slice(1));
+    if (h.get('error')) {
+      document.getElementById('ok').classList.add('hidden');
+      document.getElementById('bad').classList.remove('hidden');
+    }
+    history.replaceState(null, '', location.pathname); // don't leave tokens in the address bar
+  </script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+{
+  "news": [
+    {
+      "tag": "Android",
+      "title": "Spectra is on Android",
+      "body": "Get Spectra for Android from the download page: your library, friends and achievements on your phone, and Prismfall with touch controls.",
+      "date": "2026-11-13",
+      "game": "prismfall"
+    },
+    {
+      "tag": "Release",
+      "title": "Prismfall 1.0 is live",
+      "body": "One hull. Endless light. Steer, aim and fire your way through the rift in Spectra Games' neon survival shooter.",
+      "date": "2026-11-07",
+      "game": "prismfall"
+    }
+  ],
+  "games": [
+    {
+      "id": "prismfall",
+      "title": "Prismfall",
+      "tagline": "One hull. Endless light. Survive the rift.",
+      "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
+      "status": "available",
+      "version": "1.0.0",
+      "build": 12,
+      "released": "2026-11-06",
+      "genres": [
+        "Arcade",
+        "Survival"
+      ],
+      "platforms": [
+        "Windows",
+        "Android"
+      ],
+      "featured": true,
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.0.0.zip",
+      "exe": "Prismfall.exe",
+      "sizeBytes": 387282,
+      "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
+      "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
+      "art": {
+        "from": "#1a0c3a",
+        "to": "#050111",
+        "glow": "#6ef2ff",
+        "motif": "prism"
+      },
+      "features": [
+        "Hands-on tank controls: thrust, turn, aim and fire yourself",
+        "A big arena with a follow camera, and a deadly red border",
+        "30 escalating upgrades in five rarities, from Common to Legendary",
+        "Online multiplayer for up to 4: co-op waves with revives, or versus rounds. Invite friends from Spectra Launcher",
+        "Nine hostile types, from charging lancers to healers and phase-shifting phantoms, plus the Prism Wraith boss",
+        "29 achievements and an Icon Kit of unlockable hulls and colours",
+        "A live synthwave soundtrack (menu, chase and boss themes) and synth effects, all generated in real time"
+      ],
+      "achievements": [
+        {
+          "id": "first-blood",
+          "name": "First Light",
+          "desc": "Destroy your first hostile."
+        },
+        {
+          "id": "level-ten",
+          "name": "Resonant",
+          "desc": "Reach level 10 in a single run."
+        },
+        {
+          "id": "rift-sealed",
+          "name": "Rift Sealed",
+          "desc": "Defeat a Prism Wraith."
+        },
+        {
+          "id": "survive-five",
+          "name": "Last Light",
+          "desc": "Survive for five minutes."
+        },
+        {
+          "id": "score-five-k",
+          "name": "Overcharge",
+          "desc": "Score 5,000 points in one run."
+        },
+        {
+          "id": "level-twenty",
+          "name": "Ascendant",
+          "desc": "Reach level 20 in a single run."
+        },
+        {
+          "id": "survive-ten",
+          "name": "Eternal Light",
+          "desc": "Survive for ten minutes."
+        },
+        {
+          "id": "kills-500",
+          "name": "Annihilator",
+          "desc": "Destroy 500 hostiles in one run."
+        },
+        {
+          "id": "wraith-three",
+          "name": "Riftbreaker",
+          "desc": "Defeat three bosses in one run."
+        },
+        {
+          "id": "legendary",
+          "name": "Golden Refraction",
+          "desc": "Take a Legendary upgrade."
+        },
+        {
+          "id": "max-upgrade",
+          "name": "Perfected",
+          "desc": "Max out an upgrade that has 3 or more levels."
+        },
+        {
+          "id": "score-25k",
+          "name": "Supernova",
+          "desc": "Score 25,000 points in one run."
+        },
+        {
+          "id": "untouched",
+          "name": "Ghost Hull",
+          "desc": "Go two minutes without taking damage."
+        },
+        {
+          "id": "close-call",
+          "name": "Close Call",
+          "desc": "Get back inside the zone with under half a second left."
+        },
+        {
+          "id": "collector",
+          "name": "Full Spectrum",
+          "desc": "Hold 10 different upgrades in one run."
+        },
+        {
+          "id": "boss-queen",
+          "name": "Hive Breaker",
+          "desc": "Defeat the Hive Queen."
+        },
+        {
+          "id": "boss-tyrant",
+          "name": "Comet Catcher",
+          "desc": "Defeat the Comet Tyrant."
+        },
+        {
+          "id": "boss-oracle",
+          "name": "Unspiralled",
+          "desc": "Defeat the Spiral Oracle."
+        },
+        {
+          "id": "boss-colossus",
+          "name": "Shattered Mirror",
+          "desc": "Defeat the Mirror Colossus."
+        },
+        {
+          "id": "boss-titan",
+          "name": "Titan Toppled",
+          "desc": "Defeat the Rift Titan."
+        },
+        {
+          "id": "boss-pantheon",
+          "name": "Pantheon",
+          "desc": "Defeat all six bosses (across any runs)."
+        },
+        {
+          "id": "boss-five",
+          "name": "Rift Warden",
+          "desc": "Defeat five bosses in one run."
+        },
+        {
+          "id": "boss-blitz",
+          "name": "Blitz",
+          "desc": "Defeat a boss within 20 seconds of it appearing."
+        },
+        {
+          "id": "boss-flawless",
+          "name": "Flawless",
+          "desc": "Defeat a boss without taking damage during the fight."
+        },
+        {
+          "id": "secret-found",
+          "name": "Hidden Spectrum",
+          "desc": "Take a Secret upgrade."
+        },
+        {
+          "id": "secret-horizon",
+          "name": "Beyond the Horizon",
+          "desc": "Take Event Horizon (1 in 10,000)."
+        },
+        {
+          "id": "secret-annihilator",
+          "name": "One in 100,000",
+          "desc": "Take the Annihilator (1 in 100,000)."
+        },
+        {
+          "id": "secret-both",
+          "name": "Impossible Odds",
+          "desc": "Hold both Secret upgrades in one run."
+        },
+        {
+          "id": "secret-erase-50",
+          "name": "Void Touched",
+          "desc": "Erase 50 hostiles with the Annihilator in one run."
+        }
+      ],
+      "patchNotes": [
+        {
+          "version": "1.0.0",
+          "date": "2026-11-07",
+          "notes": [
+            "Initial release",
+            "Manual tank controls with a follow camera and a deadly red arena border",
+            "Nine hostile types plus the Prism Wraith boss",
+            "30 escalating upgrades in five rarities, picked from a hand of cards",
+            "29 achievements, a main menu, Icon Kit and settings",
+            "A live synthwave soundtrack that switches between menu, chase and boss themes",
+            "Online multiplayer (up to 4 players): co-op waves and versus rounds, with room codes and launcher invites",
+            "Plays on Android in Spectra for Android, with touch controls (thumbstick, fire, dash)",
+            "Fullscreen by default",
+            "Multiplayer: levels are per player, and each level-up brings upgrade cards straight away, even mid-wave",
+            "Multiplayer: exactly one upgrade per level-up, however fast you click",
+            "Co-op: choose Waves or Endless (single-player style, downed players back after 20s)",
+            "Multiplayer runs far smoother when everyone is firing: bolts, ships and glows are pre-rendered, off-screen objects are skipped, and network updates are about half the size",
+            "Settings redesigned: Audio and Display groups, neon volume sliders with live values, a new Effects volume slider and a reset-to-defaults button",
+            "FPS counter under BEST (can be turned off in Settings)",
+            "Pause menu redesigned: Resume and Main Menu beside the full Audio and Display options (volume sliders, fullscreen, screen shake, FPS counter)",
+            "15 new hostiles that join after each boss (1 after the first, 2 after the second... until all are in)",
+            "5 new bosses after the Prism Wraith: Hive Queen, Comet Tyrant, Spiral Oracle, Mirror Colossus and Rift Titan",
+            "Shards are the colour of the player who made the kill and only they can collect them; bosses drop a share for everyone",
+            "23 new upgrades, and the epics reworked: Satellites hit for full bolt damage with knockback, Nova Pulse is much stronger and wipes out hostile shots",
+            "Second Dawn in co-op: fly over a downed teammate to bring them back",
+            "New Secret rarity with its own odds: Event Horizon (1 in 10,000) and Annihilator (1 in 100,000)",
+            "14 new achievements: one for each new boss, Pantheon, Rift Warden, Blitz and Flawless, plus five for Secret upgrades",
+            "Upgrade cards are much easier to read, and the multiplayer card tray keeps full-size text"
+          ]
+        }
+      ],
+      "android": {
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.0.0.zip",
+        "sizeBytes": 136898
+      }
+    }
+  ],
+  "androidApp": {
+    "version": "0.1.0",
+    "url": "https://github.com/Nautiquatic/Spectra/releases/download/Android/SpectraAndroid.apk",
+    "sizeBytes": 4583222
+  }
+}
