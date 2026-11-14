@@ -23,7 +23,7 @@
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
       "version": "1.1.0",
-      "build": 16,
+      "build": 17,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -36,7 +36,7 @@
       "featured": true,
       "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.1.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 411555,
+      "sizeBytes": 418710,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -280,7 +280,11 @@
             "5 new achievements, one for beating the Rift Titan on each difficulty, plus trophy tiers in Spectra Launcher",
             "Wardens nerfed a lot: half the hull, a weaker and narrower shield, and they turn slowly",
             "Creative menu fixed (its buttons didn't respond to clicks) and it no longer pauses the game",
-            "Creative in co-op: everyone gets the menu, as long as everyone in the room has Creative unlocked"
+            "Creative in co-op: everyone gets the menu, as long as everyone in the room has Creative unlocked",
+            "Classes: Striker (bolts), Lancer (laser beam), Artillery (exploding shells), Engineer (seeker darts) and Vanguard (scattergun), each with its own stats",
+            "Your class's upgrades come up 3× as often; off-class upgrades stop at 2–3 picks",
+            "Creative menu: search, sort and filter upgrades, hover to see the card, and switch level-up upgrades off",
+            "Hulls and colours are now bought with prisms in the Icon Kit (anything you'd already unlocked stays yours)"
           ]
         },
         {
@@ -323,7 +327,7 @@
       ],
       "android": {
         "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.1.0.zip",
-        "sizeBytes": 159286
+        "sizeBytes": 166031
       }
     }
   ],
