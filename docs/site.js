@@ -179,7 +179,7 @@
       ['Status', STATUS[g.status].label],
       ['Version', g.version ? `${g.version}${g.build != null ? ` · build ${g.build}` : ''}` : '—'],
       ['Size', fmtBytes(g.sizeBytes)],
-      ['Achievements', String(g.achievements.length || '—')],
+      ['Achievements', String(g.achievements.filter((a) => !a.secret).length || '—')],
       ['Price', 'Free'],
     ];
     return `<section class="spot" style="--g:${glow(g)}">
@@ -293,7 +293,7 @@
         ${g.description ? `<p class="lead big">${esc(g.description)}</p>` : ''}
         ${Array.isArray(g.screenshots) && g.screenshots.length ? `<div class="shots">${g.screenshots.map((s) => `<div class="shot"><img src="${esc(s)}" alt="" loading="lazy"></div>`).join('')}</div>` : ''}
         ${g.features.length ? `${label('A', 'Features')}<ol class="feats">${g.features.map((f) => `<li>${esc(f)}</li>`).join('')}</ol>` : ''}
-        ${g.achievements.length ? `${label('B', `Achievements · ${g.achievements.length}`)}<div class="ach">${g.achievements.map((a, i) => a.hidden ? '<div class="secret"><em>??</em><span><b>Hidden</b><p>Unlock it in the game to find out.</p></span></div>' : `<div><em>${String(i + 1).padStart(2, '0')}</em><span><b>${esc(a.name)}</b><p>${esc(a.desc)}</p></span></div>`).join('')}</div>` : ''}
+        ${g.achievements.length ? `${label('B', `Achievements · ${g.achievements.filter((a) => !a.secret).length}`)}<div class="ach">${g.achievements.filter((a) => !a.secret).map((a, i) => a.hidden ? '<div class="secret"><em>??</em><span><b>Hidden</b><p>Unlock it in the game to find out.</p></span></div>' : `<div><em>${String(i + 1).padStart(2, '0')}</em><span><b>${esc(a.name)}</b><p>${esc(a.desc)}</p></span></div>`).join('')}</div>` : ''}
         ${g.patchNotes.length ? `${label('C', 'Patch notes')}<div class="patches">${g.patchNotes.map((p) => `<div class="patch"><div class="p-head"><b>${esc(p.version)}</b><time>${fmtDate(p.date)}</time></div><ul>${(p.notes || []).map((n) => `<li>${esc(n)}</li>`).join('')}</ul></div>`).join('')}</div>` : ''}
       </div>
       <aside class="gside">

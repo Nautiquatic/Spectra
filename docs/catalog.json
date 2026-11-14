@@ -22,8 +22,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.0.0",
-      "build": 14,
+      "version": "1.1.0",
+      "build": 15,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -34,9 +34,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.0.0.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.1.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 393278,
+      "sizeBytes": 410611,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -58,150 +58,229 @@
         {
           "id": "first-blood",
           "name": "First Light",
-          "desc": "Destroy your first hostile."
+          "desc": "Destroy your first hostile.",
+          "tier": "bronze"
         },
         {
           "id": "level-ten",
           "name": "Resonant",
-          "desc": "Reach level 10 in a single run."
+          "desc": "Reach level 10 in a single run.",
+          "tier": "bronze"
         },
         {
           "id": "rift-sealed",
           "name": "Rift Sealed",
-          "desc": "Defeat a Prism Wraith."
+          "desc": "Defeat a Prism Wraith.",
+          "tier": "bronze"
         },
         {
           "id": "survive-five",
           "name": "Last Light",
-          "desc": "Survive for five minutes."
+          "desc": "Survive for five minutes.",
+          "tier": "bronze"
         },
         {
           "id": "score-five-k",
           "name": "Overcharge",
-          "desc": "Score 5,000 points in one run."
+          "desc": "Score 5,000 points in one run.",
+          "tier": "bronze"
         },
         {
           "id": "level-twenty",
           "name": "Ascendant",
-          "desc": "Reach level 20 in a single run."
+          "desc": "Reach level 20 in a single run.",
+          "tier": "silver"
         },
         {
           "id": "survive-ten",
           "name": "Eternal Light",
-          "desc": "Survive for ten minutes."
+          "desc": "Survive for ten minutes.",
+          "tier": "silver"
         },
         {
           "id": "kills-500",
           "name": "Annihilator",
-          "desc": "Destroy 500 hostiles in one run."
+          "desc": "Destroy 500 hostiles in one run.",
+          "tier": "silver"
         },
         {
           "id": "wraith-three",
           "name": "Riftbreaker",
-          "desc": "Defeat three bosses in one run."
+          "desc": "Defeat three bosses in one run.",
+          "tier": "silver"
         },
         {
           "id": "legendary",
           "name": "Golden Refraction",
-          "desc": "Take a Legendary upgrade."
+          "desc": "Take a Legendary upgrade.",
+          "tier": "silver"
         },
         {
           "id": "max-upgrade",
           "name": "Perfected",
-          "desc": "Max out an upgrade that has 3 or more levels."
+          "desc": "Max out an upgrade that has 3 or more levels.",
+          "tier": "silver"
         },
         {
           "id": "score-25k",
           "name": "Supernova",
-          "desc": "Score 25,000 points in one run."
+          "desc": "Score 25,000 points in one run.",
+          "tier": "gold"
         },
         {
           "id": "untouched",
           "name": "Ghost Hull",
-          "desc": "Go two minutes without taking damage."
+          "desc": "Go two minutes without taking damage.",
+          "tier": "silver"
         },
         {
           "id": "close-call",
           "name": "Close Call",
-          "desc": "Get back inside the zone with under half a second left."
+          "desc": "Get back inside the zone with under half a second left.",
+          "tier": "bronze"
         },
         {
           "id": "collector",
           "name": "Full Spectrum",
-          "desc": "Hold 10 different upgrades in one run."
+          "desc": "Hold 10 different upgrades in one run.",
+          "tier": "silver"
         },
         {
           "id": "boss-queen",
           "name": "Hive Breaker",
-          "desc": "Defeat the Hive Queen."
+          "desc": "Defeat the Hive Queen.",
+          "tier": "silver"
         },
         {
           "id": "boss-tyrant",
           "name": "Comet Catcher",
-          "desc": "Defeat the Comet Tyrant."
+          "desc": "Defeat the Comet Tyrant.",
+          "tier": "silver"
         },
         {
           "id": "boss-oracle",
           "name": "Unspiralled",
-          "desc": "Defeat the Spiral Oracle."
+          "desc": "Defeat the Spiral Oracle.",
+          "tier": "silver"
         },
         {
           "id": "boss-colossus",
           "name": "Shattered Mirror",
-          "desc": "Defeat the Mirror Colossus."
+          "desc": "Defeat the Mirror Colossus.",
+          "tier": "gold"
         },
         {
           "id": "boss-titan",
           "name": "Titan Toppled",
-          "desc": "Defeat the Rift Titan."
+          "desc": "Defeat the Rift Titan.",
+          "tier": "gold"
         },
         {
           "id": "boss-pantheon",
           "name": "Pantheon",
-          "desc": "Defeat all six bosses (across any runs)."
+          "desc": "Defeat all six bosses (across any runs).",
+          "tier": "platinum"
         },
         {
           "id": "boss-five",
           "name": "Rift Warden",
-          "desc": "Defeat five bosses in one run."
+          "desc": "Defeat five bosses in one run.",
+          "tier": "gold"
         },
         {
           "id": "boss-blitz",
           "name": "Blitz",
-          "desc": "Defeat a boss within 20 seconds of it appearing."
+          "desc": "Defeat a boss within 20 seconds of it appearing.",
+          "tier": "gold"
         },
         {
           "id": "boss-flawless",
           "name": "Flawless",
-          "desc": "Defeat a boss without taking damage during the fight."
+          "desc": "Defeat a boss without taking damage during the fight.",
+          "tier": "gold"
         },
         {
           "id": "secret-found",
           "name": "Hidden Spectrum",
-          "desc": "Take a Secret upgrade."
+          "desc": "Take a Secret upgrade.",
+          "tier": "bronze",
+          "secret": true
         },
         {
           "id": "secret-horizon",
           "name": "Beyond the Horizon",
-          "desc": "Take Event Horizon (1 in 10,000)."
+          "desc": "Take Event Horizon (1 in 10,000).",
+          "tier": "silver",
+          "secret": true
         },
         {
           "id": "secret-annihilator",
           "name": "One in 100,000",
-          "desc": "Take the Annihilator (1 in 100,000)."
+          "desc": "Take the Annihilator (1 in 100,000).",
+          "tier": "platinum",
+          "secret": true
         },
         {
           "id": "secret-both",
           "name": "Impossible Odds",
-          "desc": "Hold both Secret upgrades in one run."
+          "desc": "Hold both Secret upgrades in one run.",
+          "tier": "gold",
+          "secret": true
         },
         {
           "id": "secret-erase-50",
           "name": "Void Touched",
-          "desc": "Erase 50 hostiles with the Annihilator in one run."
+          "desc": "Erase 50 hostiles with the Annihilator in one run.",
+          "tier": "gold",
+          "secret": true
+        },
+        {
+          "id": "clear-easy",
+          "name": "Rift Tourist",
+          "desc": "Defeat the Rift Titan on Easy (Normal, Waves or Boss Rush).",
+          "tier": "bronze"
+        },
+        {
+          "id": "clear-medium",
+          "name": "Riftwalker",
+          "desc": "Defeat the Rift Titan on Medium (Normal, Waves or Boss Rush).",
+          "tier": "silver"
+        },
+        {
+          "id": "clear-hard",
+          "name": "Hard Light",
+          "desc": "Defeat the Rift Titan on Hard (Normal, Waves or Boss Rush).",
+          "tier": "gold"
+        },
+        {
+          "id": "clear-insane",
+          "name": "Insanity",
+          "desc": "Defeat the Rift Titan on Insane (Normal, Waves or Boss Rush).",
+          "tier": "gold"
+        },
+        {
+          "id": "clear-nightmare",
+          "name": "Nightmare’s End",
+          "desc": "Defeat the Rift Titan on Nightmare (Normal, Waves or Boss Rush).",
+          "tier": "platinum"
         }
       ],
       "patchNotes": [
+        {
+          "version": "1.1.0",
+          "date": "2026-11-14",
+          "notes": [
+            "Game modes: Normal (beat the Rift Titan to win), Endless, Boss Rush and Creative; in co-op also Waves (30 waves) and Endless Waves",
+            "Versus teams (2v2, 3v3, 4v4) and a new Infection mode",
+            "7 maps with differently shaped voids, and optional obstacles you can't see past (Ricochet bolts bounce off them)",
+            "Optional modifiers (Fog, Glass Cannon, Swarm, Ironclad, Haste, Bullet Hell, Famine, Brittle) that raise your reward",
+            "Prisms: a currency earned by beating the rift, more on harder difficulties and with modifiers (nothing to spend them on yet)",
+            "Creative mode (beat every boss on Hard) and an Icon Creator for your own hull (beat every boss on Medium)",
+            "Arrows to off-screen teammates and bosses, switch who you spectate while down, and 5 seconds to get back from the void",
+            "5 new achievements, one for beating the Rift Titan on each difficulty, plus trophy tiers in Spectra Launcher",
+            "Wardens nerfed a lot: half the hull, a weaker and narrower shield, and they turn slowly"
+          ]
+        },
         {
           "version": "1.0.0",
           "date": "2026-11-07",
@@ -241,8 +320,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.0.0.zip",
-        "sizeBytes": 142310
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.1.0.zip",
+        "sizeBytes": 158472
       }
     }
   ],
