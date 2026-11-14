@@ -23,7 +23,7 @@
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
       "version": "1.0.0",
-      "build": 12,
+      "build": 13,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -36,7 +36,7 @@
       "featured": true,
       "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.0.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 387282,
+      "sizeBytes": 388713,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -213,7 +213,7 @@
             "29 achievements, a main menu, Icon Kit and settings",
             "A live synthwave soundtrack that switches between menu, chase and boss themes",
             "Online multiplayer (up to 4 players): co-op waves and versus rounds, with room codes and launcher invites",
-            "Plays on Android in Spectra for Android, with touch controls (thumbstick, fire, dash)",
+            "Plays on Android in Spectra for Android, with twin-stick touch controls",
             "Fullscreen by default",
             "Multiplayer: levels are per player, and each level-up brings upgrade cards straight away, even mid-wave",
             "Multiplayer: exactly one upgrade per level-up, however fast you click",
@@ -229,13 +229,15 @@
             "Second Dawn in co-op: fly over a downed teammate to bring them back",
             "New Secret rarity with its own odds: Event Horizon (1 in 10,000) and Annihilator (1 in 100,000)",
             "14 new achievements: one for each new boss, Pantheon, Rift Warden, Blitz and Flawless, plus five for Secret upgrades",
-            "Upgrade cards are much easier to read, and the multiplayer card tray keeps full-size text"
+            "Upgrade cards are much easier to read, and the multiplayer card tray keeps full-size text",
+            "PC: your cannon aims at the mouse (crosshair and a barrel on your ship), separate from the way you fly",
+            "Phones: twin thumbsticks, left to move and right to aim and fire"
           ]
         }
       ],
       "android": {
         "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.0.0.zip",
-        "sizeBytes": 136898
+        "sizeBytes": 138172
       }
     }
   ],
