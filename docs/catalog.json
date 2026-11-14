@@ -2,6 +2,13 @@
   "news": [
     {
       "tag": "Update",
+      "title": "Prismfall 1.3 (build 21): the elemental bosses reworked",
+      "body": "All eight Chronicle II bosses have new designs and attacks: a segmented ice worm, a magma serpent, a king whose floating gauntlets grab you, and more. Story mode now unlocks classes chapter by chapter.",
+      "date": "2026-11-14",
+      "game": "prismfall"
+    },
+    {
+      "tag": "Update",
       "title": "Prismfall 1.3: Story mode and the second breach",
       "body": "A Story mode alpha, Rift Breach II with eight elemental bosses, five new classes, a reworked Rift Titan and bosses, Creative building, and a rotating shop.",
       "date": "2026-11-14",
@@ -37,7 +44,7 @@
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
       "version": "1.3.0",
-      "build": 20,
+      "build": 21,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -50,7 +57,7 @@
       "featured": true,
       "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.3.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 487583,
+      "sizeBytes": 509510,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -284,6 +291,14 @@
           "version": "1.3.0",
           "date": "2026-11-14",
           "notes": [
+            "Build 21: the elemental bosses reworked, each with its own design, movement, attack patterns, shot looks and sounds",
+            "Glacial Wyrm: a 16-part ice worm that coils, burrows and bursts out beneath you",
+            "Magma Leviathan: a serpent that swims in magma pools and leaps out where you were",
+            "Iron Sovereign: gauntlets on magnetic joints that punch, slam, clap and grab (dash to break free)",
+            "Storm Seraph rods and arcs, Blight Mother pods and lashes, the Tempest Eye's turning weather fronts, the Tectonic Behemoth's plates and stone pillars, and a new look for the Null Empress",
+            "Story: each chronicle has its own hostiles, level and upgrade limits; you start with the Striker and unlock classes chapter by chapter (Story only)",
+            "Boss lists, the Chronicle and the chapter pickers are split under chronicle headers",
+            "Fixed: the stat menu stayed on screen after leaving a run",
             "Story mode (alpha): 17 chapters across both rift breaches with briefings, objectives and endings, solo or online with up to 10 players",
             "Rift Breach II: eight elemental bosses (one per element), unlocked by beating Breach I on Insane",
             "Two new elements, Wind and Void, with new hostiles and upgrades",
@@ -386,7 +401,7 @@
       ],
       "android": {
         "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.3.0.zip",
-        "sizeBytes": 231070
+        "sizeBytes": 252273
       }
     }
   ],
