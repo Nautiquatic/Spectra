@@ -23,7 +23,7 @@
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
       "version": "1.1.0",
-      "build": 17,
+      "build": 18,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -36,7 +36,7 @@
       "featured": true,
       "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.1.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 418710,
+      "sizeBytes": 425302,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -284,7 +284,12 @@
             "Classes: Striker (bolts), Lancer (laser beam), Artillery (exploding shells), Engineer (seeker darts) and Vanguard (scattergun), each with its own stats",
             "Your class's upgrades come up 3× as often; off-class upgrades stop at 2–3 picks",
             "Creative menu: search, sort and filter upgrades, hover to see the card, and switch level-up upgrades off",
-            "Hulls and colours are now bought with prisms in the Icon Kit (anything you'd already unlocked stays yours)"
+            "Hulls and colours are now bought with prisms in the Icon Kit (anything you'd already unlocked stays yours)",
+            "Lancer beams fixed: each Split beam now stops on its own target instead of all of them being cut short",
+            "Lancer: Piercing Light lets the beam pass through walls, Ricochet makes it bounce off walls; you can't have both",
+            "Class abilities on E: Overdrive, Prism Lance, Bombard, Turret and Bulwark, with a cooldown bar (and a touch button)",
+            "Class-only upgrades: 11 new cards, two or three for each class",
+            "More obstacles: L-walls, cross barricades, pillars, crystal clusters and breakable crates that drop shards"
           ]
         },
         {
@@ -327,7 +332,7 @@
       ],
       "android": {
         "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.1.0.zip",
-        "sizeBytes": 166031
+        "sizeBytes": 172111
       }
     }
   ],
