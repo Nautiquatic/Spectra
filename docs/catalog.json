@@ -326,8 +326,8 @@
     }
   ],
   "androidApp": {
-    "version": "0.1.1",
+    "version": "0.1.2",
     "url": "https://github.com/Nautiquatic/Spectra/releases/download/Android/SpectraAndroid.apk",
-    "sizeBytes": 4583362
+    "sizeBytes": 4584906
   }
 }
