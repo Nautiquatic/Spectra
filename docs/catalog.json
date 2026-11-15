@@ -71,8 +71,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.4.1",
-      "build": 30,
+      "version": "1.4.11",
+      "build": 31,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -83,9 +83,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.1.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.11.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 1135904,
+      "sizeBytes": 1134514,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -316,6 +316,16 @@
       ],
       "patchNotes": [
         {
+          "version": "1.4.11",
+          "date": "2026-11-15",
+          "notes": [
+            "ALPHA patch: Reaper swings go side to side only (no more overhead chop or uppercut)",
+            "Twin Fangs is replaced by the Morning Star: a spiked ball whirled all the way around you",
+            "New Reaper ability, Phantom Cut: blink through up to 6 nearby hostiles for 4x melee damage each, executing weak ones",
+            "Music is back to the original synthwave soundtrack (the per-boss breakcore themes are removed)"
+          ]
+        },
+        {
           "version": "1.4.1",
           "date": "2026-11-15",
           "notes": [
@@ -500,8 +510,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.1.zip",
-        "sizeBytes": 875755
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.11.zip",
+        "sizeBytes": 874127
       }
     }
   ],
