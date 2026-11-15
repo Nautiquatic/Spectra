@@ -2,6 +2,13 @@
   "news": [
     {
       "tag": "Update",
+      "title": "Prismfall 1.4.2 ALPHA: a story you play through",
+      "body": "Every story chapter now has its own place and its own objectives, from defending the colony relay to hacking the Hive Empress’s printer, with lore told as you play and bosses that come through gates. Three interludes fill the gap between Chronicle I and II, the Rainbow is the strongest and hardest secret class, and the Conduit and Scorcher have new abilities.",
+      "date": "2026-11-15",
+      "game": "prismfall"
+    },
+    {
+      "tag": "Update",
       "title": "Prismfall 1.4 ALPHA: the story, boss themes and levels",
       "body": "Chronicles I and II now tell their story as you play and end with a glimpse of Chronicle III. Every boss gets its own breakcore theme, the Reaper gets four melee weapons, the Iron Sovereign takes up his arms, and you can build and share your own levels (beta). The shop also makes two new trails every week.",
       "date": "2026-11-15",
@@ -71,8 +78,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.4.11",
-      "build": 31,
+      "version": "1.4.2",
+      "build": 32,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -83,9 +90,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.11.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.2.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 1134514,
+      "sizeBytes": 1154823,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -316,6 +323,19 @@
       ],
       "patchNotes": [
         {
+          "version": "1.4.2",
+          "date": "2026-11-15",
+          "notes": [
+            "ALPHA: story chapters are now runs of objectives with their own lines of lore: defend a point, hack a terminal, light beacons, recover shards, close rift breaches, and staged boss entrances through gates",
+            "Every chapter has its own scenery: the colony city at night, crystal plains, the hive, a magma mine, a warship graveyard, the dying void city and more, with lights and weather",
+            "Three interludes between Chronicle I and II: Quiet Orbit, The Shard Speaks, Signal from the Deep",
+            "Codex elements stay hidden until you've met them",
+            "Rainbow buffed, with three attack styles (Q), prism bursts, and a 7s Spectrum with bigger beams and a longer sound; now the hardest secret to unlock",
+            "Smoother Prism Lance; new Conduit (Storm Conduit) and Scorcher (Solar Flare) abilities; plague cloud visuals for the Blightcaller",
+            "Engineer build hotkeys are letters only; 17 new shop upgrades, including one for every class"
+          ]
+        },
+        {
           "version": "1.4.11",
           "date": "2026-11-15",
           "notes": [
@@ -510,8 +530,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.11.zip",
-        "sizeBytes": 874127
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.2.zip",
+        "sizeBytes": 893607
       }
     }
   ],
