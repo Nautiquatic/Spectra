@@ -51,7 +51,7 @@
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
       "version": "1.3.0",
-      "build": 23,
+      "build": 24,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -64,7 +64,7 @@
       "featured": true,
       "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.3.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 517431,
+      "sizeBytes": 517428,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -298,7 +298,7 @@
           "version": "1.3.0",
           "date": "2026-11-14",
           "notes": [
-            "Build 23: the Scorcher sprays a storm of fire-coloured hexagons (same damage as before the rework)",
+            "Builds 23-24: the Scorcher sprays large fire-coloured hexagons (same damage as before the rework)",
             "Railgunner rails stay on screen for as long as their plague trail, fading out steadily",
             "Build 22: class reworks",
             "Railgunner: plague rails that poison everything they pierce and leave toxic trails; poisoned hostiles spread it when they die (Pandemic replaces Piercer)",
@@ -416,7 +416,7 @@
       ],
       "android": {
         "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.3.0.zip",
-        "sizeBytes": 259898
+        "sizeBytes": 259895
       }
     }
   ],
