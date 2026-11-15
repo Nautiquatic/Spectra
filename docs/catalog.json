@@ -71,8 +71,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.4.0",
-      "build": 29,
+      "version": "1.4.1",
+      "build": 30,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -83,9 +83,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.0.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.1.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 1130168,
+      "sizeBytes": 1135904,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -316,6 +316,17 @@
       ],
       "patchNotes": [
         {
+          "version": "1.4.1",
+          "date": "2026-11-15",
+          "notes": [
+            "ALPHA patch: Reaper melee hits harder and reaches further",
+            "Two new melee weapons: Twin Fangs (double-striking daggers) and the Halberd (a long thrust)",
+            "All six melee weapons have new models, and swings alternate left, right, overhead and uppercut, with windups, light smears, afterimages and hit sparks",
+            "New class upgrades for every class, secret classes included (Executioner's Edge, Blood Harvest, Echo Swing, Full Spectrum, Capacitor Bank and more)",
+            "The Iron Sovereign grips his greatsword, hammer, crossbow and shield in both gauntlets and carries them through each attack"
+          ]
+        },
+        {
           "version": "1.4.0",
           "date": "2026-11-15",
           "notes": [
@@ -489,8 +500,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.0.zip",
-        "sizeBytes": 870468
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.1.zip",
+        "sizeBytes": 875755
       }
     }
   ],
