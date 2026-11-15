@@ -2,6 +2,13 @@
   "news": [
     {
       "tag": "Update",
+      "title": "Prismfall 1.3.2: boss cutscenes, fusions and overheat",
+      "body": "Every boss now has an intro, a phase 2 and a death scene (key bosses get a phase 3). Elements beat elements, elemental bosses fuse when Ascended, the Engineer gets a build menu and four shop builds, sprays overheat, and there is a Random mode and a Procedural map.",
+      "date": "2026-11-15",
+      "game": "prismfall"
+    },
+    {
+      "tag": "Update",
       "title": "Prismfall 1.3 (build 22): class reworks",
       "body": "A plague Railgunner, a shotgun-and-shield Vanguard, an Engineer who builds turrets, barricades, traps and repair stations, real lightning for the Conduit, flames for the Scorcher, black holes for the Gravitar, and a weapon on every ship.",
       "date": "2026-11-15",
@@ -50,8 +57,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.3.0",
-      "build": 26,
+      "version": "1.3.2",
+      "build": 27,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -62,9 +69,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.3.0.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.3.2.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 1087913,
+      "sizeBytes": 1098542,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -295,20 +302,39 @@
       ],
       "patchNotes": [
         {
-          "version": "1.3.0",
-          "date": "2026-11-14",
+          "version": "1.3.2",
+          "date": "2026-11-15",
           "notes": [
-            "Build 26: a recorded flamethrower sound for the Scorcher (fades out when you stop firing), and louder plague boiling",
-            "Build 25: new recorded sounds for the Lancer's beam and Prism Lance, explosions and the Railgunner's boiling plague trails; the Scorcher's hexagons glow",
-            "Builds 23-24: the Scorcher sprays large fire-coloured hexagons (same damage as before the rework)",
-            "Railgunner rails stay on screen for as long as their plague trail, fading out steadily",
-            "Build 22: class reworks",
+            "Overheat: the Scorcher and Conduit fire for 5 seconds, then weaker shots; let go and they lock for 3.5s while they cool",
+            "Engineer: each blueprint has its own cooldown; R opens a build menu with stats, limits and cooldowns; four more builds in the shop (Tesla Pylon, Shield Dome, Decoy Beacon, Mortar Nest)",
+            "Random mode and Random map, plus a new Procedural map",
+            "Stat menu: teammates' stats, active buffs with timers, and what your upgrades added",
+            "Elements beat elements (WEAK! / RESIST); elemental bosses get a true form (Evolved) and fuse with a second boss (Ascended)",
+            "Every boss: an intro cutscene, a phase 2 and a death scene; the last three bosses of each chronicle get a phase 3",
+            "Story: the Storm Seraph and Magma Leviathan belong to Chronicle II, and the Glaive and Railgunner unlock in Chronicle II",
+            "Story lore: the Null Empress's black hole now leads into Chronicle III, the Stasis"
+          ]
+        },
+        {
+          "version": "1.3.1",
+          "date": "2026-11-15",
+          "notes": [
             "Railgunner: plague rails that poison everything they pierce and leave toxic trails; poisoned hostiles spread it when they die (Pandemic replaces Piercer)",
             "Vanguard: a pump shotgun that hits hardest up close, a refilling Guard, and Shield Charge",
             "Engineer: a builder with tagging rivets; E builds turrets, barricades, shock traps or a repair station (R switches)",
             "Conduit: real lightning strikes that chain; Scorcher: billowing flames; Gravitar: black holes",
             "Glaive's metal chakrams, explosions for Artillery shells, and a weapon on every ship (an assault rifle for the Striker)",
-            "Build 21: the elemental bosses reworked, each with its own design, movement, attack patterns, shot looks and sounds",
+            "The Scorcher sprays large fire-coloured hexagons (same damage as before the rework)",
+            "Railgunner rails stay on screen for as long as their plague trail, fading out steadily",
+            "A recorded flamethrower sound for the Scorcher (fades out when you stop firing), and louder plague boiling",
+            "New recorded sounds for the Lancer's beam and Prism Lance, explosions and the Railgunner's boiling plague trails; the Scorcher's hexagons glow"
+          ]
+        },
+        {
+          "version": "1.3.0",
+          "date": "2026-11-14",
+          "notes": [
+            "The elemental bosses reworked, each with its own design, movement, attack patterns, shot looks and sounds",
             "Glacial Wyrm: a 16-part ice worm that coils, burrows and bursts out beneath you",
             "Magma Leviathan: a serpent that swims in magma pools and leaps out where you were",
             "Iron Sovereign: gauntlets on magnetic joints that punch, slam, clap and grab (dash to break free)",
@@ -417,8 +443,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.3.0.zip",
-        "sizeBytes": 830380
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.3.2.zip",
+        "sizeBytes": 840231
       }
     }
   ],
