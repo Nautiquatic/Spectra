@@ -2,6 +2,13 @@
   "news": [
     {
       "tag": "Update",
+      "title": "Prismfall 1.4 ALPHA: the story, boss themes and levels",
+      "body": "Chronicles I and II now tell their story as you play and end with a glimpse of Chronicle III. Every boss gets its own breakcore theme, the Reaper gets four melee weapons, the Iron Sovereign takes up his arms, and you can build and share your own levels (beta). The shop also makes two new trails every week.",
+      "date": "2026-11-15",
+      "game": "prismfall"
+    },
+    {
+      "tag": "Update",
       "title": "Prismfall 1.3.3: secret classes, the Iron Court and ready-up",
       "body": "The Blightcaller joins, the Railgunner turns secret alongside the Reaper and Rainbow, evolved classes arrive in alpha, the Iron Sovereign and Hive Empress are reworked, every boss brings its own hostiles, the Engineer gets five more builds, and multiplayer has ready-up.",
       "date": "2026-11-15",
@@ -64,8 +71,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.3.3",
-      "build": 28,
+      "version": "1.4.0",
+      "build": 29,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -76,9 +83,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.3.3.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.0.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 1114534,
+      "sizeBytes": 1130168,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -309,6 +316,22 @@
       ],
       "patchNotes": [
         {
+          "version": "1.4.0",
+          "date": "2026-11-15",
+          "notes": [
+            "ALPHA: Chronicles I and II are longer and tell their story as you play (Relay Command, the shard and the Null Empress speak), with a colour for every chapter",
+            "The end of Chronicle II: a void closes in and memories of Chronicle III flicker past",
+            "Every boss has its own original breakcore / glitchcore theme",
+            "Reaper: four melee weapons (scythe, greatsword, great-hammer, shield), switched with Q",
+            "Rainbow: Spectrum fires seven piercing beams that merge into one (5s, 20s cooldown)",
+            "Iron Sovereign rework: knightly gauntlets, a two-handed greatsword slash, crossbow, hammer and shield, a horn that calls ten of his court, and Coglings that repair him; Ferrite Knights and Crossbowmen reworked",
+            "Hive Empress faces forward; the Blightcaller has a new look",
+            "Levels (beta): build a level in Creative, share its code, play it from the Levels mode",
+            "Shop: two brand-new trails every week",
+            "Fair play: signed prism balances and reward caps; Tab for stats (no longer in the pause menu)"
+          ]
+        },
+        {
           "version": "1.3.3",
           "date": "2026-11-15",
           "notes": [
@@ -466,8 +489,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.3.3.zip",
-        "sizeBytes": 855501
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.0.zip",
+        "sizeBytes": 870468
       }
     }
   ],
