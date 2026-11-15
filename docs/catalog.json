@@ -78,8 +78,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.4.2",
-      "build": 32,
+      "version": "1.4.21",
+      "build": 33,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -90,9 +90,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.2.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.21.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 1154823,
+      "sizeBytes": 1157595,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -323,6 +323,13 @@
       ],
       "patchNotes": [
         {
+          "version": "1.4.21",
+          "date": "2026-11-15",
+          "notes": [
+            "The Library of Light (the Spiral Oracle's chapter) is now a real library: radial bookcases with ladders, reading tables and lamps, marble columns, globes, a carpet and glyph ring round the Halo well, chandeliers, window light and floating tomes"
+          ]
+        },
+        {
           "version": "1.4.2",
           "date": "2026-11-15",
           "notes": [
@@ -530,8 +537,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.2.zip",
-        "sizeBytes": 893607
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.21.zip",
+        "sizeBytes": 896175
       }
     }
   ],
