@@ -2,6 +2,13 @@
   "news": [
     {
       "tag": "Update",
+      "title": "Prismfall 1.3.3: secret classes, the Iron Court and ready-up",
+      "body": "The Blightcaller joins, the Railgunner turns secret alongside the Reaper and Rainbow, evolved classes arrive in alpha, the Iron Sovereign and Hive Empress are reworked, every boss brings its own hostiles, the Engineer gets five more builds, and multiplayer has ready-up.",
+      "date": "2026-11-15",
+      "game": "prismfall"
+    },
+    {
+      "tag": "Update",
       "title": "Prismfall 1.3.2: boss cutscenes, fusions and overheat",
       "body": "Every boss now has an intro, a phase 2 and a death scene (key bosses get a phase 3). Elements beat elements, elemental bosses fuse when Ascended, the Engineer gets a build menu and four shop builds, sprays overheat, and there is a Random mode and a Procedural map.",
       "date": "2026-11-15",
@@ -57,8 +64,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.3.2",
-      "build": 27,
+      "version": "1.3.3",
+      "build": 28,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -69,9 +76,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.3.2.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.3.3.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 1098542,
+      "sizeBytes": 1114534,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "art": {
@@ -302,6 +309,22 @@
       ],
       "patchNotes": [
         {
+          "version": "1.3.3",
+          "date": "2026-11-15",
+          "notes": [
+            "The Blightcaller (plague spores) replaces the Railgunner, which becomes a secret class; more secret classes: the Reaper (with its Prism Reaper form) and Rainbow, the rarest",
+            "Evolved classes (alpha) in a new shop tab",
+            "Overheat now counts every shot (no spam-clicking around it) and includes the Lancer, whose beam is smooth and scales with fire rate; the Conduit hits harder",
+            "Engineer: builds last up to 90s but hostiles break them; five more shop builds (Coolant Station, Flak Cannon, Cryo Projector, Shard Beacon, Overclock Relay); Twin Turrets doubles pylons and mortars; Z X C V B N M hotkeys",
+            "Iron Sovereign rework (plated arms, greatsword, crossbows, a war horn that calls his court) and the Hive Empress (honour guard and larvae)",
+            "Tempest Eye spins faster as it breaks; the Oracle's phase 3 feeds on your shots; the Null Empress weakens everyone, then implodes; fire and ice worms mirror each other; fusions only on Nightmare or as a rare mutation",
+            "Every boss has its own 1-3 hostiles (Plaguelites, Coglings, Frostlings and more)",
+            "Story: Chronicle II reordered; at the end of a chronicle, end the run or carry your build on; online, only chapters everyone has reached",
+            "Multiplayer ready-up: the host can start once everyone is ready",
+            "Pause menu with a run summary and restart; new settings (cutscenes, reduced flashing, fewer particles, combat text)"
+          ]
+        },
+        {
           "version": "1.3.2",
           "date": "2026-11-15",
           "notes": [
@@ -443,8 +466,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.3.2.zip",
-        "sizeBytes": 840231
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.3.3.zip",
+        "sizeBytes": 855501
       }
     }
   ],
