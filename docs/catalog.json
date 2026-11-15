@@ -95,6 +95,11 @@
       "sizeBytes": 1157595,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
+      "screenshots": [
+        "https://nautiquatic.github.io/Spectra/assets/games/prismfall-shot-1.webp",
+        "https://nautiquatic.github.io/Spectra/assets/games/prismfall-shot-2.webp",
+        "https://nautiquatic.github.io/Spectra/assets/games/prismfall-shot-3.webp"
+      ],
       "art": {
         "from": "#1a0c3a",
         "to": "#050111",
