@@ -11,8 +11,8 @@
 window.SPECTRA_SITE = {
   catalogUrl: 'catalog.json',
   downloadUrl: 'https://github.com/Nautiquatic/Spectra/releases/download/Launcher/SpectraLauncherSetup.exe',
-  launcherVersion: '0.6.4',
-  launcherSize: '78 MB',
+  launcherVersion: '0.7.0',
+  launcherSize: '79 MB',
   contactEmail: '',
   // Spectra accounts: same values as supabaseUrl / supabaseAnonKey in the launcher's src/catalog.js.
   // Used by account/reset.html (password reset links).
