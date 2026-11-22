@@ -19,6 +19,7 @@
           localStorage.removeItem(key);
         } catch {}
       }
+      try { const v = localStorage.getItem(key); if (v != null) return v; } catch {} // the session itself: kept between visits
       return transient.get(key) ?? null;
     },
     setItem(key, value) {
@@ -29,10 +30,12 @@
           return;
         } catch {}
       }
+      try { localStorage.setItem(key, value); transient.delete(key); return; } catch {} // stays signed in between sessions
       transient.set(key, value);
     },
     removeItem(key) {
       transient.delete(key);
+      try { localStorage.removeItem(key); } catch {}
       if (isVerifier(key)) {
         try { localStorage.removeItem(key); } catch {}
       }
@@ -91,8 +94,26 @@
   const pair = (id, other) => `and(requester.eq.${id},addressee.eq.${other}),and(requester.eq.${other},addressee.eq.${id})`;
   const ids = (value) => Array.isArray(value) ? [...new Set(value.filter((item) => typeof item === 'string' && gameIdPattern.test(item) && item !== profileMetadata))] : [];
 
+  // every player's public stats for one game, with their public profile (for the leaderboards)
+  const leaderboard = async (gameId) => {
+    if (!gameIdPattern.test(gameId) || gameId === profileMetadata) return [];
+    return must(await client().from('game_stats').select('user_id,playtime,achievements,last_played,profiles(username,display_name,avatar_color)')
+      .eq('game_id', gameId).limit(500));
+  };
+  // "notify me" for games that aren't out yet: an email and a game, nothing else (see supabase/notify.sql)
+  const notify = async (email, gameId) => {
+    email = String(email || '').trim().toLowerCase();
+    if (!/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/.test(email)) throw new Error('Enter a valid email address.');
+    if (!gameIdPattern.test(gameId)) throw new Error('That game is not in the catalogue.');
+    const { error } = await client().from('notify_signups').insert({ email, game_id: gameId });
+    if (!error || error.code === '23505') return true; // already on the list counts as success
+    if (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|schema cache/i.test(error.message || '')) throw new Error('Sign-ups open shortly. Try again later.');
+    if (error.status === 429) throw new Error('Too many attempts. Wait a few minutes and try again.');
+    throw new Error('Could not sign you up right now. Try again later.');
+  };
+
   window.SpectraWebAccount = {
-    available: !!sb, usernamePattern, gameIdPattern, user, profile, byUsername, extras, privateLibrary, stats, signIn, ids,
+    available: !!sb, usernamePattern, gameIdPattern, user, profile, byUsername, extras, privateLibrary, stats, signIn, ids, leaderboard, notify,
     onSessionChange(fn) {
       sb?.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') setTimeout(() => fn(session?.user || null), 0);

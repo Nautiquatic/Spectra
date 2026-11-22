@@ -65,6 +65,20 @@
   const tag = (g) => `<span class="tag ${STATUS[g.status].cls}">${STATUS[g.status].label}</span>`;
   const bandRule = '<div class="band" aria-hidden="true">' + RAYS.map((c) => `<i style="background:${c}"></i>`).join('') + '</div>';
   const label = (n, text) => `<div class="label"><em>${n}</em><span>${text}</span></div>`;
+  const droidBadge = (g) => (onAndroid(g) ? `<span class="badge droid" title="Also playable on Android through Spectra for Android">${droidIcon}<span>Android</span></span>` : '');
+  const fmtPlay = (s) => { s = Number(s) || 0; const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60); return h ? `${h}h ${m}m` : m ? `${m}m` : s ? '<1m' : '—'; };
+  const TIER_PTS = { bronze: 1, silver: 2, gold: 3, platinum: 5 };
+  // "Notify me": for anything that isn't out yet. An email, once, the day it releases
+  function notifyBox(g) {
+    const done = (() => { try { return localStorage.getItem('spectra-notify-' + g.id) === '1'; } catch { return false; } })();
+    if (done) return `<p class="notify-done">${'✓'} You’re on the list for ${esc(g.title)}. We’ll email you once, the day it releases.</p>`;
+    return `<form class="notify" data-notify="${esc(g.id)}" novalidate>
+      <label class="sr" for="nm-${esc(g.id)}">Email for ${esc(g.title)} release news</label>
+      <input id="nm-${esc(g.id)}" type="email" name="email" required maxlength="254" placeholder="you@example.com" autocomplete="email">
+      <button class="btn solid" type="submit">Notify me</button>
+      <p class="fine notify-msg" aria-live="polite">One email, the day ${esc(g.title)} releases. Nothing else.</p>
+    </form>`;
+  }
 
   // ---------- download ----------
   const dlHref = () => CFG.downloadUrl || '#/download';
@@ -78,7 +92,7 @@
       <span class="i-num">${String(i + 1).padStart(2, '0')}</span>
       <span class="i-title">${esc(g.title)}</span>
       <span class="i-meta"><span>${g.genres.map(esc).join(' / ') || '—'}</span>${isMulti(g) ? '<span>1–4 players</span>' : ''}${onAndroid(g) ? '<span>PC + Android</span>' : ''}</span>
-      <span class="i-status">${tag(g)}</span>
+      <span class="i-status">${tag(g)}${!playable(g) ? '<span class="i-bell" title="Notify me on its page">🔔</span>' : ''}</span>
       <span class="i-go">${arrow}</span>
       <span class="i-art" aria-hidden="true">${img(g, 'banner', 640, 300, 'i')}</span>
     </a>`;
@@ -125,7 +139,7 @@
   const pages = {};
 
   pages.home = () => {
-    const lead = (GAMES.filter((g) => g.featured)[0]) || GAMES[0];
+    const lead = GAMES.find((g) => g.featured && playable(g)) || GAMES.find(playable) || GAMES[0];
     return `
     <section class="hero">
       <canvas class="beam" id="beam" aria-hidden="true"></canvas>
@@ -285,29 +299,33 @@
       <div class="ghero-shade"></div>
       <div class="wrap ghero-in">
         <a class="back" href="#/games">← All games</a>
-        <div class="row gap wrap-row">${tag(g)}<span class="fine">${g.genres.map(esc).join(' / ')}</span></div>
+        <div class="row gap wrap-row">${tag(g)}${droidBadge(g)}<span class="fine">${g.genres.map(esc).join(' / ')}</span></div>
         <h1>${esc(g.title)}</h1>
         <p class="tagline">${esc(g.tagline)}</p>
         <div class="row gap wrap-row">
           ${playable(g) ? dlBtn() : `<span class="btn line lg static">Coming ${g.released ? fmtDate(g.released) : 'soon'}</span>`}
           ${playable(g) && onAndroid(g) ? `<a class="btn line lg" href="#/download">${droidIcon}<span>Also on Android</span></a>` : ''}
         </div>
-        <p class="fine">${playable(g) ? 'Free. Install and play it in the Spectra Launcher.' : "Not out yet. It'll appear in the Spectra Launcher on release day."}</p>
+        ${playable(g) ? '' : notifyBox(g)}
+        <p class="fine">${playable(g) ? 'Free. Install and play it in the Spectra Launcher.' : "Not out yet. It shows in the Spectra Launcher now, and you can install it there on release day."}</p>
       </div>
     </section>
     <section class="wrap gbody" style="--g:${glow(g)}">
       <div class="gmain">
         ${g.description ? `<p class="lead big">${esc(g.description)}</p>` : ''}
-        ${Array.isArray(g.screenshots) && g.screenshots.length ? `<div class="shots">${g.screenshots.map((s) => `<div class="shot"><img src="${esc(s)}" alt="" loading="lazy"></div>`).join('')}</div>` : ''}
+        ${g.trailer ? `<div class="trailer"><video src="${esc(g.trailer)}" ${g.trailerPoster ? `poster="${esc(g.trailerPoster)}"` : ''} autoplay muted loop playsinline preload="metadata" aria-label="${esc(g.title)} trailer"></video><span class="trailer-tag">Trailer · in-game footage</span></div>` : ''}
+        ${Array.isArray(g.screenshots) && g.screenshots.length ? `<div class="shots">${g.screenshots.map((s, i) => `<button class="shot" type="button" data-shot="${esc(s)}" aria-label="Open screenshot ${i + 1}"><img src="${esc(s)}" alt="${esc(g.title)} screenshot ${i + 1}" loading="lazy"></button>`).join('')}</div>` : ''}
         ${g.features.length ? `${label('A', 'Features')}<ol class="feats">${g.features.map((f) => `<li>${esc(f)}</li>`).join('')}</ol>` : ''}
         ${g.achievements.length ? `${label('B', `Achievements · ${g.achievements.filter((a) => !a.secret).length}`)}<div class="ach">${g.achievements.filter((a) => !a.secret).map((a, i) => a.hidden ? '<div class="secret"><em>??</em><span><b>Hidden</b><p>Unlock it in the game to find out.</p></span></div>' : `<div><em>${String(i + 1).padStart(2, '0')}</em><span><b>${esc(a.name)}</b><p>${esc(a.desc)}</p></span></div>`).join('')}</div>` : ''}
-        ${g.patchNotes.length ? `${label('C', 'Patch notes')}<div class="patches">${g.patchNotes.map((p) => `<div class="patch"><div class="p-head"><b>${esc(p.version)}</b><time>${fmtDate(p.date)}</time></div><ul>${(p.notes || []).map((n) => `<li>${esc(n)}</li>`).join('')}</ul></div>`).join('')}</div>` : ''}
+        ${playable(g) && g.achievements.length ? `${label('B', 'Leaderboard')}<div class="board" data-board="${esc(g.id)}"><p class="muted">Loading the leaderboard…</p></div>` : ''}
+        ${playable(g) && g.patchNotes.length ? `${label('C', 'Patch notes')}<div class="patches">${g.patchNotes.map((p) => `<div class="patch"><div class="p-head"><b>${esc(p.version)}</b><time>${fmtDate(p.date)}</time></div><ul>${(p.notes || []).map((n) => `<li>${esc(n)}</li>`).join('')}</ul></div>`).join('')}</div>` : ''}
       </div>
       <aside class="gside">
         <div class="gcover">${img(g, 'cover', 300, 400)}</div>
         <dl class="spec">
           <div><dt>Status</dt><dd>${STATUS[g.status].label}</dd></div>
-          ${g.version ? `<div><dt>Version</dt><dd>${esc(g.version)}${g.build != null ? ` · build ${esc(g.build)}` : ''}</dd></div>` : ''}
+          ${g.version && playable(g) ? `<div><dt>Version</dt><dd>${esc(g.version)}${g.build != null ? ` · build ${esc(g.build)}` : ''}</dd></div>` : ''}
+          ${onAndroid(g) ? `<div><dt>Android</dt><dd>${droidBadge(g)}</dd></div>` : ''}
           <div><dt>Released</dt><dd>${fmtDate(g.released)}</dd></div>
           ${g.sizeBytes ? `<div><dt>Size</dt><dd>${fmtBytes(g.sizeBytes)}</dd></div>` : ''}
           <div><dt>Players</dt><dd>${isMulti(g) ? '1 · 2–4 online' : '1'}</dd></div>
@@ -315,6 +333,8 @@
           <div><dt>Developer</dt><dd>Spectra</dd></div>
           <div><dt>Price</dt><dd>Free</dd></div>
         </dl>
+        ${g.requirements ? `<div class="reqs">${label('D', 'System requirements')}<dl class="spec">${[['os', 'OS'], ['processor', 'Processor'], ['memory', 'Memory'], ['graphics', 'Graphics'], ['storage', 'Storage'], ['online', 'Internet']].filter(([k]) => g.requirements[k]).map(([k, l]) => `<div><dt>${l}</dt><dd>${esc(g.requirements[k])}</dd></div>`).join('')}</dl></div>` : ''}
+        ${playable(g) && g.achievements.length ? `<a class="btn line sm full" href="#/boards/${esc(g.id)}">All leaderboards ${arrow}</a>` : ''}
       </aside>
     </section>
     ${more.length ? `<section class="wrap sec">${label('→', 'More from Spectra')}<div class="index">${more.map((x) => indexRow(x, GAMES.indexOf(x))).join('')}</div></section>` : ''}`;
@@ -359,6 +379,130 @@
       </div>
     </section>
     <section class="wrap sec">${ticket()}</section>`;
+
+  // ---------- leaderboards: every public board, per game, from Spectra accounts ----------
+  pages.boards = (id) => {
+    const list = GAMES.filter((g) => playable(g) && g.achievements.length);
+    const g = byId[id] && list.includes(byId[id]) ? byId[id] : list[0];
+    return `
+    <section class="wrap page-head">
+      ${label('04', 'Leaderboards')}
+      <h1>Boards</h1>
+      <p class="lead">Who has unlocked the most, and who has played the longest, from everyone with a Spectra account. Sign in to the launcher and play to appear here.</p>
+    </section>
+    <section class="wrap">
+      ${list.length ? `<div class="chips board-tabs">${list.map((x) => `<a class="chip ${x === g ? 'on' : ''}" href="#/boards/${esc(x.id)}">${esc(x.title)}</a>`).join('')}</div>
+      <div class="board big" data-board="${esc(g.id)}" data-full="1"><p class="muted">Loading the leaderboard…</p></div>` : '<p class="muted">No boards yet.</p>'}
+    </section>`;
+  };
+  // ranks players by achievement points (bronze 1, silver 2, gold 3, platinum 5), then playtime
+  function boardHTML(g, rows, full) {
+    const pub = g.achievements.filter((a) => !a.secret);
+    const all = g.achievements;
+    const players = rows.filter((r) => r && r.profiles && r.profiles.username).map((r) => {
+      const got = all.filter((a) => Number(r.achievements && r.achievements[a.id]) > 0);
+      return { p: r.profiles, play: Number(r.playtime) || 0, n: got.filter((a) => !a.secret).length, sec: got.filter((a) => a.secret).length, pts: got.reduce((s, a) => s + (TIER_PTS[a.tier] || 1), 0), got };
+    }).filter((x) => x.play > 0 || x.got.length);
+    if (!players.length) return '<p class="muted">No one is on this board yet. Play with a Spectra account to be first.</p>';
+    const who = (x) => `<a class="who" href="#/u/${encodeURIComponent(x.p.username)}"><b style="background:${/^#[0-9a-f]{6}$/i.test(x.p.avatar_color || '') ? x.p.avatar_color : '#927dff'}">${esc((x.p.display_name || x.p.username).slice(0, 1).toUpperCase())}</b><span>${esc(x.p.display_name || x.p.username)}<small>@${esc(x.p.username)}</small></span></a>`;
+    const byPts = players.slice().sort((a, b) => b.pts - a.pts || b.n - a.n || b.play - a.play).slice(0, full ? 25 : 10);
+    const byPlay = players.slice().sort((a, b) => b.play - a.play).slice(0, full ? 10 : 5);
+    const rarity = pub.map((a) => ({ a, pct: Math.round((100 * players.filter((x) => Number(x.got.includes(a))).length) / players.length) })).sort((x, y) => x.pct - y.pct);
+    return `<div class="board-grid">
+      <div class="board-col"><h3>Most achievements</h3><ol class="ranks">${byPts.map((x, i) => `<li class="${i < 3 ? 'top top' + (i + 1) : ''}"><em>${i + 1}</em>${who(x)}<span class="r-val"><b>${x.n}/${pub.length}</b>${x.sec ? `<small>+${x.sec} secret</small>` : ''}<small>${x.pts} pts</small></span></li>`).join('')}</ol></div>
+      <div class="board-col"><h3>Most played</h3><ol class="ranks">${byPlay.map((x, i) => `<li class="${i < 3 ? 'top top' + (i + 1) : ''}"><em>${i + 1}</em>${who(x)}<span class="r-val"><b>${fmtPlay(x.play)}</b></span></li>`).join('')}</ol>
+        <h3>Rarest achievements</h3><ul class="rarity">${rarity.slice(0, full ? pub.length : 6).map(({ a, pct }) => `<li class="t-${esc(a.tier || 'bronze')}"><span><b>${esc(a.hidden ? 'Hidden achievement' : a.name)}</b><small>${esc(a.hidden ? 'Unlock it to see it' : a.desc)}</small></span><span class="r-bar"><i style="width:${Math.max(2, pct)}%"></i></span><em>${pct}%</em></li>`).join('')}</ul></div>
+    </div><p class="fine">${players.length} player${players.length === 1 ? '' : 's'} with a Spectra account. Secret achievements are counted but never named.</p>`;
+  }
+  async function fillBoards() {
+    const A = window.SpectraWebAccount;
+    for (const el of document.querySelectorAll('[data-board]')) {
+      const g = byId[el.dataset.board];
+      if (!g) continue;
+      if (!A || !A.available) { el.innerHTML = '<p class="muted">Leaderboards need Spectra accounts, which aren’t available right now.</p>'; continue; }
+      try { const rows = await A.leaderboard(g.id); if (el.isConnected) el.innerHTML = boardHTML(g, rows || [], !!el.dataset.full); }
+      catch (e) { if (el.isConnected) el.innerHTML = '<p class="muted">Couldn’t load the leaderboard. Try again in a moment.</p>'; }
+    }
+  }
+
+  // ---------- the devlog: short posts and version notes, from devlog.json and the catalogue ----------
+  let DEVLOG = null, devFilter = 'all';
+  async function loadDevlog() {
+    if (DEVLOG) return DEVLOG;
+    try { const r = await fetch(CFG.devlogUrl || 'devlog.json', { cache: 'no-store' }); const j = await r.json(); DEVLOG = (Array.isArray(j.posts) ? j.posts : []).filter((p) => p && p.title && p.date); } catch { DEVLOG = []; }
+    return DEVLOG;
+  }
+  pages.devlog = () => `
+    <section class="wrap page-head">
+      ${label('05', 'Devlog')}
+      <h1>What changed, and why</h1>
+      <p class="lead">Short posts from the studio, and the version notes for every game, the launcher and the IDE.</p>
+    </section>
+    <section class="wrap"><div id="devlog"><p class="muted">Loading…</p></div></section>`;
+  function renderDevlog() {
+    const el = document.getElementById('devlog');
+    if (!el || !DEVLOG) return;
+    const notes = GAMES.flatMap((g) => (playable(g) ? g.patchNotes : []).map((p) => ({ date: p.date, tag: g.title, game: g.id, version: p.version, title: `${g.title} ${p.version}`, notes: p.notes || [], kind: 'notes' })));
+    const posts = DEVLOG.map((p) => ({ ...p, kind: 'post' }));
+    const tags = ['all', ...new Set(posts.concat(notes).map((p) => p.tag).filter(Boolean))];
+    const items = posts.concat(devFilter === 'posts' ? [] : notes).filter((p) => devFilter === 'all' || devFilter === 'posts' || p.tag === devFilter)
+      .sort((a, b) => String(b.date).localeCompare(String(a.date)) || (a.kind === 'post' ? -1 : 1));
+    el.innerHTML = `<div class="chips dev-tabs">${tags.concat('posts').map((t) => `<button class="chip ${devFilter === t ? 'on' : ''}" data-devtag="${esc(t)}">${t === 'all' ? 'Everything' : t === 'posts' ? 'Posts only' : esc(t)}</button>`).join('')}</div>
+      <div class="devlog">${items.map((p) => `<article class="dev ${p.kind}"><div class="dev-meta"><time>${fmtDate(p.date)}</time><span class="tag info">${esc(p.tag || 'Studio')}</span>${p.version ? `<span class="dev-ver">v${esc(p.version)}</span>` : ''}</div>
+        <div class="dev-body"><h3>${p.game && byId[p.game] ? `<a href="#/game/${esc(p.game)}">${esc(p.title)}</a>` : esc(p.title)}</h3>${p.body ? `<p>${esc(p.body)}</p>` : ''}${p.notes && p.notes.length ? `<details><summary>${p.notes.length} change${p.notes.length === 1 ? '' : 's'}</summary><ul>${p.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul></details>` : ''}</div></article>`).join('') || '<p class="muted">Nothing here yet.</p>'}</div>`;
+    el.querySelectorAll('[data-devtag]').forEach((b) => b.addEventListener('click', () => { devFilter = b.dataset.devtag; renderDevlog(); }));
+  }
+
+  // ---------- Spectra IDE ----------
+  const ideBtn = (cls = 'lg') => CFG.ideDownloadUrl
+    ? `<a class="btn solid ${cls}" href="${esc(CFG.ideDownloadUrl)}" download>${winIcon}<span>Download Spectra IDE</span></a>`
+    : `<span class="btn line ${cls} static">${dlIcon}<span>Coming soon</span></span>`;
+  function ideMock() {
+    const code = [['fn', ' main', '() {'], ['    let', ' light', ' = Prism::new();'], ['    for', ' ray', ' in light.split() {'], ['        println!', '("{ray}")', ';'], ['    }', '', ''], ['}', '', '']];
+    return `<div class="ide-mock" aria-hidden="true">
+      <div class="ide-bar"><b>Spectra IDE</b><span>File</span><span>Edit</span><span>View</span><span>Run</span><span>Plugins</span></div>
+      <div class="ide-body">
+        <div class="ide-act"><i>▤</i><i>⌕</i><i>⑂</i><i class="on">▶</i></div>
+        <div class="ide-side"><small>EXPLORER</small><span>▾ src</span><span class="on">· main.rs</span><span>· prism.rs</span><span>▸ assets</span><span>· Cargo.toml</span></div>
+        <div class="ide-main">
+          <div class="ide-tabs"><span class="on">main.rs ✕</span><span>prism.rs ✕</span></div>
+          <pre class="ide-code">${code.map((l, i) => `<span class="ln">${i + 1}</span><span class="k">${esc(l[0])}</span><span class="v">${esc(l[1])}</span>${esc(l[2])}`).join('\n')}</pre>
+          <div class="ide-term"><small>RUN · TERMINAL</small><span>$ cargo run</span><span class="ok">   red · orange · yellow · green · blue · indigo · violet</span></div>
+        </div>
+      </div>
+      <div class="ide-status"><span>⑂ main</span><span>UTF-8 · LF · Rust · Ln 3, Col 18</span></div>
+    </div>`;
+  }
+  pages.ide = () => `
+    <section class="wrap page-head ide-head">
+      ${label('06', 'Spectra IDE')}
+      <h1>The editor we make Spectra with</h1>
+      <p class="lead">A small, fast, native code editor for Windows, laid out like the big ones. Tabs, a split view, a terminal, a command palette, and plugins for the languages and mods you work on.</p>
+      <div class="row gap wrap-row">${ideBtn()}</div>
+      <p class="fine">Windows 10 / 11 · ${esc(CFG.ideSize || '')} · v${esc(CFG.ideVersion || '1.0.0')} · free · installs for your user only, no administrator rights</p>
+    </section>
+    <section class="wrap sec">${ideMock()}</section>
+    <section class="wrap sec">
+      ${label('A', 'What it does')}
+      <div class="ide-feats">${[
+        ['Syntax highlighting', 'Dozens of languages: Rust, Python, JavaScript, TypeScript, HTML, CSS, JSON, TOML, YAML, Markdown, C, C++, C#, Java, Kotlin, Go, Lua, SQL and more.'],
+        ['A real editor', 'Split editor, minimap, bracket matching, auto-indent, auto-close, multi-line indent, line moves and comments, font zoom, format document.'],
+        ['Find anything', 'Find and replace with highlighting, go to line, fuzzy go-to-file, and a command palette that runs any command, Gradle tasks included.'],
+        ['Run and terminal', 'Run your project and keep the output, open several terminal tabs, and jump from problems straight to the line.'],
+        ['Plugins', 'Python, Lua, web, Gradle and themes, plus Minecraft (Fabric) and Terraria modding with New Project templates. Install them from a plugin catalogue, permissions shown first.'],
+        ['Your setup', 'A first-run wizard for theme, title bar and editor defaults, editable shortcuts, and per-language settings. Open folders and files from Explorer.'],
+      ].map(([t, d], i) => `<div class="ide-feat" style="--c:${RAYS[i % RAYS.length]}"><h3>${t}</h3><p>${d}</p></div>`).join('')}</div>
+    </section>
+    <section class="wrap sec">
+      ${label('B', 'System requirements')}
+      <dl class="spec wide">
+        <div><dt>OS</dt><dd>Windows 10 or 11 (64-bit)</dd></div>
+        <div><dt>Size</dt><dd>${esc(CFG.ideSize || '—')}</dd></div>
+        <div><dt>Admin rights</dt><dd>Not needed (installs for your user)</dd></div>
+        <div><dt>Uninstall</dt><dd>Settings → Apps</dd></div>
+      </dl>
+      <p class="fine">The installer isn’t code-signed yet, so Windows SmartScreen may say “unknown publisher”. Choose More info → Run anyway.</p>
+    </section>`;
 
   pages.download = () => `
     <section class="wrap page-head">
@@ -484,7 +628,7 @@
       window.SpectraAccountPages.render({ root: app.firstElementChild, section: name, arg, extra, games: byId, playable });
     } else app.innerHTML = `<div class="page page-${key}">${pages[key](arg)}</div>`;
     document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === (key === 'game' ? 'games' : key)));
-    document.title = key === 'game' && byId[arg] ? `${byId[arg].title} · Spectra` : accountRoute ? 'Account · Spectra' : 'Spectra · Light goes in. Games come out.';
+    document.title = key === 'game' && byId[arg] ? `${byId[arg].title} · Spectra` : accountRoute ? 'Account · Spectra' : ({ boards: 'Leaderboards · Spectra', devlog: 'Devlog · Spectra', ide: 'Spectra IDE' })[key] || 'Spectra · Light goes in. Games come out.';
     document.body.classList.remove('menu-open');
     document.getElementById('menuBtn').setAttribute('aria-expanded', 'false');
     if (key === 'home') {
@@ -494,6 +638,9 @@
       if (out && !reduceMotion) { setTimeout(() => out.classList.add('lit'), 700); setTimeout(() => out.classList.remove('lit'), 2600); }
     }
     if (key === 'games') bindGames();
+    if (key === 'game' || key === 'boards') fillBoards();
+    if (key === 'devlog') loadDevlog().then(renderDevlog);
+    prefillNotify();
     bindTour();
     bindReveal();
     if (h === 'launcher' && window._faq) { window._faq = false; setTimeout(() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' }), 50); }
@@ -516,6 +663,32 @@
     }));
   }
 
+  // notify-me sign-ups
+  async function prefillNotify() {
+    const A = window.SpectraWebAccount;
+    if (!A || !A.available || !document.querySelector('[data-notify]')) return;
+    try { const u = await A.user(); if (u && u.email) document.querySelectorAll('[data-notify] input[type=email]').forEach((i) => { if (!i.value) i.value = u.email; }); } catch {}
+  }
+  document.addEventListener('submit', async (e) => {
+    const f = e.target.closest('[data-notify]');
+    if (!f) return;
+    e.preventDefault();
+    const msg = f.querySelector('.notify-msg'), btn = f.querySelector('button'), email = f.querySelector('input').value, id = f.dataset.notify;
+    const A = window.SpectraWebAccount;
+    btn.disabled = true; msg.textContent = 'Signing you up…'; msg.classList.remove('bad');
+    try {
+      if (!A || !A.available) throw new Error('Sign-ups aren’t available right now. Try again later.');
+      await A.notify(email, id);
+      try { localStorage.setItem('spectra-notify-' + id, '1'); } catch {}
+      f.outerHTML = `<p class="notify-done">✓ You’re on the list. We’ll email you once, the day ${esc((byId[id] || {}).title || 'it')} releases.</p>`;
+    } catch (err) { msg.textContent = err.message; msg.classList.add('bad'); btn.disabled = false; }
+  });
+  // screenshots open full size
+  document.addEventListener('click', (e) => {
+    const s = e.target.closest('[data-shot]');
+    if (s) { const box = document.createElement('div'); box.className = 'lightbox'; box.innerHTML = `<img src="${esc(s.dataset.shot)}" alt=""><button type="button" aria-label="Close">✕</button>`; box.addEventListener('click', () => box.remove()); document.body.appendChild(box); return; }
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelector('.lightbox')?.remove(); });
   document.querySelector('[data-faq]').addEventListener('click', () => (window._faq = true));
   document.getElementById('menuBtn').addEventListener('click', (e) => {
     const open = document.body.classList.toggle('menu-open');

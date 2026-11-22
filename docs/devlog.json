@@ -1,0 +1,57 @@
+{
+  "posts": [
+    {
+      "date": "2026-11-22",
+      "tag": "Prismfall",
+      "game": "prismfall",
+      "version": "1.4.3",
+      "title": "Bigger chapters, and something unreleased",
+      "body": "Every story chapter now runs four or five objectives across a bigger, more detailed map: escort the evacuation bus through Landfall, carry seed cores out of the Cold Vault, smash the Hive Empress’s printing vats, hunt a fleeing Prime Splinter. Data logs hide the rest of the story. Type a certain word on the main menu and the Chronicle I bosses come back unchained."
+    },
+    {
+      "date": "2026-11-22",
+      "tag": "LUMEN",
+      "game": "lumen",
+      "title": "LUMEN is coming",
+      "body": "Our next game is a lane-siege strategy game set in a ruined observatory: three lanes, two Lenses, and reinforcements you have to time. It is not out yet. Press Notify me on its page to hear the day it releases."
+    },
+    {
+      "date": "2026-11-21",
+      "tag": "Spectra IDE",
+      "version": "1.0.0",
+      "title": "Spectra IDE 1.0",
+      "body": "The code editor we build Spectra with is now yours too: a small, fast native editor with tabs, a split view, a terminal, find and replace, a command palette and plugins for Python, Lua, web, Gradle, Minecraft and Terraria modding. Free for Windows."
+    },
+    {
+      "date": "2026-11-15",
+      "tag": "Launcher",
+      "version": "0.6.4",
+      "title": "Launcher 0.6.4: screenshots on game pages",
+      "body": "Game pages in the launcher and on the website now show real screenshots. Spectra for Android 0.1.4 has them too."
+    },
+    {
+      "date": "2026-11-15",
+      "tag": "Prismfall",
+      "game": "prismfall",
+      "version": "1.4.21",
+      "title": "The Library of Light becomes a library",
+      "body": "The Spiral Oracle’s chapter is now a round archive around the Halo well: bookcases full of spines, reading tables with lamps, marble columns, globes, chandeliers and tomes floating over the well."
+    },
+    {
+      "date": "2026-11-15",
+      "tag": "Prismfall",
+      "game": "prismfall",
+      "version": "1.4.2",
+      "title": "A story you play through",
+      "body": "Story chapters became runs of objectives with their own scenery and lines of lore, bosses arrive through gates, and three interludes fill the gap between Chronicle I and II. The Rainbow became the strongest and hardest secret class."
+    },
+    {
+      "date": "2026-11-15",
+      "tag": "Prismfall",
+      "game": "prismfall",
+      "version": "1.4.0",
+      "title": "Prismfall 1.4 ALPHA",
+      "body": "Lore told as you play, the end of Chronicle II, melee weapons for the Reaper, the Iron Sovereign rework, a Level Creator in beta, and a shop that makes new trails every week."
+    }
+  ]
+}

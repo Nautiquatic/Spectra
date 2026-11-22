@@ -13,6 +13,11 @@ window.SPECTRA_SITE = {
   downloadUrl: 'https://github.com/Nautiquatic/Spectra/releases/download/Launcher/SpectraLauncherSetup.exe',
   launcherVersion: '0.7.0',
   launcherSize: '79 MB',
+  // Spectra IDE (the #/ide page). While ideDownloadUrl is empty, its button shows "Coming soon".
+  ideDownloadUrl: 'https://github.com/Nautiquatic/Spectra/releases/download/IDE/SpectraIDE-Setup.exe',
+  ideVersion: '1.0.0',
+  ideSize: '5.5 MB',
+  devlogUrl: 'devlog.json',
   contactEmail: '',
   // Spectra accounts: same values as supabaseUrl / supabaseAnonKey in the launcher's src/catalog.js.
   // Only the Supabase project URL and public publishable key belong here.

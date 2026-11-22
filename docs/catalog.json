@@ -8,6 +8,13 @@
       "game": "prismfall"
     },
     {
+      "tag": "Coming soon",
+      "title": "LUMEN is coming",
+      "body": "Three lanes, two Lenses, and reinforcements you have to time. Our next game is a lane-siege strategy game set in a ruined observatory. It is not out yet: press Notify me on its page and we will email you once, the day it releases.",
+      "date": "2026-11-22",
+      "game": "lumen"
+    },
+    {
       "tag": "Update",
       "title": "Prismfall 1.4.2 ALPHA: a story you play through",
       "body": "Every story chapter now has its own place and its own objectives, from defending the colony relay to hacking the Hive Empress’s printer, with lore told as you play and bosses that come through gates. Three interludes fill the gap between Chronicle I and II, the Rainbow is the strongest and hardest secret class, and the Conduit and Scorcher have new abilities.",
@@ -562,6 +569,249 @@
       "android": {
         "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.3.zip",
         "sizeBytes": 914458
+      },
+      "requirements": {
+        "os": "Windows 10 or 11 (64-bit), or Android 7+ through Spectra for Android",
+        "processor": "Any dual-core from the last 10 years",
+        "memory": "4 GB RAM",
+        "graphics": "Any GPU with hardware acceleration (WebGL not needed)",
+        "storage": "About 2 MB",
+        "online": "Only for multiplayer"
+      },
+      "trailer": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-trailer.webm",
+      "trailerPoster": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-shot-2.webp"
+    },
+    {
+      "id": "lumen",
+      "title": "LUMEN",
+      "tagline": "Three lanes. Two Lenses. Time your reinforcements.",
+      "description": "A real-time card siege in a brass observatory. Summons march and fight on their own across three bridges. Choose when to commit a heavy mortar, reshape the ground, or freeze the opposing timeline.",
+      "status": "coming-soon",
+      "released": null,
+      "genres": [
+        "Strategy",
+        "Card Battler"
+      ],
+      "platforms": [
+        "Windows"
+      ],
+      "featured": true,
+      "cover": "https://nautiquatic.github.io/Spectra/assets/games/lumen-cover.png",
+      "banner": "https://nautiquatic.github.io/Spectra/assets/games/lumen-banner.png",
+      "screenshots": [
+        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-1.png",
+        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-2.png",
+        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-3.png"
+      ],
+      "art": {
+        "from": "#08101c",
+        "to": "#04070d",
+        "glow": "#d9a85c",
+        "motif": "lens"
+      },
+      "features": [
+        "Three lanes and five ranks with elevated tiles, bridges and two Lens towers",
+        "Summons advance and attack automatically; deploy cards while battle continues",
+        "No mana: manage a six-card cooldown timeline, trigger Resonance and vent during Overload",
+        "Ignite oil, conduct lightning through water and push or pull units into position",
+        "Daily Siege, Workshop upgrades and 30 Spectra achievements"
+      ],
+      "achievements": [
+        {
+          "id": "first-siege",
+          "name": "Lines Drawn",
+          "desc": "Begin your first siege.",
+          "tier": "bronze"
+        },
+        {
+          "id": "first-blood",
+          "name": "First Blood",
+          "desc": "Destroy an enemy unit.",
+          "tier": "bronze"
+        },
+        {
+          "id": "units-50",
+          "name": "Muster",
+          "desc": "Deploy 50 units.",
+          "tier": "bronze"
+        },
+        {
+          "id": "spells-50",
+          "name": "Cantrip",
+          "desc": "Cast 50 spells.",
+          "tier": "bronze"
+        },
+        {
+          "id": "terrain-30",
+          "name": "Surveyor",
+          "desc": "Play 30 terrain cards.",
+          "tier": "bronze"
+        },
+        {
+          "id": "overload-5",
+          "name": "Too Much Light",
+          "desc": "Enter Overload five times.",
+          "tier": "bronze"
+        },
+        {
+          "id": "first-win",
+          "name": "Held the Line",
+          "desc": "Win a siege.",
+          "tier": "silver"
+        },
+        {
+          "id": "wins-5",
+          "name": "Lantern Keeper",
+          "desc": "Win five sieges.",
+          "tier": "silver"
+        },
+        {
+          "id": "daily-one",
+          "name": "Daily Siege",
+          "desc": "Complete a Daily Siege.",
+          "tier": "silver"
+        },
+        {
+          "id": "kills-100",
+          "name": "Hundred Banners",
+          "desc": "Destroy 100 enemy units.",
+          "tier": "silver"
+        },
+        {
+          "id": "resonance-25",
+          "name": "In Tune",
+          "desc": "Trigger Resonance 25 times.",
+          "tier": "silver"
+        },
+        {
+          "id": "ignites-10",
+          "name": "Wildfire",
+          "desc": "Ignite oil ten times.",
+          "tier": "silver"
+        },
+        {
+          "id": "chains-10",
+          "name": "Conduit",
+          "desc": "Chain lightning through water ten times.",
+          "tier": "silver"
+        },
+        {
+          "id": "vent-5",
+          "name": "Let It Burn",
+          "desc": "Vent five queued cards.",
+          "tier": "silver"
+        },
+        {
+          "id": "queue-six",
+          "name": "Full Timeline",
+          "desc": "Fill all six queue slots in one turn.",
+          "tier": "silver"
+        },
+        {
+          "id": "high-ground-win",
+          "name": "Higher Ground",
+          "desc": "Win a siege with a unit on high ground.",
+          "tier": "silver"
+        },
+        {
+          "id": "burn-win",
+          "name": "Ash and Oil",
+          "desc": "Win a siege where fire destroyed an enemy.",
+          "tier": "silver"
+        },
+        {
+          "id": "pylon-10",
+          "name": "Adjacent Power",
+          "desc": "Recharge ten cards beside an Arcane Pylon.",
+          "tier": "silver"
+        },
+        {
+          "id": "wins-15",
+          "name": "Siege Master",
+          "desc": "Win fifteen sieges.",
+          "tier": "gold"
+        },
+        {
+          "id": "dailies-7",
+          "name": "Seven Dawns",
+          "desc": "Complete seven Daily Sieges.",
+          "tier": "gold"
+        },
+        {
+          "id": "swift-siege",
+          "name": "Quickstep",
+          "desc": "Win a siege in eight turns or fewer.",
+          "tier": "gold"
+        },
+        {
+          "id": "unbroken-lens",
+          "name": "Unbroken",
+          "desc": "Win without losing a single point of Lens health.",
+          "tier": "gold"
+        },
+        {
+          "id": "comeback",
+          "name": "One Wick Left",
+          "desc": "Win with your Lens at 5 health or less.",
+          "tier": "gold"
+        },
+        {
+          "id": "ember-2000",
+          "name": "The Long Purse",
+          "desc": "Bank 2,000 embers.",
+          "tier": "platinum"
+        },
+        {
+          "id": "secret-logo",
+          "name": "Observatory No. 7",
+          "desc": "The lens keeps a small secret.",
+          "tier": "bronze",
+          "secret": true
+        },
+        {
+          "id": "secret-midnight",
+          "name": "Between the Hours",
+          "desc": "Begin a siege between midnight and five.",
+          "tier": "bronze",
+          "secret": true
+        },
+        {
+          "id": "secret-alchemist",
+          "name": "Alchemist",
+          "desc": "Hold fire, oil, water and high ground at once.",
+          "tier": "gold",
+          "secret": true
+        },
+        {
+          "id": "secret-architect",
+          "name": "Three Columns",
+          "desc": "Win with a friendly unit in every column.",
+          "tier": "gold",
+          "secret": true
+        },
+        {
+          "id": "secret-sacrifice",
+          "name": "Feed the Fire",
+          "desc": "Vent a Siege Mortar from your timeline.",
+          "tier": "silver",
+          "secret": true
+        },
+        {
+          "id": "secret-patience",
+          "name": "Long Siege",
+          "desc": "Win a siege that lasts past turn 25.",
+          "tier": "gold",
+          "secret": true
+        }
+      ],
+      "patchNotes": [],
+      "requirements": {
+        "os": "Windows 10 or 11 (64-bit)",
+        "processor": "Any dual-core from the last 10 years",
+        "memory": "4 GB RAM",
+        "graphics": "Any GPU with hardware acceleration",
+        "storage": "Under 5 MB",
+        "online": "Not needed"
       }
     }
   ],
