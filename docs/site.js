@@ -220,13 +220,17 @@
   }
 
   // the Android app as a second ticket (dark)
+  function androidDownload(label, style) {
+    if (!ANDROID) return '';
+    return `<a class="btn ${style} lg" href="${esc(ANDROID.url)}" download>${droidIcon}<span>${label}</span></a>`;
+  }
   function androidTicket() {
     return `<div class="ticket dark" id="android">
       <div class="t-main">
         ${label(droidIcon, 'Pocket edition')}
         <h2>Spectra for Android</h2>
         <p class="muted">The launcher on your phone: your library, friends and achievements, and games marked <b>Android</b> to play on the go, online with PC players too.</p>
-        <div class="row gap wrap-row">${ANDROID ? `<a class="btn solid lg" href="${esc(ANDROID.url)}" download>${droidIcon}<span>Download APK</span></a>` : `<span class="btn line lg static">${droidIcon}<span>Coming soon</span></span>`}</div>
+        <div class="row gap wrap-row">${androidDownload('Download APK', 'solid') || `<span class="btn line lg static">${droidIcon}<span>Coming soon</span></span>`}</div>
         ${ANDROID ? '<p class="fine">Open the APK on your phone to install it. Android asks you to allow installing apps from your browser the first time.</p>' : ''}
       </div>
       <div class="t-stub">
@@ -321,7 +325,7 @@
       ${label('03', 'Spectra Launcher')}
       <h1>Your home for Spectra games</h1>
       <p class="lead">A small desktop app that installs, updates and launches every Spectra game, and keeps you playing with friends.</p>
-      <div class="row gap wrap-row">${dlBtn()}</div>
+      <div class="row gap wrap-row">${dlBtn()}${androidDownload('Download Android APK', 'line')}</div>
     </section>
     <section class="wrap sec tour-sec">
       <div class="tour">
@@ -349,7 +353,7 @@
           ['Can I play with friends?', 'In games that support it, yes. Add each other in the launcher, host a game and invite them, and they get a Join button. Prismfall supports up to 4 players in co-op or versus.'],
           ['Can I play in the browser?', 'No. This site is for browsing. Games are installed and played through the Spectra Launcher on your PC.'],
           ['Where are games installed?', 'By default in a "Spectra Games" folder in your user folder. You can change it in the launcher settings.'],
-          ['Can I play on my phone?', 'Yes, on Android. Get Spectra for Android from the download page. Games marked Android can be installed and played on your phone, and online games work across PC and phone.'],
+          ['Can I play on my phone?', 'Yes, on Android. Use the Download Android APK button at the top of this page. Games marked Android can be installed and played on your phone, and online games work across PC and phone.'],
           ['Mac, Linux or iPhone?', 'Not yet. Spectra runs on Windows and Android for now.'],
         ].map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}
       </div>
