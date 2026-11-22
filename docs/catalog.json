@@ -2,6 +2,13 @@
   "news": [
     {
       "tag": "Update",
+      "title": "Prismfall 1.4.4 ALPHA: the true forms, rebuilt",
+      "body": "The Unchained bosses in Prismfall · Test are rebuilt from the ground up: new bodies, new attacks, new second phases. The Hive Empress is a vast wasp sovereign, the Mirror Colossus reflects you back at yourself, and the Rift Titan’s eye is split by the Rift. Spawn any of them in the Concept Lab.",
+      "date": "2026-11-22",
+      "game": "prismfall"
+    },
+    {
+      "tag": "Update",
       "title": "Prismfall 1.4.3 ALPHA: bigger chapters, and something unreleased",
       "body": "Every story chapter now runs four or five objectives across a bigger, more detailed map: escort the evacuation bus through Landfall, carry seed cores out of the Cold Vault, smash the Hive Empress’s printing vats, hunt a fleeing Prime Splinter. Data logs hide the rest of the story. And if you type a certain word on the main menu, the Chronicle I bosses come back unchained.",
       "date": "2026-11-22",
@@ -92,8 +99,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.4.3",
-      "build": 34,
+      "version": "1.4.4",
+      "build": 35,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -104,9 +111,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.3.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.4.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 1176503,
+      "sizeBytes": 1190506,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "screenshots": [
@@ -342,6 +349,15 @@
       ],
       "patchNotes": [
         {
+          "version": "1.4.4",
+          "date": "2026-11-22",
+          "notes": [
+            "ALPHA (Prismfall · Test): the six Unchained true forms are rebuilt as bosses of their own, each with a new body, its own movement, four original attacks and a second phase",
+            "The Hollow Light, Empress of the Endless Brood (a vast wasp sovereign), the Starfall, the Spiral of All Paths, the Hall of Glass (a mirror monolith that reflects you) and the Architect's Hand (its eye split by the Rift)",
+            "Concept Lab: spawn any of the six true forms from the Creative menu"
+          ]
+        },
+        {
           "version": "1.4.3",
           "date": "2026-11-22",
           "notes": [
@@ -567,8 +583,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.3.zip",
-        "sizeBytes": 914458
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.4.zip",
+        "sizeBytes": 927957
       },
       "requirements": {
         "os": "Windows 10 or 11 (64-bit), or Android 7+ through Spectra for Android",
