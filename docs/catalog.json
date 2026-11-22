@@ -2,6 +2,13 @@
   "news": [
     {
       "tag": "Update",
+      "title": "Prismfall 1.4.3 ALPHA: bigger chapters, and something unreleased",
+      "body": "Every story chapter now runs four or five objectives across a bigger, more detailed map: escort the evacuation bus through Landfall, carry seed cores out of the Cold Vault, smash the Hive Empress’s printing vats, hunt a fleeing Prime Splinter. Data logs hide the rest of the story. And if you type a certain word on the main menu, the Chronicle I bosses come back unchained.",
+      "date": "2026-11-22",
+      "game": "prismfall"
+    },
+    {
+      "tag": "Update",
       "title": "Prismfall 1.4.2 ALPHA: a story you play through",
       "body": "Every story chapter now has its own place and its own objectives, from defending the colony relay to hacking the Hive Empress’s printer, with lore told as you play and bosses that come through gates. Three interludes fill the gap between Chronicle I and II, the Rainbow is the strongest and hardest secret class, and the Conduit and Scorcher have new abilities.",
       "date": "2026-11-15",
@@ -78,8 +85,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.4.21",
-      "build": 33,
+      "version": "1.4.3",
+      "build": 34,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -90,9 +97,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.21.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.3.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 1157595,
+      "sizeBytes": 1176503,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "screenshots": [
@@ -328,6 +335,17 @@
       ],
       "patchNotes": [
         {
+          "version": "1.4.3",
+          "date": "2026-11-22",
+          "notes": [
+            "ALPHA: story chapters now have 4-5 objectives each, tied to their story, with four new kinds: escort a convoy, carry cargo, destroy targets, and hunt an elite that runs",
+            "Bigger story maps with room to explore, and beacons you can light in any order",
+            "Hidden data logs in every chapter and interlude: pieces of the story, 25 prisms each, kept in the Codex",
+            "Detailed scenery for every chapter: station wrecks, hive pods, colony domes, the vault door, warship hulks and more",
+            "Prismfall · Test: type 'unreleased' on the main menu for a True Form Rush (the Chronicle I bosses Unchained) and a Concept Lab"
+          ]
+        },
+        {
           "version": "1.4.21",
           "date": "2026-11-15",
           "notes": [
@@ -542,8 +560,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.21.zip",
-        "sizeBytes": 896175
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.3.zip",
+        "sizeBytes": 914458
       }
     }
   ],

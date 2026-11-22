@@ -11,13 +11,11 @@
 window.SPECTRA_SITE = {
   catalogUrl: 'catalog.json',
   downloadUrl: 'https://github.com/Nautiquatic/Spectra/releases/download/Launcher/SpectraLauncherSetup.exe',
-  launcherVersion: '0.7.0',
-  launcherSize: '79 MB',
+  launcherVersion: '0.6.4',
+  launcherSize: '78 MB',
   contactEmail: '',
   // Spectra accounts: same values as supabaseUrl / supabaseAnonKey in the launcher's src/catalog.js.
-  // Only the Supabase project URL and public publishable key belong here.
-  siteUrl: 'https://nautiquatic.github.io/Spectra/',
-  launcherProtocol: false,
+  // Used by account/reset.html (password reset links).
   supabaseUrl: 'https://chkkfntakeoohwpaugrr.supabase.co',
-  supabasePublishableKey: 'sb_publishable_eTMBOPDEzWtpqOoBkQvKnQ_Swy3y8ox',
+  supabaseAnonKey: 'sb_publishable_eTMBOPDEzWtpqOoBkQvKnQ_Swy3y8ox',
 };

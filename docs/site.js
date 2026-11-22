@@ -26,10 +26,7 @@
   // ---------- catalogue ----------
   let GAMES = [], NEWS = [], byId = {}, loadError = '', loaded = false;
   let ANDROID = null; // the Android app (catalog.androidApp: { version, url, sizeBytes })
-  // Only local previews can override the catalogue URL. A public account page
-  // should never render game links or content from a URL supplied by a visitor.
-  const localPreview = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
-  const catalogUrl = (localPreview ? new URLSearchParams(location.search).get('catalog') : '') || CFG.catalogUrl || '';
+  const catalogUrl = new URLSearchParams(location.search).get('catalog') || CFG.catalogUrl || '';
   async function loadCatalog() {
     if (!catalogUrl) { loaded = true; return; }
     try {
@@ -43,7 +40,7 @@
       GAMES.forEach((g) => { if (!STATUS[g.status]) g.status = 'available'; });
       NEWS = Array.isArray(c.news) ? c.news : [];
       ANDROID = c.androidApp && c.androidApp.url ? c.androidApp : null;
-      byId = Object.assign(Object.create(null), Object.fromEntries(GAMES.map((g) => [g.id, g])));
+      byId = Object.fromEntries(GAMES.map((g) => [g.id, g]));
     } catch (e) { loadError = e.message; }
     loaded = true;
   }
@@ -469,18 +466,12 @@
   // ---------- router ----------
   function route() {
     const h = location.hash.replace(/^#\/?/, '');
-    const [name, raw, rawExtra] = h.split('/');
-    const decode = (value) => { try { return decodeURIComponent(value || ''); } catch { return ''; } };
-    const arg = decode(raw), extra = decode(rawExtra);
-    const accountRoute = ['account', 'u', 'join'].includes(name);
-    const key = accountRoute ? 'account' : Object.hasOwn(pages, name) ? name : 'home';
+    const [name, arg] = h.split('/');
+    const key = pages[name] ? name : 'home';
     if (beamStop) beamStop();
-    if (accountRoute) {
-      app.innerHTML = '<div class="page page-account" data-account-view></div>';
-      window.SpectraAccountPages.render({ root: app.firstElementChild, section: name, arg, extra, games: byId, playable });
-    } else app.innerHTML = `<div class="page page-${key}">${pages[key](arg)}</div>`;
+    app.innerHTML = `<div class="page page-${key}">${pages[key](arg && decodeURIComponent(arg))}</div>`;
     document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === (key === 'game' ? 'games' : key)));
-    document.title = key === 'game' && byId[arg] ? `${byId[arg].title} · Spectra` : accountRoute ? 'Account · Spectra' : 'Spectra · Light goes in. Games come out.';
+    document.title = key === 'game' && byId[arg] ? `${byId[arg].title} · Spectra` : 'Spectra · Light goes in. Games come out.';
     document.body.classList.remove('menu-open');
     document.getElementById('menuBtn').setAttribute('aria-expanded', 'false');
     if (key === 'home') {
@@ -528,10 +519,6 @@
   document.querySelectorAll('[data-download]').forEach((a) => (a.href = dlHref()));
   if (CFG.contactEmail) { const c = document.getElementById('contactLink'); c.href = 'mailto:' + CFG.contactEmail; c.hidden = false; }
 
-  loadCatalog().then(() => {
-    // Preserve credentials typed while the catalogue was loading.
-    const accountView = app.querySelector('[data-account-view]');
-    if (!accountView || !accountView.querySelector('[data-form]') || !accountView.contains(document.activeElement)) route();
-  });
+  loadCatalog().then(route);
   route();
 })();
