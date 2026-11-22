@@ -17,3 +17,6 @@ button:disabled { opacity: .5; cursor: default; }
 .msg.err { color: var(--err); }
 .msg.ok { color: var(--ok); }
 .hidden { display: none; }
+
+[hidden] { display: none !important; }
+a { color: #c5b8ff; }

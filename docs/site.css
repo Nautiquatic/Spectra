@@ -381,3 +381,130 @@ a.disp:hover h3 { text-decoration: underline; text-underline-offset: 4px; }
 .also:hover { border-color: var(--ink); color: var(--ink); }
 .also > svg:first-child { color: var(--r4); }
 @media (max-width: 760px) { .ticket.dark .t-stub { border-top-color: var(--line-2); } }
+
+
+/* Spectra account pages */
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.nav-account { max-width: 185px; gap: 7px; overflow: hidden; white-space: nowrap; color: var(--ink); }
+.nav-account span:not(.account-avatar) { overflow: hidden; text-overflow: ellipsis; }
+.accounts { padding-block: clamp(30px, 8vw, 100px); max-width: 960px; min-height: 56vh; }
+.account-head { margin-bottom: 20px; }
+.accounts h1 { margin: 0 0 19px; font-size: clamp(28px, 5.2vw, 54px); }
+.accounts h2 { margin: 0 0 9px; font-size: clamp(16px, 2vw, 22px); }
+.account-tabs { display: flex; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--line); }
+.account-tabs a { padding: 8px 3px; color: var(--muted); }
+.account-tabs a[aria-current=page] { color: var(--ink); box-shadow: 0 2px var(--ink); }
+.account-card, .account-game { padding: clamp(14px, 3vw, 23px); border: 1px solid var(--line); margin-block: 12px; background: rgba(255,255,255,.025); }
+form.account-card { display: grid; justify-items: start; gap: 12px; width: min(100%, 420px); }
+.account-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr)); gap: 14px; align-items: start; }
+.account-columns .account-card { width: 100%; margin: 0; }
+.account-delete > form { padding: 0; background: transparent; border: 0; }
+.account-delete summary { cursor: pointer; color: #ff9ea7; font-weight: 700; }
+.account-field { width: 100%; display: grid; gap: 5px; }
+.account-field input { width: 100%; min-height: 40px; padding: 8px 11px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; }
+.account-field input:focus-visible, .account-tabs a:focus-visible { outline: 2px solid #c5b8ff; outline-offset: 2px; }
+.account-card .btn, .account-game .btn { white-space: normal; }
+.account-feedback { color: #c5e9d9; overflow-wrap: anywhere; margin: 0; }
+.account-feedback:empty { display: none; }
+.account-feedback.error { color: #ffa6af; }
+.account-profile, .account-friend, .account-game-top, .account-actions { display: flex; align-items: center; gap: 12px; }
+.account-profile, .account-friend, .account-game-top, .account-actions { flex-wrap: wrap; }
+.account-profile p, .account-card p { margin: 4px 0; }
+.account-game-top, .account-friend { justify-content: space-between; }
+.account-game-top strong, .account-game-top span { display: block; }
+.account-game-top span, .account-game small, .account-friend small, .account-field small { color: var(--muted); }
+.account-game details { margin-top: 8px; }
+.account-game details summary { cursor: pointer; color: #c5b8ff; }
+.account-game ul { margin: 8px 0 0; }
+.account-avatar { position: relative; display: inline-grid; flex: 0 0 auto; place-items: center; width: 27px; height: 27px; overflow: hidden; border-radius: 50%; font-weight: 800; color: #100d18; background: var(--avatar-color); }
+.account-avatar.large { width: 62px; height: 62px; font-size: 26px; }
+.account-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.account-friend { padding: 10px 0; }
+.account-friend + .account-friend { border-top: 1px solid var(--line); }
+.account-friend > a { display: flex; align-items: center; gap: 8px; color: var(--ink); }
+.account-friend small { display: block; }
+.room-code { display: block; font-family: var(--mono); font-size: clamp(24px, 5vw, 44px); letter-spacing: .12em; margin: 10px 0 18px; }
+@media (max-width: 850px) { .nav-actions { margin-left: auto; } }
+@media (max-width: 470px) { .nav-in { gap: 10px; } .nav-account { max-width: 125px; } }
+
+
+/* Launcher-style player profiles */
+.player-profile { width: min(1100px, 100% - 48px); margin-inline: auto; padding-block: 96px 72px; font-size: 15px; line-height: 1.45; }
+.player-profile > .account-tabs { margin: 0 0 16px; }
+.player-panel { min-width: 0; border: 1px solid var(--line); background: var(--bg); }
+.player-identity { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: clamp(14px, 2.4vw, 23px); min-height: 176px; align-items: center; padding: clamp(16px, 2.5vw, 25px); }
+.player-profile .player-identity .account-avatar { width: clamp(64px, 8.8vw, 108px); height: clamp(64px, 8.8vw, 108px); font-size: clamp(26px, 4vw, 46px); border: 3px solid var(--bg); outline: 2px solid color-mix(in srgb, var(--profile-accent), transparent 18%); box-shadow: 0 7px 30px color-mix(in srgb, var(--profile-accent), transparent 74%); }
+.player-identity h1 { margin: 0 0 4px; font: 850 clamp(23px, 4.1vw, 40px)/1.15 var(--display); letter-spacing: -.055em; overflow-wrap: anywhere; }
+.player-identity-text p + p { margin-top: 4px; }
+.player-bio { max-width: 56ch; white-space: pre-wrap; overflow-wrap: anywhere; }
+.player-bio-link, .player-version, .player-presence { color: var(--r5); }
+.player-bio-link { font-size: 13px; }
+.player-presence { display: flex; align-items: center; gap: 7px; font: 12px var(--mono); }
+.player-presence i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 9px currentColor; }
+.player-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; align-self: start; }
+.player-profile .btn.sm { min-height: 35px; padding-inline: 11px; font-size: 13px; white-space: normal; }
+.player-feature { margin-top: 16px; padding: 16px; display: flex; gap: 17px; align-items: center; }
+.player-cover { width: 96px; aspect-ratio: 3 / 4; background: var(--bg-2); overflow: hidden; flex: 0 0 auto; display: grid; place-items: center; }
+.player-cover img, .player-cover svg { width: 100%; height: 100%; object-fit: cover; }
+.player-cover-letter { color: var(--r6); font: 700 24px var(--display); }
+.player-feature h2 { margin: 1px 0 5px; font: 750 22px/1.2 var(--body); }
+.player-feature .muted, .player-version { font-size: 13px; }
+.player-feature .btn { margin-top: 6px; }
+.player-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 16px; gap: 12px; }
+.player-stat { border-top: 2px solid var(--ink); padding: 16px 18px; display: grid; min-height: 91px; align-content: start; gap: 4px; }
+.player-stat dd { grid-row: 1; font: 850 clamp(19px, 2.6vw, 28px)/1.12 var(--display); letter-spacing: -.045em; }
+.player-stat dt { grid-row: 2; color: var(--muted); text-transform: uppercase; letter-spacing: .15em; font: 600 10px/1.45 var(--mono); }
+.player-section { margin-top: 36px; }
+.player-section h2 { font: 800 clamp(16px, 2.4vw, 20px)/1.25 var(--display); letter-spacing: -.045em; padding-bottom: 10px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.player-showcase { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.player-trophy { text-align: left; padding: 13px; min-height: 96px; display: grid; align-content: center; gap: 3px; }
+.player-trophy strong { font-size: 14px; line-height: 1.23; overflow-wrap: anywhere; }
+.player-trophy span { font-size: 12px; color: var(--muted); }
+.player-trophy svg { width: 16px; height: 16px; margin-bottom: 4px; }
+.player-trophy:hover { border-color: var(--line-2); background: var(--bg-2); }
+.tier-platinum > svg { color: #8de4f0; }
+.tier-gold > svg { color: #f1c77b; }
+.tier-silver > svg { color: #c2d1ee; }
+.tier-bronze > svg { color: #db9e70; }
+.player-activity, .player-achievements ul { list-style: none; }
+.player-activity li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 14px; }
+.player-activity li + li, .player-game + .player-game { border-top: 1px solid var(--line); }
+.player-activity li > button { text-align: left; }
+.player-activity li > :is(button, a):hover, .player-bio-link:hover, .player-game-title a:hover { text-decoration: underline; }
+.player-activity time, .player-activity .muted { color: var(--muted); font-size: 12px; }
+.player-owned { margin-bottom: 8px; }
+.player-game { padding: 12px 14px; }
+.player-game-row { display: flex; gap: 12px; align-items: center; }
+.player-game-row .player-cover { width: 41px; }
+.player-game-title { flex: 1; }
+.player-game-title a { font-weight: 700; }
+.player-game-title p { font-size: 12px; }
+.player-progress { min-width: 145px; text-align: left; font-size: 12px; }
+.player-progress strong { margin-left: 7px; color: #f1c77b; }
+.player-bar { display: block; height: 5px; margin-top: 5px; background: var(--bg-2); }
+.player-bar i { display: block; height: 100%; background: var(--r5); }
+.player-progress.complete .player-bar i { background: #f1c77b; }
+.player-achievements { font-size: 13px; padding-top: 10px; scroll-margin-top: 82px; }
+.player-achievements summary { color: var(--muted); cursor: pointer; }
+.player-achievements li { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); margin-top: 6px; padding-top: 6px; }
+.player-achievements li svg { width: 13px; height: 13px; vertical-align: middle; }
+.player-achievements li small { color: var(--muted); }
+.account-field textarea { width: 100%; padding: 8px 11px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; resize: vertical; }
+@media (max-width: 840px) {
+  .player-profile { width: calc(100% - 36px); }
+  .player-identity { grid-template-columns: auto minmax(0, 1fr); min-height: 0; }
+  .player-actions { grid-column: 2; justify-content: flex-start; }
+  .player-stat { padding-inline: 12px; }
+}
+@media (max-width: 610px) {
+  .player-profile { width: calc(100% - 24px); padding-top: 86px; }
+  .player-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .player-showcase { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .player-feature .player-cover { width: 71px; }
+  .player-section { margin-top: 26px; }
+  .player-game-row { flex-wrap: wrap; }
+  .player-game-title { flex-basis: calc(100% - 56px); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .player-trophy, .player-profile .btn { transition: background-color .15s, border-color .15s; }
+}

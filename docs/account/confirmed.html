@@ -1,32 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Email confirmed · Spectra</title>
-  <link rel="icon" href="../assets/icon.png" />
-  <link rel="stylesheet" href="account.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://chkkfntakeoohwpaugrr.supabase.co; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <script src="mail-link.js"></script>
+  <title>Verify your email · Spectra</title>
+  <link rel="icon" href="../assets/icon.png">
+  <link rel="stylesheet" href="account.css">
 </head>
-<body>
+<body data-mail-mode="confirmed">
   <main class="box">
-    <div class="brand"><img src="../assets/spectra-logo.svg" alt="" />Spectra</div>
-    <div id="ok">
-      <h1>Your email is confirmed</h1>
-      <p>Your Spectra account is ready. Go back to Spectra Launcher and sign in.</p>
-    </div>
-    <div id="bad" class="hidden">
-      <h1>That link didn't work</h1>
-      <p id="why">The confirmation link has expired or was already used. Sign in from the launcher; if it says your email isn't confirmed, create the account again to get a new link.</p>
-    </div>
+    <div class="brand"><img src="../assets/spectra-logo.svg" alt="">Spectra</div>
+    <div id="message" role="status"><h1 id="heading">Checking your link…</h1><p id="detail"></p></div>
+    
+    <p><a id="signinLink" href="../#/account">Go to Sign in</a></p>
   </main>
-  <script>
-    // Supabase puts errors in the URL hash, e.g. #error=access_denied&error_description=...
-    var h = new URLSearchParams(location.hash.slice(1));
-    if (h.get('error')) {
-      document.getElementById('ok').classList.add('hidden');
-      document.getElementById('bad').classList.remove('hidden');
-    }
-    history.replaceState(null, '', location.pathname); // don't leave tokens in the address bar
-  </script>
+  <script src="../config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js" integrity="sha384-TcHRA3zBbn+Lexh5n+Oil4guNPOS3rjNDpGRAN46u/s/mB2IZ50ceC6TYDU2yvgK" crossorigin="anonymous"></script>
+  <script src="client.js"></script>
+  <script src="callback.js"></script>
 </body>
 </html>
