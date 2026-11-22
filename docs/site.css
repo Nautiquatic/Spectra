@@ -381,3 +381,48 @@ a.disp:hover h3 { text-decoration: underline; text-underline-offset: 4px; }
 .also:hover { border-color: var(--ink); color: var(--ink); }
 .also > svg:first-child { color: var(--r4); }
 @media (max-width: 760px) { .ticket.dark .t-stub { border-top-color: var(--line-2); } }
+
+
+/* Spectra account pages */
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.nav-account { max-width: 185px; gap: 7px; overflow: hidden; white-space: nowrap; color: var(--ink); }
+.nav-account span:not(.account-avatar) { overflow: hidden; text-overflow: ellipsis; }
+.accounts { padding-block: clamp(30px, 8vw, 100px); max-width: 960px; min-height: 56vh; }
+.account-head { margin-bottom: 20px; }
+.accounts h1 { margin: 0 0 19px; font-size: clamp(28px, 5.2vw, 54px); }
+.accounts h2 { margin: 0 0 9px; font-size: clamp(16px, 2vw, 22px); }
+.account-tabs { display: flex; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--line); }
+.account-tabs a { padding: 8px 3px; color: var(--muted); }
+.account-tabs a[aria-current=page] { color: var(--ink); box-shadow: 0 2px var(--ink); }
+.account-card, .account-game { padding: clamp(14px, 3vw, 23px); border: 1px solid var(--line); margin-block: 12px; background: rgba(255,255,255,.025); }
+form.account-card { display: grid; justify-items: start; gap: 12px; width: min(100%, 420px); }
+.account-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr)); gap: 14px; align-items: start; }
+.account-columns .account-card { width: 100%; margin: 0; }
+.account-delete > form { padding: 0; background: transparent; border: 0; }
+.account-delete summary { cursor: pointer; color: #ff9ea7; font-weight: 700; }
+.account-field { width: 100%; display: grid; gap: 5px; }
+.account-field input { width: 100%; min-height: 40px; padding: 8px 11px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; }
+.account-field input:focus-visible, .account-tabs a:focus-visible { outline: 2px solid #c5b8ff; outline-offset: 2px; }
+.account-card .btn, .account-game .btn { white-space: normal; }
+.account-feedback { color: #c5e9d9; overflow-wrap: anywhere; margin: 0; }
+.account-feedback:empty { display: none; }
+.account-feedback.error { color: #ffa6af; }
+.account-profile, .account-friend, .account-game-top, .account-actions { display: flex; align-items: center; gap: 12px; }
+.account-profile, .account-friend, .account-game-top, .account-actions { flex-wrap: wrap; }
+.account-profile p, .account-card p { margin: 4px 0; }
+.account-game-top, .account-friend { justify-content: space-between; }
+.account-game-top strong, .account-game-top span { display: block; }
+.account-game-top span, .account-game small, .account-friend small, .account-field small { color: var(--muted); }
+.account-game details { margin-top: 8px; }
+.account-game details summary { cursor: pointer; color: #c5b8ff; }
+.account-game ul { margin: 8px 0 0; }
+.account-avatar { position: relative; display: inline-grid; flex: 0 0 auto; place-items: center; width: 27px; height: 27px; overflow: hidden; border-radius: 50%; font-weight: 800; color: #100d18; background: var(--avatar-color); }
+.account-avatar.large { width: 62px; height: 62px; font-size: 26px; }
+.account-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.account-friend { padding: 10px 0; }
+.account-friend + .account-friend { border-top: 1px solid var(--line); }
+.account-friend > a { display: flex; align-items: center; gap: 8px; color: var(--ink); }
+.account-friend small { display: block; }
+.room-code { display: block; font-family: var(--mono); font-size: clamp(24px, 5vw, 44px); letter-spacing: .12em; margin: 10px 0 18px; }
+@media (max-width: 850px) { .nav-actions { margin-left: auto; } }
+@media (max-width: 470px) { .nav-in { gap: 10px; } .nav-account { max-width: 125px; } }
