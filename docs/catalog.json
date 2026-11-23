@@ -1,6 +1,13 @@
 {
   "news": [
     {
+      "tag": "Release",
+      "title": "LUMEN is out: Stormlight Salvage",
+      "body": "Our second game is here. Fly a scrap-built ship through a storm-torn sky, shoot sky-pirates apart and bolt their parts onto your hull, then make it home before the storm tears it apart. Free in the Spectra Launcher.",
+      "date": "2026-11-23",
+      "game": "lumen"
+    },
+    {
       "tag": "Update",
       "title": "Prismfall 1.4.5: 54 new achievements",
       "body": "Prismfall goes from 34 to 88 achievements: every boss beyond the Rift Titan, Boss Rush on Nightmare, all ten classes, half-hour survival runs, the story chronicles, online wins and four new secrets. Heads up, Achievement Specialists: these count towards your tag.",
@@ -949,8 +956,10 @@
       "title": "LUMEN",
       "tagline": "Scrap-built hull. Storm-torn sky. Bring the light home.",
       "description": "A scrap-ship salvage run through a storm-torn sky archipelago. Shoot sky-pirates apart and bolt their parts onto your hull wherever they touch. Dive into squalls and thunderheads to harvest stormlight cores, then make it back to a floating dock before the strain tears your ship apart.",
-      "status": "coming-soon",
-      "released": null,
+      "status": "available",
+      "version": "1.0.0",
+      "build": 3,
+      "released": "2026-11-23",
       "genres": [
         "Action",
         "Roguelite"
@@ -959,6 +968,10 @@
         "Windows"
       ],
       "featured": true,
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/lumen/Lumen-1.0.0.zip",
+      "exe": "Lumen.exe",
+      "sizeBytes": 313747,
+      "sha256": "244f6ca4cef7c593cd7828f5ec019622784899417926d4ba9f270f995ec6b94d",
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/lumen-cover.png?v=2",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/lumen-banner.png?v=3",
       "screenshots": [
@@ -977,7 +990,7 @@
         "Ten part types, from deck cannons and Lens Lances to lightning rods and ballast keels",
         "Squalls that shear you sideways, thunderheads full of lightning, and the eye of the storm",
         "Sky-pirates, gull drone swarms and a leviathan that hunts the deepest storms",
-        "Bank cores for Workshop upgrades, fly the shared Daily Voyage, and earn 30 Spectra achievements"
+        "Bank cores for Workshop upgrades, fly the shared Daily Voyage, and earn 63 Spectra achievements"
       ],
       "achievements": [
         {
@@ -1023,6 +1036,54 @@
           "tier": "bronze"
         },
         {
+          "id": "first-move",
+          "name": "Shipwright",
+          "desc": "Drag a part to a new spot on your hull.",
+          "tier": "bronze"
+        },
+        {
+          "id": "first-dash",
+          "name": "Slip the Wind",
+          "desc": "Dash.",
+          "tier": "bronze"
+        },
+        {
+          "id": "first-squall",
+          "name": "Into the Squall",
+          "desc": "Fly into a squall.",
+          "tier": "bronze"
+        },
+        {
+          "id": "thunderstruck",
+          "name": "Thunderstruck",
+          "desc": "Get hit by lightning.",
+          "tier": "bronze"
+        },
+        {
+          "id": "first-lance",
+          "name": "Focused Light",
+          "desc": "Bolt a Lens Lance onto your hull.",
+          "tier": "bronze"
+        },
+        {
+          "id": "first-upgrade",
+          "name": "Tinkerer",
+          "desc": "Buy a Workshop upgrade.",
+          "tier": "bronze"
+        },
+        {
+          "id": "codex-open",
+          "name": "Field Guide",
+          "desc": "Open the Codex.",
+          "tier": "bronze"
+        },
+        {
+          "id": "thief-taker",
+          "name": "Thief Taker",
+          "desc": "Sink a skiff that stole salvage.",
+          "tier": "bronze"
+        },
+        {
           "id": "first-dock",
           "name": "Safe Harbour",
           "desc": "Dock with cores aboard.",
@@ -1038,6 +1099,12 @@
           "id": "daily-one",
           "name": "Daily Voyage",
           "desc": "Complete a Daily Voyage.",
+          "tier": "silver"
+        },
+        {
+          "id": "dailies-3",
+          "name": "Three Dawns",
+          "desc": "Complete three Daily Voyages.",
           "tier": "silver"
         },
         {
@@ -1083,6 +1150,66 @@
           "tier": "silver"
         },
         {
+          "id": "balanced",
+          "name": "Trim and True",
+          "desc": "Fly with four or more thrusters in perfect balance.",
+          "tier": "silver"
+        },
+        {
+          "id": "broadside",
+          "name": "Broadside",
+          "desc": "Have six guns with a clear line of fire at once.",
+          "tier": "silver"
+        },
+        {
+          "id": "rods-3",
+          "name": "Lightning Garden",
+          "desc": "Fly with three lightning rods bolted on.",
+          "tier": "silver"
+        },
+        {
+          "id": "patchwork",
+          "name": "Patchwork",
+          "desc": "Repair 500 hull points with Patch Bellows.",
+          "tier": "silver"
+        },
+        {
+          "id": "kills-run-10",
+          "name": "Scourge of the Skies",
+          "desc": "Sink 10 skiffs in one voyage.",
+          "tier": "silver"
+        },
+        {
+          "id": "every-harbour",
+          "name": "Every Harbour",
+          "desc": "Dock at all three harbours.",
+          "tier": "silver"
+        },
+        {
+          "id": "dashes-100",
+          "name": "Gust Rider",
+          "desc": "Dash 100 times.",
+          "tier": "silver"
+        },
+        {
+          "id": "long-haul",
+          "name": "Long Haul",
+          "desc": "Dock after ten minutes aloft.",
+          "tier": "silver"
+        },
+        {
+          "id": "drones-run-25",
+          "name": "Gull Storm",
+          "desc": "Bring down 25 gull drones in one voyage.",
+          "tier": "silver"
+        },
+        {
+          "id": "shed-plates",
+          "name": "Shedding Plates",
+          "desc": "Dock after losing 10 parts to hull strain in one voyage.",
+          "tier": "silver"
+        },
+        {
           "id": "docks-15",
           "name": "Archipelago Master",
           "desc": "Complete fifteen voyages.",
@@ -1119,55 +1246,157 @@
           "tier": "gold"
         },
         {
+          "id": "haul-30",
+          "name": "Treasure Fleet",
+          "desc": "Dock with 30 cores from one voyage.",
+          "tier": "gold"
+        },
+        {
+          "id": "docks-30",
+          "name": "Sky Admiral",
+          "desc": "Complete thirty voyages.",
+          "tier": "gold"
+        },
+        {
+          "id": "kills-250",
+          "name": "Pirate’s Bane",
+          "desc": "Sink 250 sky-pirate skiffs.",
+          "tier": "gold"
+        },
+        {
+          "id": "leviathans-5",
+          "name": "Serpent Hunter",
+          "desc": "Bring down five leviathans.",
+          "tier": "gold"
+        },
+        {
+          "id": "workshop-max",
+          "name": "Master Shipwright",
+          "desc": "Max out every Workshop upgrade.",
+          "tier": "gold"
+        },
+        {
+          "id": "fortress",
+          "name": "Flying Fortress",
+          "desc": "Fly a ship of 35 parts or more.",
+          "tier": "gold"
+        },
+        {
+          "id": "storm-diver",
+          "name": "Storm Diver",
+          "desc": "Harvest 10 eye-of-the-storm cores in one voyage.",
+          "tier": "gold"
+        },
+        {
           "id": "cores-1000",
           "name": "The Long Purse",
           "desc": "Bank 1,000 cores in total.",
           "tier": "platinum"
         },
         {
-          "id": "secret-logo",
-          "name": "Observatory No. 7",
-          "desc": "The lens keeps a small secret.",
-          "tier": "bronze",
-          "secret": true
+          "id": "cores-5000",
+          "name": "Lantern of the World",
+          "desc": "Bank 5,000 cores in total.",
+          "tier": "platinum"
         },
         {
-          "id": "secret-midnight",
-          "name": "Between the Hours",
-          "desc": "Begin a voyage between midnight and five.",
-          "tier": "bronze",
-          "secret": true
+          "id": "completionist",
+          "name": "Observatory Complete",
+          "desc": "Unlock every achievement that isn’t secret.",
+          "tier": "platinum"
         },
         {
-          "id": "secret-maw",
-          "name": "Wearing the Beast",
-          "desc": "Bolt a Leviathan Maw onto your hull.",
-          "tier": "gold",
-          "secret": true
-        },
-        {
-          "id": "secret-bare",
+          "id": "secret-bare-lens",
           "name": "Bare Lens",
-          "desc": "Dock with nothing left but the Lens Core.",
-          "tier": "gold",
+          "desc": "Dock with 20 or more cores and nothing left but the Lens Core.",
+          "tier": "secret",
+          "secret": true
+        },
+        {
+          "id": "secret-lantern",
+          "name": "Lantern, Not Cannon",
+          "desc": "Dock with 15 or more cores without sinking a skiff or downing a drone.",
+          "tier": "secret",
+          "secret": true
+        },
+        {
+          "id": "secret-two-maws",
+          "name": "Wearing the Beast",
+          "desc": "Dock with two Leviathan Maws bolted on.",
+          "tier": "secret",
           "secret": true
         },
         {
           "id": "secret-shear",
           "name": "Riding the Shear",
-          "desc": "Hit top speed inside a squall.",
-          "tier": "silver",
+          "desc": "Reach a speed of 650 inside a squall without dashing.",
+          "tier": "secret",
           "secret": true
         },
         {
-          "id": "secret-strain",
+          "id": "secret-held",
           "name": "Held Together",
-          "desc": "Dock while your hull is at full strain.",
-          "tier": "silver",
+          "desc": "Survive 60 seconds at full hull strain and still dock.",
+          "tier": "secret",
+          "secret": true
+        },
+        {
+          "id": "secret-twin-serpents",
+          "name": "Twin Serpents",
+          "desc": "Bring down two leviathans in one voyage.",
+          "tier": "secret",
+          "secret": true
+        },
+        {
+          "id": "secret-witching",
+          "name": "The Witching Hour",
+          "desc": "Dock with 10 or more cores between 3 and 4 in the morning.",
+          "tier": "secret",
+          "secret": true
+        },
+        {
+          "id": "secret-magpie-king",
+          "name": "Magpie King",
+          "desc": "Fly a full 42-part hull.",
+          "tier": "secret",
+          "secret": true
+        },
+        {
+          "id": "secret-finders",
+          "name": "Finders Keepers",
+          "desc": "Sink a skiff carrying five or more parts it stole.",
+          "tier": "secret",
+          "secret": true
+        },
+        {
+          "id": "secret-edge",
+          "name": "Edge of the Chart",
+          "desc": "Spend 30 seconds beyond the storm wall and still dock.",
+          "tier": "secret",
+          "secret": true
+        },
+        {
+          "id": "secret-untouched",
+          "name": "Untouched",
+          "desc": "Dock with 20 or more cores without taking any damage.",
+          "tier": "secret",
           "secret": true
         }
       ],
-      "patchNotes": [],
+      "patchNotes": [
+        {
+          "version": "1.0.0",
+          "date": "2026-11-23",
+          "notes": [
+            "First public release of LUMEN: Stormlight Salvage",
+            "Bolt salvaged pirate parts onto your hull wherever they touch, and drag them around to rebuild mid-flight",
+            "Placement matters: guns need a clear line of fire, and lopsided thrusters drift you sideways",
+            "Squalls, thunderheads, the eye of the storm, sky-pirates that scavenge, gull drones and the leviathan",
+            "Prismfall-style controls: W/S thrust, A/D turn, mouse to aim, Shift to dash",
+            "Workshop upgrades, a shared Daily Voyage and 63 achievements, including 11 in the Secret tier"
+          ]
+        }
+      ],
       "requirements": {
         "os": "Windows 10 or 11 (64-bit)",
         "processor": "Any dual-core from the last 10 years",
@@ -1175,13 +1404,6 @@
         "graphics": "Any GPU with hardware acceleration",
         "storage": "Under 5 MB",
         "online": "Not needed"
-      },
-      "playtest": {
-        "path": "lumen/Lumen-playtest.zip",
-        "version": "1.0.0",
-        "build": 2,
-        "exe": "Lumen.exe",
-        "sizeBytes": 302224
       }
     }
   ],
