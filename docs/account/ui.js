@@ -92,7 +92,7 @@
     const action = !install || !game || !context.playable(game) ? '' : cfg.launcherProtocol === true
       ? `<a class="btn solid sm" href="spectra://install/${id}">Install</a>` : '<a class="btn line sm" href="#/download">Get launcher</a>';
     return `<article class="account-game"><div class="account-game-top"><div><strong>${game ? `<a href="#/game/${id}">${esc(game.title)}</a>` : esc(id)}</strong>
-      ${publicAchievements.length ? `<span>${count}/${publicAchievements.length} achievements${count === publicAchievements.length ? ' · Completed' : ''}</span>` : ''}</div>${action}</div>
+      ${publicAchievements.length ? `<span>${count + catalog.filter((a) => a.secret && progress?.[a.id]).length}/${publicAchievements.length} achievements ${(() => { const b = window.SpectraTiers?.doneTiers(catalog, (a) => progress?.[a.id]).pop(); return b ? window.SpectraTiers.badge(b) : ''; })()}</span>` : ''}</div>${action}</div>
       ${earned.length ? `<details><summary>Unlocked achievements</summary><ul>${earned.map((a) => `<li>${esc(a.name)} <small>${esc(date(Number(progress[a.id])))}</small></li>`).join('')}</ul></details>` : ''}</article>`;
   }
 
@@ -207,7 +207,7 @@
         <div class="split-bar">${visible.filter((id) => nonnegative(byGame.get(id)?.playtime)).map((id, i) => `<i style="width:${100 * nonnegative(byGame.get(id).playtime) / total}%;background:${SPLIT[i % SPLIT.length]}" title="${esc(games[id].title)}"></i>`).join('')}</div>
         <div class="split-key">${visible.filter((id) => nonnegative(byGame.get(id)?.playtime)).map((id, i) => `<span><i style="background:${SPLIT[i % SPLIT.length]}"></i>${esc(games[id].title)} <b>${duration(byGame.get(id).playtime)}</b> <em>${Math.round(100 * nonnegative(byGame.get(id).playtime) / total)}%</em></span>`).join('')}</div></section>` : ''}
       ${panel('Showcase', showcase.length ? `<div class="player-showcase">${showcase.map(({ game, achievement }) => {
-        const tier = tiers[tierRank(achievement)];
+        const tier = achievement.secret ? 'Secret' : tiers[tierRank(achievement)];
         return `<button class="player-panel player-trophy tier-${tier.toLowerCase()}" data-act="show-achievements" data-value="${game.id}" type="button">
           ${trophy}<strong>${esc(achievement.name)}</strong><span>${esc(game.title)} · ${tier}</span></button>`;
       }).join('')}</div>` : '<p class="muted">Unlocked achievements will appear here.</p>')}
@@ -237,20 +237,23 @@
     const published = catalog.filter((achievement) => !achievement.secret);
     const shown = catalog.filter((achievement) => !achievement.secret || unlocked(achievement));
     const done = published.filter(unlocked).length;
+    const secretDone = catalog.filter((a) => a.secret && unlocked(a)).length;
     const complete = published.length && done === published.length;
+    const T = window.SpectraTiers;
+    const best = T ? T.doneTiers(catalog, unlocked).pop() : (complete ? 'gold' : '');
     const played = nonnegative(row?.playtime);
     return `<article class="player-game" data-profile-game="${game.id}">
       <div class="player-game-row">${cover(game)}<div class="player-game-title"><a href="${profileGameUrl(game.id)}">${esc(game.title)}</a>
         <p class="muted">${played ? duration(played) + ' played' + (total ? ' · ' + Math.round(100 * played / total) + '% of playtime' : '') : 'Not played yet'}</p></div>
-      ${published.length ? `<button class="player-progress ${complete ? 'complete' : ''}" type="button" data-act="show-achievements" data-value="${game.id}" aria-label="View achievements for ${esc(game.title)}">
-        <span>${done}/${published.length} achievements</span>${complete ? '<strong>Completed</strong>' : ''}
-        <span class="player-bar"><i style="width:${100 * done / published.length}%"></i></span></button>` : ''}
+      ${published.length ? `<button class="player-progress ${complete ? 'complete' : ''} ${done + secretDone > published.length ? 'over' : ''}" type="button" data-act="show-achievements" data-value="${game.id}" aria-label="View achievements for ${esc(game.title)}">
+        <span>${done + secretDone}/${published.length} achievements</span>${best && T ? T.badge(best) : ''}
+        <span class="player-bar"><i style="width:${Math.min(100, (100 * done) / published.length)}%"></i></span></button>` : ''}
       ${ownProfile ? button(game.id === pinned ? 'Unpin' : 'Pin game', 'pin-game', game.id === pinned ? '' : game.id) : ''}
       </div>
       ${shown.length ? `<details class="player-achievements"><summary>Achievements</summary><ul>${shown.map((a) => {
         const earned = unlocked(a);
         const title = !earned && a.hidden ? 'Hidden achievement' : a.name;
-        return `<li><span class="tier-${tiers[tierRank(a)].toLowerCase()}">${trophy} ${esc(title)}</span><small>${earned ? esc(date(Number(row.achievements[a.id]))) : 'Locked'}</small></li>`;
+        return `<li><span class="tier-${a.secret ? 'secret' : tiers[tierRank(a)].toLowerCase()}">${trophy} ${esc(title)}${a.secret ? ' <small>Secret</small>' : ''}</span><small>${earned ? esc(date(Number(row.achievements[a.id]))) : 'Locked'}</small></li>`;
       }).join('')}</ul></details>` : ''}
     </article>`;
   }
@@ -516,5 +519,6 @@
     if (!account && active?.root.isConnected && active.account) render(active);
   });
   updateNav();
+  window.SpectraAvatar = avatar;
   window.SpectraAccountPages = { render };
 })();

@@ -79,14 +79,56 @@
   };
   // ranks (owner, admin, …; supabase/roles.sql). Missing table = no ranks, never an error.
   const RANKS = { owner: 'Owner', admin: 'Admin', moderator: 'Mod', tester: 'Tester' };
-  window.SpectraRank = (p) => (p && RANKS[p.role] ? `<span class="rank-badge r-${p.role}" title="Spectra ${RANKS[p.role]}">${RANKS[p.role]}</span>` : '');
+  // achievement tags (supabase/achievements.sql): the best one held, else the best one lost ("Former …"), shown next to the rank
+  const TAGS = { master: 'Achievement Master', specialist: 'Achievement Specialist' };
+  const TAG_HINT = { master: 'Every achievement in every released Spectra game, secrets included', specialist: 'Every achievement in every released Spectra game' };
+  const bestTag = (p) => {
+    const t = Array.isArray(p?.tags) ? p.tags : [];
+    const m = t.find((x) => x.tag === 'master'), s = t.find((x) => x.tag === 'specialist');
+    return m?.active ? { k: 'master', row: m } : s?.active ? { k: 'specialist', row: s } : m ? { k: 'master', former: true, row: m } : s ? { k: 'specialist', former: true, row: s } : null;
+  };
+  const escHtml = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const tagBadge = (p) => {
+    const b = bestTag(p);
+    return b ? `<span class="tag-badge tg-${b.k}${b.former ? ' former' : ''}" title="${escHtml((b.former ? 'Had this before new achievements were added. ' : '') + TAG_HINT[b.k])}">${b.former ? 'Former ' : ''}${TAGS[b.k]}</span>` : '';
+  };
+  window.SpectraRank = (p) => (p && RANKS[p.role] ? `<span class="rank-badge r-${p.role}" title="Spectra ${RANKS[p.role]}">${RANKS[p.role]}</span>` : '') + tagBadge(p);
+  window.SpectraTag = { TAGS, TAG_HINT, bestTag, tagBadge };
+  // achievement tiers: secret achievements are their own tier; a tier is "done" when every achievement in it is unlocked
+  const TIER_NAME = { bronze: 'Bronze', silver: 'Silver', gold: 'Gold', platinum: 'Platinum', secret: 'Secret' };
+  const TIER_ORDER = ['bronze', 'silver', 'gold', 'platinum', 'secret'];
+  const tierOf = (a) => (a.secret ? 'secret' : TIER_NAME[a.tier] && a.tier !== 'secret' ? a.tier : 'bronze');
+  const doneTiers = (list, got) => TIER_ORDER.filter((t) => { const all = list.filter((a) => tierOf(a) === t); return all.length && all.every((a) => got(a)); });
+  window.SpectraTiers = { TIER_NAME, TIER_ORDER, tierOf, doneTiers, badge: (t) => `<em class="tier-done td-${t}" title="Every ${TIER_NAME[t]} achievement unlocked">${TIER_NAME[t]}</em>` };
   const rolesFor = async (ids) => {
     ids = [...new Set(ids.filter(Boolean))];
     if (!ids.length) return {};
     const { data, error } = await client().from('user_roles').select('user_id,role').in('user_id', ids.slice(0, 500));
     return error ? {} : Object.fromEntries((data || []).map((r) => [r.user_id, r.role]));
   };
-  const withRole = async (p) => { if (p) p.role = (await rolesFor([p.id]))[p.id] || null; return p; };
+  const tagsFor = async (ids) => {
+    ids = [...new Set(ids.filter(Boolean))];
+    if (!ids.length) return {};
+    const { data, error } = await client().from('achievement_awards').select('user_id,tag,active,first_at,last_at,times,took_seconds,playtime').in('user_id', ids.slice(0, 500));
+    const out = {};
+    if (!error) (data || []).forEach((r) => (out[r.user_id] = out[r.user_id] || []).push(r));
+    return out;
+  };
+  // rank + tags onto profile objects: pairs of [userId, profile]
+  const decorate = async (pairs) => {
+    const ids = pairs.map(([id]) => id);
+    const [roles, tags] = await Promise.all([rolesFor(ids), tagsFor(ids)]);
+    pairs.forEach(([id, p]) => { if (p) { p.role = roles[id] || null; p.tags = tags[id] || []; } });
+  };
+  // profile pictures and icons for many players at once (stored with the profile extras)
+  const avatarsFor = async (ids) => {
+    ids = [...new Set(ids.filter(Boolean))];
+    if (!ids.length) return {};
+    const { data, error } = await client().from('game_stats').select('user_id,avatar:achievements->>avatar,avatarIcon:achievements->>avatarIcon')
+      .eq('game_id', profileMetadata).in('user_id', ids.slice(0, 500));
+    return error ? {} : Object.fromEntries((data || []).map((r) => [r.user_id, { avatar: r.avatar || '', avatarIcon: r.avatarIcon || '' }]));
+  };
+  const withRole = async (p) => { if (p) await decorate([[p.id, p]]); return p; };
   const profile = async (id) => withRole(must(await client().from('profiles').select(profileFields).eq('id', id).maybeSingle()));
   async function byUsername(name) {
     if (!usernamePattern.test(name)) return null;
@@ -109,8 +151,8 @@
     if (!gameIdPattern.test(gameId) || gameId === profileMetadata) return [];
     const rows = must(await client().from('game_stats').select('user_id,playtime,achievements,last_played,profiles(username,display_name,avatar_color)')
       .eq('game_id', gameId).limit(500));
-    const roles = await rolesFor(rows.map((r) => r.user_id));
-    rows.forEach((r) => { if (r.profiles) r.profiles.role = roles[r.user_id] || null; });
+    const [, pics] = await Promise.all([decorate(rows.map((r) => [r.user_id, r.profiles])), avatarsFor(rows.map((r) => r.user_id))]);
+    rows.forEach((r) => { if (r.profiles) r.profiles.extras = pics[r.user_id] || {}; });
     return rows;
   };
   // "notify me" for games that aren't out yet: an email and a game, nothing else (see supabase/notify.sql)
@@ -186,14 +228,98 @@
       .eq('game_id', gameId).order('updated_at', { ascending: false }).limit(200);
     if (error) return [];
     const rows = (data || []).filter((r) => r.profiles);
-    const roles = await rolesFor(rows.map((r) => r.user_id));
-    rows.forEach((r) => { r.profiles.role = roles[r.user_id] || null; });
+    await decorate(rows.map((r) => [r.user_id, r.profiles]));
     return rows;
+  };
+
+  // ---------- the Hall of Fame (opt-in; supabase/achievements.sql) ----------
+  const missingFn = (e) => e && (e.code === 'PGRST202' || e.code === '42P01' || e.code === 'PGRST205' || /could not find the function|does not exist|schema cache/i.test(e.message || ''));
+  const hallOfFame = async () => {
+    const { data, error } = await client().rpc('hall_of_fame_list');
+    if (error) throw new Error(missingFn(error) ? 'The Hall of Fame opens soon.' : 'Couldn’t load the Hall of Fame. Try again in a moment.');
+    const pics = await avatarsFor((data || []).map((r) => r.user_id));
+    return (data || []).map((r) => ({ ...r, extras: pics[r.user_id] || {} }));
+  };
+  const inHall = async () => {
+    const account = await user();
+    if (!account) return false;
+    const { data, error } = await client().from('hall_of_fame').select('user_id').eq('user_id', account.id).maybeSingle();
+    return !error && !!data;
+  };
+  const setHall = async (on) => {
+    const account = await own();
+    const { error } = on ? await client().from('hall_of_fame').upsert({ user_id: account.id }, { onConflict: 'user_id', ignoreDuplicates: true })
+      : await client().from('hall_of_fame').delete().eq('user_id', account.id);
+    if (error) throw new Error(missingFn(error) ? 'The Hall of Fame opens soon.' : 'Couldn’t change that right now. Try again.');
+    return on;
+  };
+
+  // ---------- admin tools (owners, admins, moderators; the server checks every action) ----------
+  const myRole = async () => {
+    const account = await user();
+    if (!account) return null;
+    const { data, error } = await client().from('user_roles').select('role').eq('user_id', account.id).maybeSingle();
+    return error ? null : data?.role || null;
+  };
+  const myBan = async () => {
+    const account = await user();
+    if (!account) return null;
+    const { data, error } = await client().from('bans').select('reason,created_at,expires_at').eq('user_id', account.id).maybeSingle();
+    return !error && data && (!data.expires_at || Date.parse(data.expires_at) > Date.now()) ? data : null;
+  };
+  const rpc = async (fn, args) => {
+    const { data, error } = await client().rpc(fn, args);
+    if (error) throw new Error(missingFn(error) ? 'Admin tools aren’t set up on the server yet (run supabase/achievements.sql).' : error.code === 'P0001' ? error.message : 'That didn’t work. Try again.');
+    return data;
+  };
+  const profilesById = async (ids) => {
+    ids = [...new Set(ids.filter(Boolean))];
+    if (!ids.length) return {};
+    const rows = must(await client().from('profiles').select(profileFields).in('id', ids));
+    await decorate(rows.map((p) => [p.id, p]));
+    return Object.fromEntries(rows.map((p) => [p.id, p]));
+  };
+  const admin = {
+    ban: (id, reason, days) => rpc('admin_ban', { target: id, reason: String(reason || ''), days: days || null }),
+    unban: (id) => rpc('admin_unban', { target: id }),
+    setRole: (id, role) => rpc('admin_set_role', { target: id, new_role: role || null }),
+    resetProfile: (id, parts) => rpc('admin_reset_profile', { target: id, parts }),
+    deleteReview: (id, game) => rpc('admin_delete_review', { target: id, game }),
+    resetAchievements: (id, game) => rpc('admin_reset_achievements', { target: id, game: game || null }),
+    async search(q) {
+      q = String(q || '').trim().replace(/[^A-Za-z0-9_]/g, '');
+      if (q.length < 2) return [];
+      const rows = must(await client().from('profiles').select(profileFields).or(`username.ilike.${q}%,display_name.ilike.${q}%`).limit(12));
+      await decorate(rows.map((p) => [p.id, p]));
+      return rows;
+    },
+    async player(id) {
+      const [p, ban, gameStats, rv] = await Promise.all([
+        profile(id),
+        client().from('bans').select('reason,created_at,expires_at').eq('user_id', id).maybeSingle().then((r) => r.data, () => null),
+        stats(id).catch(() => []),
+        client().from('reviews').select('game_id,stars,body').eq('user_id', id).then((r) => r.data || [], () => []),
+      ]);
+      return { profile: p, ban: ban && (!ban.expires_at || Date.parse(ban.expires_at) > Date.now()) ? ban : null, stats: gameStats, reviews: rv };
+    },
+    async bans() {
+      const { data, error } = await client().from('bans').select('user_id,reason,created_at,expires_at,banned_by').order('created_at', { ascending: false }).limit(200);
+      if (error) throw new Error(missingFn(error) ? 'Bans aren’t set up on the server yet.' : 'Couldn’t load bans.');
+      const live = data.filter((b) => !b.expires_at || Date.parse(b.expires_at) > Date.now());
+      const by = await profilesById(live.flatMap((b) => [b.user_id, b.banned_by]));
+      return live.map((b) => ({ ...b, profile: by[b.user_id] || null, by: by[b.banned_by] || null }));
+    },
+    async log() {
+      const { data, error } = await client().from('admin_log').select('id,at,actor,action,target,detail').order('at', { ascending: false }).limit(80);
+      if (error) return [];
+      const by = await profilesById(data.flatMap((r) => [r.actor, r.target]));
+      return data.map((r) => ({ ...r, actorP: by[r.actor] || null, targetP: by[r.target] || null }));
+    },
   };
 
   window.SpectraWebAccount = {
     available: !!sb, usernamePattern, gameIdPattern, user, profile, byUsername, extras, privateLibrary, stats, signIn, ids, leaderboard, notify,
-    report, myReports, isAdmin, allReports, updateReport, deleteReport, reviews,
+    report, myReports, isAdmin, allReports, updateReport, deleteReport, reviews, hallOfFame, inHall, setHall, myRole, myBan, admin,
     onSessionChange(fn) {
       sb?.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') setTimeout(() => fn(session?.user || null), 0);
@@ -286,8 +412,7 @@
       if (!rows.length) return result;
       const players = new Map(must(await client().from('profiles').select(profileFields)
         .in('id', [...new Set(rows.map(idOf))])).map((entry) => [entry.id, entry]));
-      const roles = await rolesFor([...players.keys()]);
-      players.forEach((p, id) => { p.role = roles[id] || null; });
+      await decorate([...players.entries()]);
       for (const row of rows) {
         const entry = players.get(idOf(row));
         if (entry) result[row.status === 'accepted' ? 'accepted' : row.addressee === account.id ? 'incoming' : 'outgoing'].push(entry);

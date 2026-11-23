@@ -405,18 +405,19 @@
     const all = g.achievements;
     const players = rows.filter((r) => r && r.profiles && r.profiles.username).map((r) => {
       const got = all.filter((a) => Number(r.achievements && r.achievements[a.id]) > 0);
-      return { p: r.profiles, play: Number(r.playtime) || 0, n: got.filter((a) => !a.secret).length, sec: got.filter((a) => a.secret).length, pts: got.reduce((s, a) => s + (TIER_PTS[a.tier] || 1), 0), got };
+      return { p: r.profiles, play: Number(r.playtime) || 0, n: got.filter((a) => !a.secret).length, sec: got.filter((a) => a.secret).length, pts: got.reduce((s, a) => s + (TIER_PTS[a.tier] || 1), 0), got, best: window.SpectraTiers ? window.SpectraTiers.doneTiers(all, (a) => got.includes(a)).pop() : '' };
     }).filter((x) => x.play > 0 || x.got.length);
     if (!players.length) return '<p class="muted">No one is on this board yet. Play with a Spectra account to be first.</p>';
-    const who = (x) => `<a class="who" href="#/u/${encodeURIComponent(x.p.username)}"><b style="background:${/^#[0-9a-f]{6}$/i.test(x.p.avatar_color || '') ? x.p.avatar_color : '#927dff'}">${esc((x.p.display_name || x.p.username).slice(0, 1).toUpperCase())}</b><span>${esc(x.p.display_name || x.p.username)}${(window.SpectraRank || (() => ''))(x.p)}<small>@${esc(x.p.username)}</small></span></a>`;
+    const pic = (p) => window.SpectraAvatar ? window.SpectraAvatar(p, p.extras || {}) : `<b style="background:${/^#[0-9a-f]{6}$/i.test(p.avatar_color || '') ? p.avatar_color : '#927dff'}">${esc((p.display_name || p.username).slice(0, 1).toUpperCase())}</b>`;
+    const who = (x) => `<a class="who" href="#/u/${encodeURIComponent(x.p.username)}">${pic(x.p)}<span>${esc(x.p.display_name || x.p.username)}${(window.SpectraRank || (() => ''))(x.p)}<small>@${esc(x.p.username)}</small></span></a>`;
     const byPts = players.slice().sort((a, b) => b.pts - a.pts || b.n - a.n || b.play - a.play).slice(0, full ? 25 : 10);
     const byPlay = players.slice().sort((a, b) => b.play - a.play).slice(0, full ? 10 : 5);
     const rarity = pub.map((a) => ({ a, pct: Math.round((100 * players.filter((x) => Number(x.got.includes(a))).length) / players.length) })).sort((x, y) => x.pct - y.pct);
     return `<div class="board-grid">
-      <div class="board-col"><h3>Most achievements</h3><ol class="ranks">${byPts.map((x, i) => `<li class="${i < 3 ? 'top top' + (i + 1) : ''}"><em>${i + 1}</em>${who(x)}<span class="r-val"><b>${x.n}/${pub.length}</b>${x.sec ? `<small>+${x.sec} secret</small>` : ''}<small>${x.pts} pts</small></span></li>`).join('')}</ol></div>
+      <div class="board-col"><h3>Most achievements</h3><ol class="ranks">${byPts.map((x, i) => `<li class="${i < 3 ? 'top top' + (i + 1) : ''}"><em>${i + 1}</em>${who(x)}<span class="r-val"><b class="${x.n + x.sec > pub.length ? 'over' : ''}">${x.n + x.sec}/${pub.length}</b>${x.best && window.SpectraTiers ? window.SpectraTiers.badge(x.best) : ''}${x.sec ? `<small>${x.sec} secret</small>` : ''}<small>${x.pts} pts</small></span></li>`).join('')}</ol></div>
       <div class="board-col"><h3>Most played</h3><ol class="ranks">${byPlay.map((x, i) => `<li class="${i < 3 ? 'top top' + (i + 1) : ''}"><em>${i + 1}</em>${who(x)}<span class="r-val"><b>${fmtPlay(x.play)}</b></span></li>`).join('')}</ol>
         <h3>Rarest achievements</h3><ul class="rarity">${rarity.slice(0, full ? pub.length : 6).map(({ a, pct }) => `<li class="t-${esc(a.tier || 'bronze')}"><span><b>${esc(a.hidden ? 'Hidden achievement' : a.name)}</b><small>${esc(a.hidden ? 'Unlock it to see it' : a.desc)}</small></span><span class="r-bar"><i style="width:${Math.max(2, pct)}%"></i></span><em>${pct}%</em></li>`).join('')}</ul></div>
-    </div><p class="fine">${players.length} player${players.length === 1 ? '' : 's'} with a Spectra account. Secret achievements are counted but never named.</p>`;
+    </div><p class="fine">${players.length} player${players.length === 1 ? '' : 's'} with a Spectra account. Secret achievements count past the total (32/29) but are never named. <a href="#/hall">Hall of Fame</a></p>`;
   }
   async function fillBoards() {
     const A = window.SpectraWebAccount;
@@ -438,7 +439,7 @@
   }
   pages.devlog = () => `
     <section class="wrap page-head">
-      ${label('05', 'Devlog')}
+      ${label('06', 'Devlog')}
       <h1>What changed, and why</h1>
       <p class="lead">Short posts from the studio, and the version notes for every game, the launcher and the IDE.</p>
     </section>
@@ -471,7 +472,7 @@
     <section class="wrap page-head">
       ${label('✉', 'Reports inbox')}
       <h1>Reports</h1>
-      <p class="lead">Every bug report and piece of feedback sent from the website and the launcher. Only Spectra admins can see this page.</p>
+      <p class="lead">Every bug report and piece of feedback sent from the website and the launcher. Only Spectra admins can see this page. <a href="#/admin">Admin tools</a></p>
     </section>
     <section class="wrap"><div id="inbox"><p class="muted">Loading…</p></div></section>`;
     const pick = byId[arg] || ['launcher', 'android-app', 'ide', 'website', 'other'].includes(arg) ? arg : '';
@@ -642,7 +643,7 @@
   }
   pages.ide = () => `
     <section class="wrap page-head ide-head">
-      ${label('06', 'Spectra IDE')}
+      ${label('07', 'Spectra IDE')}
       <h1>The editor we make Spectra with</h1>
       <p class="lead">A small, fast, native code editor for Windows, laid out like the big ones. Tabs, a split view, a terminal, a command palette, and plugins for the languages and mods you work on.</p>
       <div class="row gap wrap-row">${ideBtn()}</div>
@@ -782,6 +783,126 @@
   }
 
   // ---------- router ----------
+  // ---------- Hall of Fame: players who got every achievement (opt-in) ----------
+  pages.hall = () => `
+    <section class="wrap page-head">
+      ${label('05', 'Hall of Fame')}
+      <h1>Hall of Fame</h1>
+      <p class="lead">Players who unlocked every achievement in every released Spectra game. <b>Achievement Specialist</b> means every achievement; <b>Achievement Master</b> means the secret ones too. When new achievements arrive, holders become “Former” until they catch up. Checked by the Spectra servers; playtests and unreleased games don’t count.</p>
+      <div id="hallMe"></div>
+    </section>
+    <section class="wrap"><div id="hall"><p class="muted">Loading the Hall of Fame…</p></div></section>`;
+  const fmtSpan = (sec) => { sec = Math.max(0, Number(sec) || 0); const d = Math.floor(sec / 86400); return d >= 1 ? `${d} day${d === 1 ? '' : 's'}` : sec >= 3600 ? `${Math.floor(sec / 3600)}h ${Math.floor((sec % 3600) / 60)}m` : `${Math.max(1, Math.floor(sec / 60))}m`; };
+  const fmtDay = (iso) => (iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '');
+  async function renderHall() {
+    const el = document.getElementById('hall');
+    const A = window.SpectraWebAccount;
+    if (!el) return;
+    if (!A || !A.available) { el.innerHTML = '<p class="muted">The Hall of Fame needs Spectra accounts, which aren’t available right now.</p>'; return; }
+    let rows;
+    try { rows = await A.hallOfFame(); } catch (err) { el.innerHTML = `<p class="muted">${esc(err.message)}</p>`; return; }
+    const T = window.SpectraTag;
+    const card = (r) => {
+      const p = { username: r.username, display_name: r.display_name, avatar_color: r.avatar_color, role: r.role, extras: r.extras };
+      return `<li class="hall-card tg-${esc(r.tag)}${r.active ? '' : ' former'}">
+        <a class="who" href="#/u/${encodeURIComponent(r.username)}">${window.SpectraAvatar ? window.SpectraAvatar(p, r.extras || {}) : ''}<span>${esc(r.display_name)}${(window.SpectraRank || (() => ''))({ role: r.role })}<small>@${esc(r.username)}</small></span></a>
+        <span class="tag-badge tg-${esc(r.tag)}${r.active ? '' : ' former'}">${r.active ? '' : 'Former '}${esc(T ? T.TAGS[r.tag] : r.tag)}</span>
+        <dl><div><dt>First earned</dt><dd>${esc(fmtDay(r.first_at))}</dd></div><div><dt>Took</dt><dd>${esc(fmtSpan(r.took_seconds))}</dd></div>
+          <div><dt>Played</dt><dd>${esc(fmtPlay(r.playtime))}</dd></div><div><dt>Times</dt><dd>${Number(r.times) || 1}</dd></div></dl></li>`;
+    };
+    const masters = rows.filter((r) => r.tag === 'master'), specs = rows.filter((r) => r.tag === 'specialist');
+    el.innerHTML = rows.length ? `
+      ${masters.length ? `<h2 class="hall-h">Achievement Masters <small>${masters.length}</small></h2><ol class="hall-list">${masters.map(card).join('')}</ol>` : ''}
+      ${specs.length ? `<h2 class="hall-h">Achievement Specialists <small>${specs.length}</small></h2><ol class="hall-list">${specs.map(card).join('')}</ol>` : ''}
+      <p class="fine">“Took” is the time from a player’s first unlock to earning the tag. “Times” counts how often they earned it again after new achievements were added.</p>`
+      : '<p class="muted">No one is in the Hall of Fame yet. Earn a tag, then join from your profile.</p>';
+    const me = document.getElementById('hallMe');
+    try {
+      const u = await A.user();
+      if (!u || !me) return;
+      const p = await A.profile(u.id);
+      if (!p || !T?.bestTag(p)) { me.innerHTML = '<p class="muted">Earn the Achievement Specialist tag to join.</p>'; return; }
+      const on = await A.inHall();
+      me.innerHTML = `<button class="btn ${on ? 'line' : 'solid'}" id="hallToggle">${on ? 'Leave the Hall of Fame' : 'Join the Hall of Fame'}</button>`;
+      document.getElementById('hallToggle').onclick = async () => { try { await A.setHall(!on); renderHall(); } catch (err) { me.insertAdjacentHTML('beforeend', `<p class="muted">${esc(err.message)}</p>`); } };
+    } catch {}
+  }
+
+  // ---------- admin tools for Spectra staff (the server checks every action) ----------
+  pages.admin = () => `
+    <section class="wrap page-head">
+      ${label('⛨', 'Admin')}
+      <h1>Admin</h1>
+      <p class="lead">Ban players, clear profiles, reset achievements and change ranks. Only Spectra staff can use this page, and every action goes in the admin log. <a href="#/report/inbox">Reports inbox</a></p>
+    </section>
+    <section class="wrap"><div id="admin"><p class="muted">Loading…</p></div></section>`;
+  const LEVEL = { owner: 4, admin: 3, moderator: 2, tester: 1 };
+  const LOG_TEXT = { ban: 'banned', unban: 'lifted the ban on', rank: 'changed the rank of', 'reset-profile': 'cleared the profile of', 'delete-review': 'deleted a review by', 'reset-achievements': 'reset the achievements of', 'sync-achievements': 'updated the achievement list' };
+  const adminState = { tab: 'players', q: '', results: [], sel: null, data: null, role: null };
+  async function renderAdmin() {
+    const el = document.getElementById('admin');
+    const A = window.SpectraWebAccount;
+    if (!el) return;
+    if (!adminState.role) adminState.role = A && A.available ? await A.myRole().catch(() => null) : null;
+    const lvl = LEVEL[adminState.role] || 0;
+    if (lvl < 2) { el.innerHTML = `<p class="lead">This page is for Spectra staff. ${A && A.available ? '<a href="#/account">Sign in</a> with a staff account.' : ''}</p>`; return; }
+    const S = adminState;
+    const tabs = [['players', 'Players'], ['bans', 'Bans'], ...(lvl >= 3 ? [['log', 'Admin log']] : [])];
+    let body = '<p class="muted">Loading…</p>';
+    el.innerHTML = `<div class="chips">${tabs.map(([k, l]) => `<button class="chip ${S.tab === k ? 'on' : ''}" data-admin-tab="${k}">${l}</button>`).join('')}</div><div class="admin-pane" id="adminPane">${body}</div>`;
+    el.querySelectorAll('[data-admin-tab]').forEach((b) => (b.onclick = () => { S.tab = b.dataset.adminTab; renderAdmin(); }));
+    const pane = document.getElementById('adminPane');
+    const whoOf = (p) => p ? `<span class="who">${window.SpectraAvatar ? window.SpectraAvatar(p, {}) : ''}<span>${esc(p.display_name)}${(window.SpectraRank || (() => ''))(p)}<small>@${esc(p.username)}</small></span></span>` : 'Unknown player';
+    const when = (iso) => (iso ? new Date(iso).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '');
+    const act = async (fn, ask) => {
+      if (ask && !confirm(ask)) return;
+      try { await fn(); } catch (err) { alert(err.message); return; }
+      if (S.sel) S.data = await A.admin.player(S.sel).catch(() => null);
+      renderAdmin();
+    };
+    try {
+      if (S.tab === 'bans') {
+        const bans = await A.admin.bans();
+        pane.innerHTML = bans.length ? `<ul class="admin-list">${bans.map((b) => `<li>${whoOf(b.profile)}<span class="muted">${b.expires_at ? 'until ' + esc(when(b.expires_at)) : 'permanent'}${b.reason ? ' · ' + esc(b.reason) : ''}${b.by ? ' · by @' + esc(b.by.username) : ''}</span><button class="btn line sm" data-unban="${esc(b.user_id)}">Lift ban</button></li>`).join('')}</ul>` : '<p class="muted">No one is banned.</p>';
+        pane.querySelectorAll('[data-unban]').forEach((b) => (b.onclick = () => act(() => A.admin.unban(b.dataset.unban))));
+        return;
+      }
+      if (S.tab === 'log') {
+        const rows = await A.admin.log();
+        pane.innerHTML = rows.length ? `<ul class="admin-list">${rows.map((r) => `<li><span><b>@${esc(r.actorP?.username || '?')}</b> ${esc(LOG_TEXT[r.action] || r.action)}${r.targetP ? ` <b>@${esc(r.targetP.username)}</b>` : ''}${r.action === 'ban' && r.detail?.reason ? ` <span class="muted">(${esc(r.detail.reason)})</span>` : ''}</span><time class="muted">${esc(when(r.at))}</time></li>`).join('')}</ul>` : '<p class="muted">Nothing yet.</p>';
+        return;
+      }
+      const d = S.data, p = d?.profile;
+      const theirs = LEVEL[p?.role] || 0, self = p && p.id === (await A.user())?.id;
+      const can = (min) => p && lvl >= min && (self || theirs < lvl);
+      pane.innerHTML = `<form class="admin-search" id="adminSearch"><input name="q" placeholder="Find a player by username or name" value="${esc(S.q)}" autocomplete="off"><button class="btn solid sm">Search</button></form>
+        ${S.results.length ? `<ul class="admin-list">${S.results.map((x) => `<li class="${S.sel === x.id ? 'on' : ''}">${whoOf(x)}<button class="btn line sm" data-pick="${esc(x.id)}">Open</button></li>`).join('')}</ul>` : ''}
+        ${p ? `<div class="admin-player">
+          <div class="admin-head">${whoOf(p)}<a class="btn line sm" href="#/u/${encodeURIComponent(p.username)}">View profile</a></div>
+          ${d.ban ? `<p class="admin-banned">Banned ${d.ban.expires_at ? 'until ' + esc(when(d.ban.expires_at)) : 'permanently'}${d.ban.reason ? ' · ' + esc(d.ban.reason) : ''} ${can(2) ? '<button class="btn line sm" id="aUnban">Lift ban</button>' : ''}</p>` : ''}
+          <div class="admin-grid">
+            <section><h3>Ban</h3>${self ? '<p class="muted">You can’t ban yourself.</p>' : can(2) ? `<input id="aReason" maxlength="500" placeholder="Reason (the player sees this)">
+              <select id="aDays">${[[1, '1 day'], [3, '3 days'], [7, '7 days'], ...(lvl >= 3 ? [[30, '30 days'], [365, '1 year'], ['', 'Permanent']] : [])].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>
+              <button class="btn solid sm" id="aBan">${d.ban ? 'Change ban' : 'Ban'}</button>` : '<p class="muted">Your rank can’t ban this player.</p>'}</section>
+            <section><h3>Clear profile</h3>${can(2) ? `${[['name', 'Display name'], ['username', 'Username'], ['bio', 'Bio'], ['avatar', 'Avatar and banner'], ['links', 'Links and pronouns']].map(([k, l]) => `<label class="admin-check"><input type="checkbox" data-part="${k}"> ${l}</label>`).join('')}<button class="btn line sm" id="aClear">Clear selected</button>` : '<p class="muted">Your rank can’t change this player.</p>'}</section>
+            <section><h3>Achievements</h3>${(d.stats || []).filter((r) => byId[r.game_id]).map((r) => `<p class="muted">${esc(byId[r.game_id].title)}: ${Object.keys(r.achievements || {}).length} unlocked</p>`).join('') || '<p class="muted">No stats yet.</p>'}
+              ${can(3) ? `<select id="aGame"><option value="">Every game</option>${(d.stats || []).filter((r) => byId[r.game_id]).map((r) => `<option value="${esc(r.game_id)}">${esc(byId[r.game_id].title)}</option>`).join('')}</select><button class="btn line sm" id="aReset">Reset achievements</button>` : '<p class="muted">Admins and owners can reset achievements.</p>'}</section>
+            <section><h3>Rank</h3>${lvl >= 4 && !self && p.role !== 'owner' ? `<select id="aRank">${[['', 'No rank'], ['tester', 'Tester'], ['moderator', 'Moderator'], ['admin', 'Admin']].map(([v, l]) => `<option value="${v}" ${(p.role || '') === v ? 'selected' : ''}>${l}</option>`).join('')}</select><button class="btn line sm" id="aRankSave">Save rank</button>` : '<p class="muted">Only owners can change ranks.</p>'}</section>
+          </div>
+          ${(d.reviews || []).length ? `<h3>Reviews</h3><ul class="admin-list">${d.reviews.map((r) => `<li><span>${'★'.repeat(r.stars)} <b>${esc(byId[r.game_id]?.title || r.game_id)}</b> <span class="muted">${esc(r.body || '')}</span></span>${can(2) ? `<button class="btn line sm" data-delrev="${esc(r.game_id)}">Delete</button>` : ''}</li>`).join('')}</ul>` : ''}
+        </div>` : ''}`;
+      document.getElementById('adminSearch').onsubmit = async (e) => { e.preventDefault(); S.q = e.target.q.value; S.results = await A.admin.search(S.q).catch(() => []); renderAdmin(); };
+      pane.querySelectorAll('[data-pick]').forEach((b) => (b.onclick = async () => { S.sel = b.dataset.pick; S.data = await A.admin.player(S.sel).catch(() => null); renderAdmin(); }));
+      const on = (id, fn) => { const b = document.getElementById(id); if (b) b.onclick = fn; };
+      on('aUnban', () => act(() => A.admin.unban(S.sel)));
+      on('aBan', () => { const reason = document.getElementById('aReason').value.trim(); const days = Number(document.getElementById('aDays').value) || null; if (!reason) return alert('Write a reason first. The player sees it.'); act(() => A.admin.ban(S.sel, reason, days), `Ban @${p.username} ${days ? 'for ' + days + ' days' : 'permanently'}?`); });
+      on('aClear', () => { const parts = [...pane.querySelectorAll('[data-part]:checked')].map((c) => c.dataset.part); if (!parts.length) return; act(() => A.admin.resetProfile(S.sel, parts), `Clear @${p.username}'s ${parts.join(', ')}?`); });
+      on('aReset', () => { const g = document.getElementById('aGame').value; act(() => A.admin.resetAchievements(S.sel, g || null), `Reset @${p.username}'s achievements in ${g ? byId[g]?.title || g : 'every game'}?`); });
+      on('aRankSave', () => act(() => A.admin.setRole(S.sel, document.getElementById('aRank').value)));
+      pane.querySelectorAll('[data-delrev]').forEach((b) => (b.onclick = () => act(() => A.admin.deleteReview(S.sel, b.dataset.delrev), 'Delete this review?')));
+    } catch (err) { pane.innerHTML = `<p class="muted">${esc(err.message)}</p>`; }
+  }
+
   function route() {
     const h = location.hash.replace(/^#\/?/, '');
     const [name, raw, rawExtra] = h.split('/');
@@ -795,7 +916,7 @@
       window.SpectraAccountPages.render({ root: app.firstElementChild, section: name, arg, extra, games: byId, playable });
     } else app.innerHTML = `<div class="page page-${key}">${pages[key](arg)}</div>`;
     document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === (key === 'game' ? 'games' : key)));
-    document.title = key === 'game' && byId[arg] ? `${byId[arg].title} · Spectra` : accountRoute ? 'Account · Spectra' : ({ boards: 'Leaderboards · Spectra', devlog: 'Devlog · Spectra', ide: 'Spectra IDE', report: arg === 'inbox' ? 'Reports inbox · Spectra' : 'Report a problem · Spectra' })[key] || 'Spectra · Light goes in. Games come out.';
+    document.title = key === 'game' && byId[arg] ? `${byId[arg].title} · Spectra` : accountRoute ? 'Account · Spectra' : ({ hall: 'Hall of Fame · Spectra', admin: 'Admin · Spectra', boards: 'Leaderboards · Spectra', devlog: 'Devlog · Spectra', ide: 'Spectra IDE', report: arg === 'inbox' ? 'Reports inbox · Spectra' : 'Report a problem · Spectra' })[key] || 'Spectra · Light goes in. Games come out.';
     document.body.classList.remove('menu-open');
     document.getElementById('menuBtn').setAttribute('aria-expanded', 'false');
     if (key === 'home') {
@@ -809,6 +930,8 @@
     if (key === 'devlog') loadDevlog().then(renderDevlog);
     if (key === 'report') bindReport(arg);
     if (key === 'game') fillReviews();
+    if (key === 'hall') renderHall();
+    if (key === 'admin') { adminState.role = null; renderAdmin(); }
     prefillNotify();
     bindTour();
     bindReveal();

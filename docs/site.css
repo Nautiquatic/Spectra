@@ -703,3 +703,75 @@ h1 .rank-badge { font-size: 13px; padding: 5px 11px; margin-left: 16px; transfor
 .player-bar { height: 7px !important; background: rgba(255,255,255,.07); }
 .player-bar i { background: linear-gradient(90deg, var(--r5), var(--r6)); }
 .player-progress.complete .player-bar i { background: linear-gradient(90deg, #c99a2e, #ffe58a, #c99a2e); }
+
+/* ---------- 0.9.1: tier badges, secret overflow, achievement tags, Hall of Fame, admin ---------- */
+.tier-done { display: inline-flex; align-items: center; margin-left: 7px; padding: 1px 7px; font: 800 10px/1.5 var(--mono); font-style: normal; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; vertical-align: middle; }
+.td-bronze { background: linear-gradient(135deg, #d4955f, #8a5228); color: #fff; }
+.td-silver { background: linear-gradient(135deg, #f4f6fa, #a9b2c1); color: #000; }
+.td-gold { background: linear-gradient(135deg, #ffe58a, #c99a2e); color: #000; }
+.td-platinum { background: linear-gradient(135deg, #effcff, #7fd8ec); color: #000; }
+.td-secret { background: linear-gradient(135deg, #d070ff, #5b3dff); color: #fff; }
+.player-progress .tier-done::before, .player-progress strong::before { content: none; }
+.player-progress.over .player-bar i { background: linear-gradient(90deg, var(--r1), var(--r2), var(--r3), var(--r4), var(--r5), var(--r6)); }
+.r-val b.over { background: linear-gradient(90deg, var(--r1), var(--r3), var(--r5), var(--r6)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.r-val .tier-done { margin: 2px 0 0; }
+.tier-secret > svg { color: #c88cff; }
+.tier-secret small { color: #c88cff; font: 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.who .account-avatar { width: 30px; height: 30px; font-size: 13px; }
+.tag-badge { display: inline-flex; align-items: center; margin-left: 6px; padding: 2px 7px; font: 700 10px/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; white-space: nowrap; color: #000; }
+h1 .tag-badge { font-size: 12px; padding: 5px 11px; transform: translateY(-0.4em); }
+.tag-badge.tg-specialist { background: linear-gradient(135deg, #ffe58a, #e3ad3c); }
+.tag-badge.tg-master { background: linear-gradient(120deg, #ffe58a, #ff9ff0, #9ff3ff, #ffe58a); background-size: 200% 100%; animation: tagShine 4s linear infinite; }
+.tag-badge.former { background: transparent; color: var(--muted); border: 1px dashed currentColor; animation: none; }
+@keyframes tagShine { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .tag-badge { animation: none; } }
+.hall-h { margin: 34px 0 14px; font: 700 20px var(--display, inherit); }
+.hall-h small { font: 12px var(--mono); color: var(--muted); margin-left: 8px; }
+.hall-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.hall-card { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--line); border-top: 3px solid #e3ad3c; background: rgba(243, 240, 234, .02); }
+.hall-card.tg-master { border-top-color: #ff9ff0; }
+.hall-card.former { border-top-color: var(--line); opacity: .8; }
+.hall-card .tag-badge { justify-self: start; margin: 0; }
+.hall-card dl { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0; }
+.hall-card dt { font: 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.hall-card dd { margin: 2px 0 0; font-weight: 600; font-size: 13px; }
+#hallMe { margin-top: 18px; }
+.admin-pane { margin-top: 18px; display: grid; gap: 16px; }
+.admin-search { display: flex; gap: 8px; max-width: 520px; }
+.admin-search input, .admin-grid input, .admin-grid select { flex: 1; min-width: 0; padding: 9px 12px; background: transparent; color: var(--ink); border: 1px solid var(--line); font: inherit; }
+.admin-grid select option { background: #08080c; }
+.admin-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); }
+.admin-list li { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.admin-list li:last-child { border-bottom: 0; }
+.admin-list li > span:not(.who) { flex: 1; }
+.admin-list li.on { background: rgba(243, 240, 234, .04); }
+.admin-list .who { flex: 1; }
+.admin-player { display: grid; gap: 14px; padding: 18px; border: 1px solid var(--line); }
+.admin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.admin-banned { padding: 10px 14px; border: 1px solid rgba(255, 94, 142, .4); background: rgba(255, 94, 142, .08); }
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.admin-grid section { display: grid; gap: 8px; align-content: start; padding: 14px; border: 1px solid var(--line); }
+.admin-grid h3, .admin-player > h3 { font: 600 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.admin-check { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+
+/* readability: solid badge colours, bigger small print, no faded text */
+.tier-done { padding: 2px 8px; font-size: 11px; letter-spacing: .05em; }
+.td-bronze { background: #9a5a26; color: #fff; }
+.td-silver { background: #d5dbe5; color: #000; }
+.td-gold { background: #f2c14e; color: #000; }
+.td-platinum { background: #8fe3f2; color: #000; }
+.td-secret { background: #6d3fe0; color: #fff; }
+.rank-badge, .tag-badge { font-size: 11px; padding: 3px 8px; letter-spacing: .06em; }
+.rank-badge.r-admin { color: #ff8a8a; background: rgba(255, 107, 107, .14); }
+.rank-badge.r-moderator { color: #8fd8ff; background: rgba(94, 200, 255, .14); }
+.rank-badge.r-tester { color: #8ef0bf; background: rgba(94, 232, 164, .14); }
+.tag-badge.tg-specialist { background: #f2c14e; }
+.tag-badge.former { color: #c9c6d1; border-style: solid; border-color: rgba(243, 240, 234, .45); }
+.who small, .r-val small { font-size: 12.5px; opacity: 1; color: #c9c6d1; }
+.ranks li em { opacity: 1; color: #c9c6d1; }
+.r-val b { font-size: 15px; }
+.r-val .tier-done { margin: 4px 0 2px; }
+.ranks li em.tier-done { opacity: 1; font-weight: 800; text-align: left; }
+.td-bronze, .td-secret { color: #fff !important; }
+.td-silver, .td-gold, .td-platinum { color: #000 !important; }
+.rarity small { opacity: 1; color: #c9c6d1; font-size: 12.5px; }
