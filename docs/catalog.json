@@ -17,7 +17,7 @@
     {
       "tag": "Coming soon",
       "title": "LUMEN is coming",
-      "body": "Three lanes, two Lenses, and reinforcements you have to time. Our next game is a lane-siege strategy game set in a ruined observatory. It is not out yet: press Notify me on its page and we will email you once, the day it releases.",
+      "body": "A scrap-built ship, a storm-torn sky, and every pirate part yours to bolt on. Our next game is a salvage run through a sky archipelago in the observatory’s brass and ink. It is not out yet: press Notify me on its page and we will email you once, the day it releases.",
       "date": "2026-11-22",
       "game": "lumen"
     },
@@ -600,24 +600,24 @@
     {
       "id": "lumen",
       "title": "LUMEN",
-      "tagline": "Three lanes. Two Lenses. Time your reinforcements.",
-      "description": "A real-time card siege in a brass observatory. Summons march and fight on their own across three bridges. Choose when to commit a heavy mortar, reshape the ground, or freeze the opposing timeline.",
+      "tagline": "Scrap-built hull. Storm-torn sky. Bring the light home.",
+      "description": "A scrap-ship salvage run through a storm-torn sky archipelago. Shoot sky-pirates apart and bolt their parts onto your hull wherever they touch. Dive into squalls and thunderheads to harvest stormlight cores, then make it back to a floating dock before the strain tears your ship apart.",
       "status": "coming-soon",
       "released": null,
       "genres": [
-        "Strategy",
-        "Card Battler"
+        "Action",
+        "Roguelite"
       ],
       "platforms": [
         "Windows"
       ],
       "featured": true,
-      "cover": "https://nautiquatic.github.io/Spectra/assets/games/lumen-cover.png",
-      "banner": "https://nautiquatic.github.io/Spectra/assets/games/lumen-banner.png",
+      "cover": "https://nautiquatic.github.io/Spectra/assets/games/lumen-cover.png?v=2",
+      "banner": "https://nautiquatic.github.io/Spectra/assets/games/lumen-banner.png?v=2",
       "screenshots": [
-        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-1.png",
-        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-2.png",
-        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-3.png"
+        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-1.png?v=2",
+        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-2.png?v=2",
+        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-3.png?v=2"
       ],
       "art": {
         "from": "#08101c",
@@ -626,155 +626,155 @@
         "motif": "lens"
       },
       "features": [
-        "Three lanes and five ranks with elevated tiles, bridges and two Lens towers",
-        "Summons advance and attack automatically; deploy cards while battle continues",
-        "No mana: manage a six-card cooldown timeline, trigger Resonance and vent during Overload",
-        "Ignite oil, conduct lightning through water and push or pull units into position",
-        "Daily Siege, Workshop upgrades and 30 Spectra achievements"
+        "Build your ship mid-flight: every part bolts on wherever it touches your hull",
+        "Ten part types, from deck cannons and Lens Lances to lightning rods and ballast keels",
+        "Squalls that shear you sideways, thunderheads full of lightning, and the eye of the storm",
+        "Sky-pirates, gull drone swarms and a leviathan that hunts the deepest storms",
+        "Bank cores for Workshop upgrades, fly the shared Daily Voyage, and earn 30 Spectra achievements"
       ],
       "achievements": [
         {
-          "id": "first-siege",
-          "name": "Lines Drawn",
-          "desc": "Begin your first siege.",
+          "id": "first-voyage",
+          "name": "Cast Off",
+          "desc": "Begin your first voyage.",
+          "tier": "bronze"
+        },
+        {
+          "id": "first-bolt",
+          "name": "Bolted On",
+          "desc": "Bolt a salvaged part onto your ship.",
           "tier": "bronze"
         },
         {
           "id": "first-blood",
-          "name": "First Blood",
-          "desc": "Destroy an enemy unit.",
+          "name": "Scuttled",
+          "desc": "Sink a sky-pirate skiff.",
           "tier": "bronze"
         },
         {
-          "id": "units-50",
-          "name": "Muster",
-          "desc": "Deploy 50 units.",
+          "id": "first-core",
+          "name": "Stormlight",
+          "desc": "Harvest a stormlight core.",
           "tier": "bronze"
         },
         {
-          "id": "spells-50",
-          "name": "Cantrip",
-          "desc": "Cast 50 spells.",
+          "id": "rod-catch",
+          "name": "Grounded",
+          "desc": "Catch a lightning strike with a rod.",
           "tier": "bronze"
         },
         {
-          "id": "terrain-30",
-          "name": "Surveyor",
-          "desc": "Play 30 terrain cards.",
+          "id": "jettison",
+          "name": "Lighten the Load",
+          "desc": "Jettison a part from your hull.",
           "tier": "bronze"
         },
         {
-          "id": "overload-5",
-          "name": "Too Much Light",
-          "desc": "Enter Overload five times.",
+          "id": "drones-50",
+          "name": "Gull Season",
+          "desc": "Bring down 50 gull drones.",
           "tier": "bronze"
         },
         {
-          "id": "first-win",
-          "name": "Held the Line",
-          "desc": "Win a siege.",
+          "id": "first-dock",
+          "name": "Safe Harbour",
+          "desc": "Dock with cores aboard.",
           "tier": "silver"
         },
         {
-          "id": "wins-5",
-          "name": "Lantern Keeper",
-          "desc": "Win five sieges.",
+          "id": "docks-5",
+          "name": "Harbour Regular",
+          "desc": "Complete five voyages.",
           "tier": "silver"
         },
         {
           "id": "daily-one",
-          "name": "Daily Siege",
-          "desc": "Complete a Daily Siege.",
+          "name": "Daily Voyage",
+          "desc": "Complete a Daily Voyage.",
           "tier": "silver"
         },
         {
-          "id": "kills-100",
-          "name": "Hundred Banners",
-          "desc": "Destroy 100 enemy units.",
+          "id": "kills-50",
+          "name": "Fifty Hulls",
+          "desc": "Sink 50 sky-pirate skiffs.",
           "tier": "silver"
         },
         {
-          "id": "resonance-25",
-          "name": "In Tune",
-          "desc": "Trigger Resonance 25 times.",
+          "id": "bolted-100",
+          "name": "Magpie",
+          "desc": "Bolt on 100 salvaged parts.",
           "tier": "silver"
         },
         {
-          "id": "ignites-10",
-          "name": "Wildfire",
-          "desc": "Ignite oil ten times.",
+          "id": "big-ship",
+          "name": "Flying Junkyard",
+          "desc": "Fly a ship of 25 parts or more.",
           "tier": "silver"
         },
         {
-          "id": "chains-10",
-          "name": "Conduit",
-          "desc": "Chain lightning through water ten times.",
+          "id": "haul-15",
+          "name": "Full Hold",
+          "desc": "Dock with 15 cores from one voyage.",
           "tier": "silver"
         },
         {
-          "id": "vent-5",
-          "name": "Let It Burn",
-          "desc": "Vent five queued cards.",
+          "id": "strikes-25",
+          "name": "Lightning Farmer",
+          "desc": "Catch 25 lightning strikes with rods.",
           "tier": "silver"
         },
         {
-          "id": "queue-six",
-          "name": "Full Timeline",
-          "desc": "Fill all six queue slots in one turn.",
+          "id": "eye-core",
+          "name": "Eye of the Storm",
+          "desc": "Harvest a core from the eye of a storm.",
           "tier": "silver"
         },
         {
-          "id": "high-ground-win",
-          "name": "Higher Ground",
-          "desc": "Win a siege with a unit on high ground.",
+          "id": "far-dock",
+          "name": "Long Way Round",
+          "desc": "Dock at a harbour other than Home Harbour.",
           "tier": "silver"
         },
         {
-          "id": "burn-win",
-          "name": "Ash and Oil",
-          "desc": "Win a siege where fire destroyed an enemy.",
-          "tier": "silver"
-        },
-        {
-          "id": "pylon-10",
-          "name": "Adjacent Power",
-          "desc": "Recharge ten cards beside an Arcane Pylon.",
-          "tier": "silver"
-        },
-        {
-          "id": "wins-15",
-          "name": "Siege Master",
-          "desc": "Win fifteen sieges.",
+          "id": "docks-15",
+          "name": "Archipelago Master",
+          "desc": "Complete fifteen voyages.",
           "tier": "gold"
         },
         {
           "id": "dailies-7",
           "name": "Seven Dawns",
-          "desc": "Complete seven Daily Sieges.",
+          "desc": "Complete seven Daily Voyages.",
           "tier": "gold"
         },
         {
-          "id": "swift-siege",
-          "name": "Quickstep",
-          "desc": "Win a siege in eight turns or fewer.",
+          "id": "leviathan",
+          "name": "Leviathan’s Bane",
+          "desc": "Bring down the leviathan.",
           "tier": "gold"
         },
         {
-          "id": "unbroken-lens",
-          "name": "Unbroken",
-          "desc": "Win without losing a single point of Lens health.",
+          "id": "clean-hull",
+          "name": "Not a Scratch",
+          "desc": "Dock with 5 or more cores without losing a single part.",
           "tier": "gold"
         },
         {
           "id": "comeback",
-          "name": "One Wick Left",
-          "desc": "Win with your Lens at 5 health or less.",
+          "name": "One Rivet Left",
+          "desc": "Dock with your Lens Core below 15% health.",
           "tier": "gold"
         },
         {
-          "id": "ember-2000",
+          "id": "swift",
+          "name": "Quick Run",
+          "desc": "Dock with 8 or more cores in under three minutes.",
+          "tier": "gold"
+        },
+        {
+          "id": "cores-1000",
           "name": "The Long Purse",
-          "desc": "Bank 2,000 embers.",
+          "desc": "Bank 1,000 cores in total.",
           "tier": "platinum"
         },
         {
@@ -787,36 +787,36 @@
         {
           "id": "secret-midnight",
           "name": "Between the Hours",
-          "desc": "Begin a siege between midnight and five.",
+          "desc": "Begin a voyage between midnight and five.",
           "tier": "bronze",
           "secret": true
         },
         {
-          "id": "secret-alchemist",
-          "name": "Alchemist",
-          "desc": "Hold fire, oil, water and high ground at once.",
+          "id": "secret-maw",
+          "name": "Wearing the Beast",
+          "desc": "Bolt a Leviathan Maw onto your hull.",
           "tier": "gold",
           "secret": true
         },
         {
-          "id": "secret-architect",
-          "name": "Three Columns",
-          "desc": "Win with a friendly unit in every column.",
+          "id": "secret-bare",
+          "name": "Bare Lens",
+          "desc": "Dock with nothing left but the Lens Core.",
           "tier": "gold",
           "secret": true
         },
         {
-          "id": "secret-sacrifice",
-          "name": "Feed the Fire",
-          "desc": "Vent a Siege Mortar from your timeline.",
+          "id": "secret-shear",
+          "name": "Riding the Shear",
+          "desc": "Hit top speed inside a squall.",
           "tier": "silver",
           "secret": true
         },
         {
-          "id": "secret-patience",
-          "name": "Long Siege",
-          "desc": "Win a siege that lasts past turn 25.",
-          "tier": "gold",
+          "id": "secret-strain",
+          "name": "Held Together",
+          "desc": "Dock while your hull is at full strain.",
+          "tier": "silver",
           "secret": true
         }
       ],
