@@ -250,7 +250,10 @@
         <span class="player-bar"><i style="width:${Math.min(100, (100 * done) / published.length)}%"></i></span></button>` : ''}
       ${ownProfile ? button(game.id === pinned ? 'Unpin' : 'Pin game', 'pin-game', game.id === pinned ? '' : game.id) : ''}
       </div>
-      ${shown.length ? `<details class="player-achievements"><summary>Achievements</summary><ul>${shown.map((a) => {
+      ${shown.length ? `<details class="player-achievements"><summary>Achievements</summary><ul>${shown.slice().sort((a, b) => {
+        const T = window.SpectraTiers, order = T ? T.TIER_ORDER : [];
+        return T ? order.indexOf(T.tierOf(b)) - order.indexOf(T.tierOf(a)) || (unlocked(b) ? 1 : 0) - (unlocked(a) ? 1 : 0) : 0;
+      }).map((a) => {
         const earned = unlocked(a);
         const title = !earned && a.hidden ? 'Hidden achievement' : a.name;
         return `<li><span class="tier-${a.secret ? 'secret' : tiers[tierRank(a)].toLowerCase()}">${trophy} ${esc(title)}${a.secret ? ' <small>Secret</small>' : ''}</span><small>${earned ? esc(date(Number(row.achievements[a.id]))) : 'Locked'}</small></li>`;
