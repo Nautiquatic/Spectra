@@ -261,6 +261,17 @@
       if (!displayName || displayName.length > 24 || bio.length > 200) throw new Error('Use up to 24 characters for your name and 200 for your bio.');
       return must(await client().from('profiles').update({ display_name: displayName, bio }).eq('id', account.id).select(profileFields).maybeSingle());
     },
+    async changeUsername(name) {
+      await own();
+      name = String(name || '').trim();
+      if (!usernamePattern.test(name)) throw new Error('Usernames are 3–20 letters, numbers or underscores.');
+      const { error } = await client().rpc('change_username', { new_name: name });
+      if (error) {
+        if (error.code === 'PGRST202' || /could not find the function/i.test(error.message || '')) throw new Error('Username changes are not set up yet.');
+        throw new Error(error.code === 'P0001' ? error.message : 'Could not change your username right now.');
+      }
+      return name;
+    },
     async saveExtras(patch) {
       const account = await own();
       const current = await extras(account.id);

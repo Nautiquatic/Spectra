@@ -259,7 +259,7 @@
     </div>`;
   }
 
-  let gFilter = { q: '', genre: 'All', status: 'all' };
+  let gFilter = { q: '', genre: 'All', status: 'all', android: false };
   pages.games = () => {
     const genres = ['All', ...new Set(GAMES.flatMap((g) => g.genres))];
     return `
@@ -274,6 +274,7 @@
         <label class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><input id="gq" placeholder="Search" value="${esc(gFilter.q)}" aria-label="Search games"></label>
         <div class="chips">${genres.map((x) => `<button class="chip ${gFilter.genre === x ? 'on' : ''}" data-genre="${esc(x)}">${esc(x)}</button>`).join('')}</div>
         <div class="chips">${[['all', 'Any'], ['playable', 'Playable now'], ['upcoming', 'Upcoming']].map(([k, l]) => `<button class="chip ${gFilter.status === k ? 'on' : ''}" data-status="${k}">${l}</button>`).join('')}</div>
+        ${GAMES.some(onAndroid) ? `<div class="chips"><button class="chip ${gFilter.android ? 'on' : ''}" data-android>On Android</button></div>` : ''}
       </div>
       <div id="gameGrid"></div>` : emptyIndex()}
     </section>`;
@@ -284,7 +285,8 @@
     const list = GAMES.filter((g) =>
       (!gFilter.q || g.title.toLowerCase().includes(gFilter.q.toLowerCase())) &&
       (gFilter.genre === 'All' || g.genres.includes(gFilter.genre)) &&
-      (gFilter.status === 'all' || (gFilter.status === 'playable' ? playable(g) : !playable(g))));
+      (gFilter.status === 'all' || (gFilter.status === 'playable' ? playable(g) : !playable(g))) &&
+      (!gFilter.android || onAndroid(g)));
     el.innerHTML = list.length ? `<div class="index">${list.map((g) => indexRow(g, GAMES.indexOf(g))).join('')}</div>` : '<p class="muted none">Nothing in that part of the spectrum.</p>';
   }
 
@@ -823,6 +825,7 @@
       document.querySelectorAll('[data-status]').forEach((x) => x.classList.toggle('on', x === b));
       renderGrid();
     }));
+    document.querySelector('[data-android]')?.addEventListener('click', (e) => { gFilter.android = !gFilter.android; e.currentTarget.classList.toggle('on', gFilter.android); renderGrid(); });
     document.querySelectorAll('[data-genre]').forEach((b) => b.addEventListener('click', () => {
       gFilter.genre = b.dataset.genre;
       document.querySelectorAll('[data-genre]').forEach((x) => x.classList.toggle('on', x === b));

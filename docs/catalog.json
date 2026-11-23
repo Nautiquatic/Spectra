@@ -828,6 +828,14 @@
         "graphics": "Any GPU with hardware acceleration",
         "storage": "Under 5 MB",
         "online": "Not needed"
+      },
+      "playtest": {
+        "path": "lumen/Lumen-playtest.zip",
+        "version": "4.0.0",
+        "build": 1,
+        "exe": "Lumen.exe",
+        "sizeBytes": 302157,
+        "sha256": "eb49503a57dd06d2c0bc4c3e78978799f6ae6822175aafd8fea0cf9040e59eca"
       }
     }
   ],

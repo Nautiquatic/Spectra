@@ -15,12 +15,29 @@
   const errorText = (message) => `<p class="account-feedback error" role="alert">${esc(message)}</p>`;
   const feedbackLine = '<p data-page-feedback class="account-feedback" role="status"></p>';
   const validAvatar = (value) => typeof value === 'string' && value.length <= 65536 && /^data:image\/webp;base64,[a-z0-9+/]+=*$/i.test(value);
+  // Spectra-themed avatar icons (same set as the launcher)
+  const ICONS = {
+    prism: '<path d="M12 3.5 21 19H3z"/><path d="M12 3.5 14 19M7 12.5h10"/>',
+    ship: '<path d="M12 2.5 18.5 20 12 15.8 5.5 20z"/><circle cx="12" cy="10.5" r="1.6" class="f"/>',
+    hex: '<path d="M12 2.8 20 7.4v9.2L12 21.2 4 16.6V7.4z"/><path d="M12 7.5 16 9.8v4.4L12 16.5 8 14.2V9.8z"/>',
+    diamond: '<path d="M12 2.5 21.5 12 12 21.5 2.5 12z"/><path d="M12 7 17 12 12 17 7 12z"/>',
+    lens: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.6" class="f"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/>',
+    spark: '<path d="M12 2.5c.9 5 2.5 6.6 7.5 9.5-5 2.9-6.6 4.5-7.5 9.5-.9-5-2.5-6.6-7.5-9.5 5-2.9 6.6-4.5 7.5-9.5z"/>',
+    orbit: '<circle cx="12" cy="12" r="3" class="f"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(-25 12 12)"/>',
+    rift: '<path d="M4 4l6.5 6.5M20 4l-6.5 6.5M4 20l6.5-6.5M20 20l-6.5-6.5"/><circle cx="12" cy="12" r="2.4"/>',
+  };
+  const iconSvg = (id) => (ICONS[id] ? `<svg class="avatar-icon" viewBox="0 0 24 24" aria-hidden="true">${ICONS[id]}</svg>` : '');
+  const BANNERS = ['', '#927dff', '#5ec8ff', '#5ee8a4', '#f2f27a', '#ffb35c', '#ff5e8e', '#c86bff', 'spectrum'];
+  const bannerCss = (b) => (b === 'spectrum' ? 'linear-gradient(100deg,#ff5e8e,#ffb35c,#f2f27a,#5ee8a4,#5ec8ff,#927dff)' : /^#[0-9a-f]{6}$/i.test(b || '') ? `linear-gradient(120deg, ${b}, color-mix(in srgb, ${b} 35%, #08080c))` : '');
+  const safeLink = (u) => { try { const x = new URL(String(u)); return x.protocol === 'https:' && !x.username && !x.password ? x.href : ''; } catch { return ''; } };
+  const linkLabel = (u) => { try { const x = new URL(u); return (x.hostname.replace(/^www\./, '') + x.pathname.replace(/\/$/, '')).slice(0, 40); } catch { return u; } };
   const avatar = (p, extras, large = false) => {
     const color = /^#[a-f0-9]{6}$/i.test(p?.avatar_color) ? p.avatar_color : '#927dff';
     const letter = (p?.display_name || p?.username || '?').slice(0, 1).toUpperCase();
-    return `<span class="account-avatar ${large ? 'large' : ''}" style="--avatar-color:${color}">${esc(letter)}
-      ${validAvatar(extras?.avatar) ? `<img src="${extras.avatar}" alt="">` : ''}</span>`;
+    const inner = validAvatar(extras?.avatar) ? `${esc(letter)}<img src="${extras.avatar}" alt="">` : ICONS[extras?.avatarIcon] ? iconSvg(extras.avatarIcon) : esc(letter);
+    return `<span class="account-avatar ${large ? 'large' : ''}" style="--avatar-color:${color}">${inner}</span>`;
   };
+  let profileSort = 'playtime';
   const navigation = (current, entries) => `<nav class="account-tabs" aria-label="Account">${entries.map(([key, label]) =>
     `<a href="#/account${key ? '/' + key : ''}" ${key === current ? 'aria-current="page"' : ''}>${label}</a>`).join('')}</nav>`;
   const tabs = (key) => navigation(key, [['', 'Profile'], ['library', 'My Library'], ['friends', 'Friends'], ['settings', 'Settings']]);
@@ -152,7 +169,9 @@
         return at > 0 && at <= now ? [{ game, achievement, at }] : [];
       });
     });
-    const showcase = earned.slice().sort((a, b) => tierRank(b.achievement) - tierRank(a.achievement) || b.at - a.at).slice(0, 5);
+    const picks = Array.isArray(extras.showcase) ? extras.showcase.filter((k) => typeof k === 'string').slice(0, 5) : [];
+    const picked = picks.map((k) => earned.find(({ game, achievement }) => game.id + ':' + achievement.id === k)).filter(Boolean);
+    const showcase = picked.length ? picked : earned.slice().sort((a, b) => tierRank(b.achievement) - tierRank(a.achievement) || b.at - a.at).slice(0, 5);
     const activity = [
       ...knownRows.map((row) => ({ id: row.game_id, at: Date.parse(row.last_played), label: 'Played ' + games[row.game_id].title })),
       ...earned.map(({ game, achievement, at }) => ({ id: game.id, at, label: 'Unlocked ' + achievement.name, achievement: true })),
@@ -164,16 +183,17 @@
 
     return `<section class="wrap player-profile">
       ${ownProfile ? tabs('') : ''}
-      <header class="player-panel player-identity" style="--profile-accent:${avatarColor(p)}">
-        ${avatar(p, extras, true)}
+      <header class="player-panel player-identity ${bannerCss(extras.banner) ? 'has-banner' : ''}" style="--profile-accent:${avatarColor(p)};${bannerCss(extras.banner) ? '--banner:' + bannerCss(extras.banner) : ''}">
+        ${ownProfile ? `<a class="avatar-edit" href="#/account/settings/avatar" title="Change avatar">${avatar(p, extras, true)}<span>Change avatar</span></a>` : avatar(p, extras, true)}
         <div class="player-identity-text">
           <h1>${esc(p.display_name || p.username)}${(window.SpectraRank || (() => ''))(p)}</h1>
-          <p class="muted">&#64;${esc(p.username)}${date(p.created_at) ? ' · Joined ' + esc(date(p.created_at)) : ''}</p>
+          <p class="muted">&#64;${esc(p.username)}${extras.pronouns ? ' · ' + esc(String(extras.pronouns).slice(0, 20)) : ''}${date(p.created_at) ? ' · Joined ' + esc(date(p.created_at)) : ''}</p>
           ${presenceLine(presence, games, now)}
-          ${p.bio ? `<p class="player-bio">${esc(p.bio)}</p>` : ownProfile ? '<a class="player-bio-link" href="#/account/settings/bio">Add a bio</a>' : ''}
+          ${p.bio ? `<p class="player-bio">${esc(p.bio)}</p>` : ownProfile ? '<a class="player-bio-link" href="#/account/settings/bio">Add a bio</a>' : '<p class="muted">No bio yet.</p>'}
+          ${Array.isArray(extras.links) && extras.links.some(safeLink) ? `<p class="player-links">${extras.links.map(safeLink).filter(Boolean).slice(0, 3).map((u) => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer nofollow">↗ ${esc(linkLabel(u))}</a>`).join('')}</p>` : ''}
         </div>
         <div class="player-actions">${editLink}${canFriend ? button('Add friend', 'add-friend', p.username) : ''}
-          ${button('Copy profile link', 'copy-profile', p.username)}</div>
+          ${button('Share profile', 'copy-profile', p.username)}</div>
       </header>
       ${feedbackLine}
       ${pinned ? featured(pinned, now) : ''}
@@ -183,6 +203,9 @@
         ${stat('Achievements', earned.length)}
         ${stat('Achievements this month', earned.filter(({ at }) => at >= monthStart).length)}
       </dl>
+      ${total ? `<section class="player-panel player-split"><div class="split-head"><b>Playtime by game</b>${Number.isFinite(joined) ? `<span class="muted">Member for ${Math.max(0, Math.floor((now - joined) / 86400000))} days</span>` : ''}</div>
+        <div class="split-bar">${visible.filter((id) => nonnegative(byGame.get(id)?.playtime)).map((id, i) => `<i style="width:${100 * nonnegative(byGame.get(id).playtime) / total}%;background:${SPLIT[i % SPLIT.length]}" title="${esc(games[id].title)}"></i>`).join('')}</div>
+        <div class="split-key">${visible.filter((id) => nonnegative(byGame.get(id)?.playtime)).map((id, i) => `<span><i style="background:${SPLIT[i % SPLIT.length]}"></i>${esc(games[id].title)} <b>${duration(byGame.get(id).playtime)}</b> <em>${Math.round(100 * nonnegative(byGame.get(id).playtime) / total)}%</em></span>`).join('')}</div></section>` : ''}
       ${panel('Showcase', showcase.length ? `<div class="player-showcase">${showcase.map(({ game, achievement }) => {
         const tier = tiers[tierRank(achievement)];
         return `<button class="player-panel player-trophy tier-${tier.toLowerCase()}" data-act="show-achievements" data-value="${game.id}" type="button">
@@ -195,12 +218,19 @@
         ${Number.isFinite(joined) ? `<li><span>Joined ${esc(date(p.created_at))}</span><span class="muted">Member for ${Math.max(0, Math.floor((now - joined) / 86400000))} days</span></li>` : ''}
         ${!activity.length && !Number.isFinite(joined) ? '<li class="muted">No recent activity.</li>' : ''}
       </ul>`)}
-      ${panel('Games', (showOwned ? `<p class="muted player-owned">${owned.length} owned game${owned.length === 1 ? '' : 's'}</p>` : '')
-        + (visible.length ? `<div class="player-panel player-games">${visible.map((id) => playerGame(games[id], byGame.get(id), total, pinned?.id, ownProfile)).join('')}</div>`
+      ${panel('Games', (visible.length > 1 ? `<div class="chips player-sort">${[['playtime', 'Most played'], ['recent', 'Last played'], ['az', 'A–Z']].map(([k, l]) => `<button type="button" class="chip ${profileSort === k ? 'on' : ''}" data-act="profile-sort" data-value="${k}">${l}</button>`).join('')}</div>` : '')
+        + (showOwned ? `<p class="muted player-owned">${owned.length} owned game${owned.length === 1 ? '' : 's'}</p>` : '')
+        + (visible.length ? `<div class="player-panel player-games">${sortGames(visible, byGame, games).map((id) => playerGame(games[id], byGame.get(id), total, pinned?.id, ownProfile)).join('')}</div>`
           : '<p class="muted">Games and achievements will appear here.</p>'))}
     </section>`;
   }
 
+  const SPLIT = ['#927dff', '#5ec8ff', '#5ee8a4', '#f2f27a', '#ffb35c', '#ff5e8e', '#c86bff'];
+  function sortGames(ids, byGame, games) {
+    return ids.slice().sort(profileSort === 'az' ? (a, b) => games[a].title.localeCompare(games[b].title)
+      : profileSort === 'recent' ? (a, b) => (Date.parse(byGame.get(b)?.last_played) || 0) - (Date.parse(byGame.get(a)?.last_played) || 0)
+        : (a, b) => nonnegative(byGame.get(b)?.playtime) - nonnegative(byGame.get(a)?.playtime));
+  }
   function playerGame(game, row, total, pinned, ownProfile) {
     const catalog = Array.isArray(game.achievements) ? game.achievements : [];
     const unlocked = (achievement) => nonnegative(row?.achievements?.[achievement.id]) > 0;
@@ -251,9 +281,15 @@
   function settingsPage(context, p, extras) {
     return layout('Account settings', feedbackLine + `<div class="account-columns">
       ${form('Profile', 'edit-profile', field('Display name', 'text', 'displayName', `maxlength="24" value="${esc(p?.display_name || '')}" autocomplete="nickname"`)
-        + `<label class="account-field"><span>Bio</span><textarea name="bio" maxlength="200" rows="3">${esc(p?.bio || '')}</textarea></label>`, 'Save profile')}
+        + `<label class="account-field"><span>Bio <em class="bio-count" data-count-for="bio">${(p?.bio || '').length}/200</em></span><textarea name="bio" maxlength="200" rows="3">${esc(p?.bio || '')}</textarea></label>`
+        + `<label class="account-field"><span>Pronouns <small>(optional)</small></span><input name="pronouns" maxlength="20" placeholder="e.g. they/them" value="${esc(extras.pronouns || '')}"></label>`
+        + `<div class="account-field"><span>Links <small>(optional, https only)</small></span>${[0, 1, 2].map((i) => `<input name="link${i}" maxlength="200" placeholder="https://" value="${esc((Array.isArray(extras.links) && extras.links[i]) || '')}">`).join('')}</div>`, 'Save profile')}
+      ${form('Username', 'username', `<p class="muted">You are <b>&#64;${esc(p?.username || '')}</b>. Friends find you by your username, so you can change it once every 30 days.</p>`
+        + field('New username', 'text', 'username', 'minlength="3" maxlength="20" pattern="[A-Za-z0-9_]{3,20}" autocomplete="off"'), 'Change username')}
       ${form('Avatar', 'avatar', `<div class="account-actions">${avatar(p, extras, true)}${button('Remove picture', 'remove-avatar')}</div>
-        ${field('Profile picture', 'file', 'photo', 'accept="image/png,image/jpeg,image/webp"')}`, 'Upload picture')}
+        ${field('Profile picture', 'file', 'photo', 'accept="image/png,image/jpeg,image/webp"').replace(' required', '')}
+        <div class="account-field"><span>Or a Spectra icon</span><div class="icon-pick">${['', ...Object.keys(ICONS)].map((k) => `<label><input type="radio" name="icon" value="${k}" ${(extras.avatarIcon || '') === k ? 'checked' : ''}><span style="--avatar-color:${avatarColor(p)}">${k ? iconSvg(k) : esc((p?.display_name || '?')[0].toUpperCase())}</span></label>`).join('')}</div></div>
+        <div class="account-field"><span>Banner</span><div class="icon-pick banner-pick">${BANNERS.map((c) => `<label><input type="radio" name="banner" value="${c}" ${(extras.banner || '') === c ? 'checked' : ''}><span style="background:${bannerCss(c) || 'transparent'}" title="${c || 'No banner'}">${c ? '' : '✕'}</span></label>`).join('')}</div></div>`, 'Save avatar')}
       ${form('Email address', 'email', `<p class="muted">Current email ${esc(context.account.email)}</p>${email()}${current()}`, 'Send confirmation')}
       ${form('Password', 'password', current() + password() + password('Confirm new password', 'repeat'), 'Change password')}
       <section class="account-card"><h2>Public profile</h2><p class="muted">Share a copy of your synced owned games. Share the list again after changes in the launcher.</p>
@@ -347,12 +383,24 @@
           await A.resend(values.email.trim());
           message = 'If this account is still awaiting verification, you’ll receive a new link.';
           break;
-        case 'edit-profile':
+        case 'edit-profile': {
+          const links = [values.link0, values.link1, values.link2].map((u) => String(u || '').trim()).filter(Boolean);
+          const bad = links.find((u) => !safeLink(u));
+          if (bad) throw new Error('Links must be full https:// addresses.');
           await A.updateProfile(values.displayName.trim(), values.bio.trim());
+          await A.saveExtras({ pronouns: String(values.pronouns || '').trim().slice(0, 20), links: links.map(safeLink).slice(0, 3) });
           updateNav(); render(context, 'Profile updated.'); return;
-        case 'avatar':
-          await A.saveExtras({ avatar: await avatarData(values.photo) });
-          updateNav(); render(context, 'Profile picture updated.'); return;
+        }
+        case 'username':
+          await A.changeUsername(values.username.trim());
+          updateNav(); render(context, 'Username changed to @' + values.username.trim() + '.'); return;
+        case 'avatar': {
+          const patch = { avatarIcon: Object.hasOwn(ICONS, values.icon) ? values.icon : '', banner: BANNERS.includes(values.banner) ? values.banner : '' };
+          if (values.photo && values.photo.size) { patch.avatar = await avatarData(values.photo); patch.avatarIcon = ''; }
+          else if (patch.avatarIcon) patch.avatar = '';
+          await A.saveExtras(patch);
+          updateNav(); render(context, 'Avatar updated.'); return;
+        }
         case 'email':
           await A.changeEmail(values.email.trim(), values.password);
           message = 'Check your inboxes to confirm the change.';
@@ -399,6 +447,7 @@
       const action = target.dataset.act;
       if (action === 'copy-profile') return show(note, await copy(new URL(userLink(value), location.href).href));
       if (action === 'copy-code') return show(note, await copy(value));
+      if (action === 'profile-sort') { profileSort = ['playtime', 'recent', 'az'].includes(value) ? value : 'playtime'; render(context); return; }
       if (action === 'show-achievements' && A.gameIdPattern.test(value)) {
         const details = context.root.querySelector(`[data-profile-game="${value}"] .player-achievements`);
         if (details) {
@@ -453,6 +502,8 @@
       if (message) show(root.querySelector('[data-page-feedback]'), message);
       if (context.arg === 'settings' && context.extra === 'bio') root.querySelector('[name="bio"]')?.focus();
       else if (context.arg === 'settings' && context.extra === 'profile') root.querySelector('[name="displayName"]')?.focus();
+      else if (context.arg === 'settings' && context.extra === 'avatar') root.querySelector('[data-form="avatar"]')?.scrollIntoView({ block: 'center' });
+      root.querySelectorAll('[data-count-for]').forEach((c) => { const t = root.querySelector(`[name="${c.dataset.countFor}"]`); if (t) t.addEventListener('input', () => { c.textContent = t.value.length + '/200'; }); });
     } catch (err) {
       if (root.isConnected && context.nonce === nonce) root.innerHTML = layout('Spectra account', errorText(err.message));
     }
