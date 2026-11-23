@@ -775,3 +775,15 @@ h1 .tag-badge { font-size: 12px; padding: 5px 11px; transform: translateY(-0.4em
 .td-bronze, .td-secret { color: #fff !important; }
 .td-silver, .td-gold, .td-platinum { color: #000 !important; }
 .rarity small { opacity: 1; color: #c9c6d1; font-size: 12.5px; }
+/* player name blocks: name and badges on one line, @username under it */
+.who > span:not(.account-avatar) { display: block; min-width: 0; overflow: visible; white-space: normal; line-height: 1.5; }
+.who > .account-avatar { display: inline-grid; place-items: center; flex: none; }
+.who > span > small { display: block; }
+.who .rank-badge, .who .tag-badge { display: inline-flex; width: auto; overflow: visible; margin-left: 6px; vertical-align: 1px; text-decoration: none; }
+.who:hover span { text-decoration: none; }
+/* "Former …" tags: plain outlined text, whatever tag it was */
+.tag-badge.former, .tag-badge.tg-specialist.former, .tag-badge.tg-master.former { background: transparent; color: #e6e3ec; border: 1px solid rgba(243, 240, 234, .5); box-shadow: none; animation: none; }
+.account-check { display: flex; gap: 10px; align-items: center; margin: 6px 0; font-size: 15px; }
+
+.who > span > small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.who .rank-badge, .who .tag-badge { margin: 2px 0 2px 6px; }

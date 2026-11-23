@@ -92,7 +92,7 @@
     const b = bestTag(p);
     return b ? `<span class="tag-badge tg-${b.k}${b.former ? ' former' : ''}" title="${escHtml((b.former ? 'Had this before new achievements were added. ' : '') + TAG_HINT[b.k])}">${b.former ? 'Former ' : ''}${TAGS[b.k]}</span>` : '';
   };
-  window.SpectraRank = (p) => (p && RANKS[p.role] ? `<span class="rank-badge r-${p.role}" title="Spectra ${RANKS[p.role]}">${RANKS[p.role]}</span>` : '') + tagBadge(p);
+  window.SpectraRank = (p) => (p && RANKS[p.role] && !p.hideRank ? `<span class="rank-badge r-${p.role}" title="Spectra ${RANKS[p.role]}">${RANKS[p.role]}</span>` : '') + (p && p.hideTag ? '' : tagBadge(p));
   window.SpectraTag = { TAGS, TAG_HINT, bestTag, tagBadge };
   // achievement tiers: secret achievements are their own tier; a tier is "done" when every achievement in it is unlocked
   const TIER_NAME = { bronze: 'Bronze', silver: 'Silver', gold: 'Gold', platinum: 'Platinum', secret: 'Secret' };
@@ -114,11 +114,22 @@
     if (!error) (data || []).forEach((r) => (out[r.user_id] = out[r.user_id] || []).push(r));
     return out;
   };
+  const prefsFor = async (ids) => {
+    ids = [...new Set(ids.filter(Boolean))];
+    if (!ids.length) return {};
+    const { data, error } = await client().from('badge_prefs').select('user_id,hide_rank,hide_tag').in('user_id', ids.slice(0, 500));
+    return error ? {} : Object.fromEntries((data || []).map((r) => [r.user_id, r]));
+  };
+  const setBadgePrefs = async (hideRank, hideTag) => {
+    const account = await own();
+    const { error } = await client().from('badge_prefs').upsert({ user_id: account.id, hide_rank: !!hideRank, hide_tag: !!hideTag, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+    if (error) throw new Error(missingFn(error) ? 'Hiding badges isn’t set up on the server yet.' : 'Couldn’t save that. Try again.');
+  };
   // rank + tags onto profile objects: pairs of [userId, profile]
   const decorate = async (pairs) => {
     const ids = pairs.map(([id]) => id);
-    const [roles, tags] = await Promise.all([rolesFor(ids), tagsFor(ids)]);
-    pairs.forEach(([id, p]) => { if (p) { p.role = roles[id] || null; p.tags = tags[id] || []; } });
+    const [roles, tags, prefs] = await Promise.all([rolesFor(ids), tagsFor(ids), prefsFor(ids)]);
+    pairs.forEach(([id, p]) => { if (p) { p.role = roles[id] || null; p.tags = tags[id] || []; p.hideRank = !!prefs[id]?.hide_rank; p.hideTag = !!prefs[id]?.hide_tag; } });
   };
   // profile pictures and icons for many players at once (stored with the profile extras)
   const avatarsFor = async (ids) => {
@@ -319,7 +330,7 @@
 
   window.SpectraWebAccount = {
     available: !!sb, usernamePattern, gameIdPattern, user, profile, byUsername, extras, privateLibrary, stats, signIn, ids, leaderboard, notify,
-    report, myReports, isAdmin, allReports, updateReport, deleteReport, reviews, hallOfFame, inHall, setHall, myRole, myBan, admin,
+    report, myReports, isAdmin, allReports, updateReport, deleteReport, reviews, hallOfFame, inHall, setHall, myRole, myBan, admin, setBadgePrefs,
     onSessionChange(fn) {
       sb?.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') setTimeout(() => fn(session?.user || null), 0);

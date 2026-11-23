@@ -289,6 +289,10 @@
         + `<div class="account-field"><span>Links <small>(optional, https only)</small></span>${[0, 1, 2].map((i) => `<input name="link${i}" maxlength="200" placeholder="https://" value="${esc((Array.isArray(extras.links) && extras.links[i]) || '')}">`).join('')}</div>`, 'Save profile')}
       ${form('Username', 'username', `<p class="muted">You are <b>&#64;${esc(p?.username || '')}</b>. Friends find you by your username, so you can change it once every 30 days.</p>`
         + field('New username', 'text', 'username', 'minlength="3" maxlength="20" pattern="[A-Za-z0-9_]{3,20}" autocomplete="off"'), 'Change username')}
+      ${(p?.role && ['owner', 'admin', 'moderator', 'tester'].includes(p.role)) || window.SpectraTag?.bestTag(p) ? form('Badges', 'badges',
+        (p?.role ? `<label class="account-check"><input type="checkbox" name="hideRank" ${p.hideRank ? 'checked' : ''}> Hide my rank badge</label>` : '')
+        + (window.SpectraTag?.bestTag(p) ? `<label class="account-check"><input type="checkbox" name="hideTag" ${p.hideTag ? 'checked' : ''}> Hide my achievement tag</label>` : '')
+        + '<p class="muted">Hidden badges don’t show next to your name anywhere. Your rank still works.</p>', 'Save badges') : ''}
       ${form('Avatar', 'avatar', `<div class="account-actions">${avatar(p, extras, true)}${button('Remove picture', 'remove-avatar')}</div>
         ${field('Profile picture', 'file', 'photo', 'accept="image/png,image/jpeg,image/webp"').replace(' required', '')}
         <div class="account-field"><span>Or a Spectra icon</span><div class="icon-pick">${['', ...Object.keys(ICONS)].map((k) => `<label><input type="radio" name="icon" value="${k}" ${(extras.avatarIcon || '') === k ? 'checked' : ''}><span style="--avatar-color:${avatarColor(p)}">${k ? iconSvg(k) : esc((p?.display_name || '?')[0].toUpperCase())}</span></label>`).join('')}</div></div>
@@ -393,6 +397,10 @@
           await A.updateProfile(values.displayName.trim(), values.bio.trim());
           await A.saveExtras({ pronouns: String(values.pronouns || '').trim().slice(0, 20), links: links.map(safeLink).slice(0, 3) });
           updateNav(); render(context, 'Profile updated.'); return;
+        }
+        case 'badges': {
+          await A.setBadgePrefs(values.hideRank === 'on', values.hideTag === 'on');
+          render(context, 'Badges saved.'); return;
         }
         case 'username':
           await A.changeUsername(values.username.trim());
