@@ -11,7 +11,7 @@
 window.SPECTRA_SITE = {
   catalogUrl: 'catalog.json',
   downloadUrl: 'https://github.com/Nautiquatic/Spectra/releases/download/Launcher/SpectraLauncherSetup.exe',
-  launcherVersion: '1.0.0',
+  launcherVersion: '1.0.1',
   launcherSize: '79 MB',
   // Spectra IDE (the #/games/ide page). While ideDownloadUrl is empty, its button shows "Coming soon".
   ideDownloadUrl: 'https://github.com/Nautiquatic/Spectra/releases/download/IDE/SpectraIDE-Setup.exe',

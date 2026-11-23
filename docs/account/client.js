@@ -324,6 +324,7 @@
     resetProfile: (id, parts) => rpc('admin_reset_profile', { target: id, parts }),
     deleteReview: (id, game) => rpc('admin_delete_review', { target: id, game }),
     resetAchievements: (id, game) => rpc('admin_reset_achievements', { target: id, game: game || null }),
+    deleteLog: (ids) => rpc('admin_delete_log', { ids: ids && ids.length ? ids : null }), // owners only
     async search(q) {
       q = String(q || '').trim().replace(/[^A-Za-z0-9_]/g, '');
       if (q.length < 2) return [];

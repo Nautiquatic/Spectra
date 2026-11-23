@@ -951,7 +951,11 @@
       }
       if (S.tab === 'log') {
         const rows = await A.admin.log();
-        pane.innerHTML = rows.length ? `<ul class="admin-list">${rows.map((r) => `<li><span><b>@${esc(r.actorP?.username || '?')}</b> ${esc(LOG_TEXT[r.action] || r.action)}${r.targetP ? ` <b>@${esc(r.targetP.username)}</b>` : ''}${r.action === 'ban' && r.detail?.reason ? ` <span class="muted">(${esc(r.detail.reason)})</span>` : ''}</span><time class="muted">${esc(when(r.at))}</time></li>`).join('')}</ul>` : '<p class="muted">Nothing yet.</p>';
+        const owner = adminState.role === 'owner';
+        pane.innerHTML = rows.length ? `${owner ? '<p class="row-between"><span class="muted">Only you (the owner) can delete log entries.</span><button class="btn line sm" id="aLogClear">Clear the whole log</button></p>' : ''}<ul class="admin-list">${rows.map((r) => `<li><span><b>@${esc(r.actorP?.username || '?')}</b> ${esc(LOG_TEXT[r.action] || r.action)}${r.targetP ? ` <b>@${esc(r.targetP.username)}</b>` : ''}${r.action === 'ban' && r.detail?.reason ? ` <span class="muted">(${esc(r.detail.reason)})</span>` : ''}</span><time class="muted">${esc(when(r.at))}</time>${owner ? `<button class="btn line sm" data-logdel="${r.id}" title="Delete this entry">Delete</button>` : ''}</li>`).join('')}</ul>` : '<p class="muted">Nothing yet.</p>';
+        pane.querySelectorAll('[data-logdel]').forEach((b) => (b.onclick = () => act(() => A.admin.deleteLog([Number(b.dataset.logdel)]))));
+        const clr = document.getElementById('aLogClear');
+        if (clr) clr.onclick = () => act(() => A.admin.deleteLog(null), 'Clear the whole admin log? This can’t be undone.');
         return;
       }
       const d = S.data, p = d?.profile;
