@@ -2,6 +2,13 @@
   "news": [
     {
       "tag": "Update",
+      "title": "Prismfall 1.4.5: 54 new achievements",
+      "body": "Prismfall goes from 34 to 88 achievements: every boss beyond the Rift Titan, Boss Rush on Nightmare, all ten classes, half-hour survival runs, the story chronicles, online wins and four new secrets. Heads up, Achievement Specialists: these count towards your tag.",
+      "date": "2026-11-23",
+      "game": "prismfall"
+    },
+    {
+      "tag": "Update",
       "title": "Prismfall 1.4.4 ALPHA: the true forms, rebuilt",
       "body": "The Unchained bosses in Prismfall · Test are rebuilt from the ground up: new bodies, new attacks, new second phases. The Hive Empress is a vast wasp sovereign, the Mirror Colossus reflects you back at yourself, and the Rift Titan’s eye is split by the Rift. Spawn any of them in the Concept Lab.",
       "date": "2026-11-22",
@@ -99,8 +106,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.4.4",
-      "build": 35,
+      "version": "1.4.5",
+      "build": 36,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -111,9 +118,9 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.4.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.5.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 1190506,
+      "sizeBytes": 1191164,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "screenshots": [
@@ -133,7 +140,7 @@
         "30 escalating upgrades in five rarities, from Common to Legendary",
         "Online multiplayer for up to 4: co-op waves with revives, or versus rounds. Invite friends from Spectra Launcher",
         "Nine hostile types, from charging lancers to healers and phase-shifting phantoms, plus the Prism Wraith boss",
-        "29 achievements and an Icon Kit of unlockable hulls and colours",
+        "88 achievements (nine of them secret) and an Icon Kit of unlockable hulls and colours",
         "A live synthwave soundtrack (menu, chase and boss themes) and synth effects, all generated in real time"
       ],
       "achievements": [
@@ -345,9 +352,349 @@
           "name": "Nightmare’s End",
           "desc": "Defeat the Rift Titan on Nightmare (Normal, Waves or Boss Rush).",
           "tier": "platinum"
+        },
+        {
+          "id": "boss-seraph",
+          "name": "Grounded",
+          "desc": "Defeat the Storm Seraph.",
+          "tier": "silver"
+        },
+        {
+          "id": "boss-leviathan",
+          "name": "Cooled Off",
+          "desc": "Defeat the Magma Leviathan.",
+          "tier": "silver"
+        },
+        {
+          "id": "boss-wyrm",
+          "name": "Thaw",
+          "desc": "Defeat the Glacial Wyrm.",
+          "tier": "gold"
+        },
+        {
+          "id": "boss-blight",
+          "name": "Weed Killer",
+          "desc": "Defeat the Blight Mother.",
+          "tier": "gold"
+        },
+        {
+          "id": "boss-sovereign",
+          "name": "Crown Breaker",
+          "desc": "Defeat the Iron Sovereign.",
+          "tier": "gold"
+        },
+        {
+          "id": "boss-roc",
+          "name": "Eye of the Storm",
+          "desc": "Defeat the Tempest Eye.",
+          "tier": "gold"
+        },
+        {
+          "id": "boss-behemoth",
+          "name": "Fault Line",
+          "desc": "Defeat the Tectonic Behemoth.",
+          "tier": "gold"
+        },
+        {
+          "id": "boss-nullem",
+          "name": "Null and Void",
+          "desc": "Defeat the Null Empress.",
+          "tier": "platinum"
+        },
+        {
+          "id": "boss-elemental",
+          "name": "Elemental Pantheon",
+          "desc": "Defeat all eight bosses beyond the Rift Titan (across any runs).",
+          "tier": "platinum"
+        },
+        {
+          "id": "boss-ten",
+          "name": "Boss Hunter",
+          "desc": "Defeat ten bosses in one run.",
+          "tier": "gold"
+        },
+        {
+          "id": "rush-clear",
+          "name": "Rush Hour",
+          "desc": "Beat Boss Rush on any difficulty.",
+          "tier": "silver"
+        },
+        {
+          "id": "rush-nightmare",
+          "name": "Nightmare Rush",
+          "desc": "Beat Boss Rush on Nightmare.",
+          "tier": "platinum"
+        },
+        {
+          "id": "breach2-clear",
+          "name": "Second Breach",
+          "desc": "Close the rift in Breach II.",
+          "tier": "gold"
+        },
+        {
+          "id": "daily-clear",
+          "name": "Daily Light",
+          "desc": "Beat the Daily Rift.",
+          "tier": "silver"
+        },
+        {
+          "id": "clear-mod",
+          "name": "Handicap",
+          "desc": "Close the rift with a modifier on.",
+          "tier": "silver"
+        },
+        {
+          "id": "clear-three-mods",
+          "name": "Stacked Odds",
+          "desc": "Close the rift with three or more modifiers on.",
+          "tier": "gold"
+        },
+        {
+          "id": "clear-paper",
+          "name": "Paper Hull",
+          "desc": "Close the rift with Glass Cannon and Brittle both on.",
+          "tier": "gold"
+        },
+        {
+          "id": "clear-minimal",
+          "name": "Minimalist",
+          "desc": "Close the rift holding six or fewer upgrades.",
+          "tier": "gold"
+        },
+        {
+          "id": "clear-five-classes",
+          "name": "Versatile",
+          "desc": "Close the rift with five different classes.",
+          "tier": "silver"
+        },
+        {
+          "id": "clear-all-classes",
+          "name": "Master of Arms",
+          "desc": "Close the rift with all ten main classes.",
+          "tier": "platinum"
+        },
+        {
+          "id": "clear-secret-class",
+          "name": "Forbidden Light",
+          "desc": "Close the rift with a secret class.",
+          "tier": "gold"
+        },
+        {
+          "id": "clear-maps",
+          "name": "Cartographer",
+          "desc": "Close the rift on five different maps.",
+          "tier": "silver"
+        },
+        {
+          "id": "survive-twenty",
+          "name": "Undying Light",
+          "desc": "Survive for twenty minutes.",
+          "tier": "gold"
+        },
+        {
+          "id": "survive-thirty",
+          "name": "Endless Light",
+          "desc": "Survive for thirty minutes.",
+          "tier": "platinum"
+        },
+        {
+          "id": "level-thirty",
+          "name": "Transcendent",
+          "desc": "Reach level 30 in a single run.",
+          "tier": "gold"
+        },
+        {
+          "id": "kills-1000",
+          "name": "Exterminator",
+          "desc": "Destroy 1,000 hostiles in one run.",
+          "tier": "gold"
+        },
+        {
+          "id": "score-100k",
+          "name": "Hypernova",
+          "desc": "Score 100,000 points in one run.",
+          "tier": "gold"
+        },
+        {
+          "id": "untouched-five",
+          "name": "Untouchable",
+          "desc": "Go five minutes without taking damage.",
+          "tier": "gold"
+        },
+        {
+          "id": "lifetime-10k",
+          "name": "Lights Out",
+          "desc": "Destroy 10,000 hostiles in total.",
+          "tier": "silver"
+        },
+        {
+          "id": "lifetime-50k",
+          "name": "Extinction Event",
+          "desc": "Destroy 50,000 hostiles in total.",
+          "tier": "gold"
+        },
+        {
+          "id": "runs-25",
+          "name": "Regular",
+          "desc": "Finish 25 runs.",
+          "tier": "bronze"
+        },
+        {
+          "id": "runs-100",
+          "name": "Veteran",
+          "desc": "Finish 100 runs.",
+          "tier": "silver"
+        },
+        {
+          "id": "epic",
+          "name": "Epic Find",
+          "desc": "Take an Epic upgrade.",
+          "tier": "bronze"
+        },
+        {
+          "id": "legendary-three",
+          "name": "Gilded",
+          "desc": "Hold three different Legendary upgrades in one run.",
+          "tier": "gold"
+        },
+        {
+          "id": "collector-fifteen",
+          "name": "Kaleidoscope",
+          "desc": "Hold 15 different upgrades in one run.",
+          "tier": "silver"
+        },
+        {
+          "id": "elite-ten",
+          "name": "Elite Hunter",
+          "desc": "Destroy 10 elite hostiles in one run.",
+          "tier": "bronze"
+        },
+        {
+          "id": "elite-fifty",
+          "name": "Elite Breaker",
+          "desc": "Destroy 50 elite hostiles in one run.",
+          "tier": "silver"
+        },
+        {
+          "id": "lifeline",
+          "name": "Lifeline",
+          "desc": "Bring a downed teammate back with Second Dawn.",
+          "tier": "silver"
+        },
+        {
+          "id": "story-first",
+          "name": "Once Upon a Rift",
+          "desc": "Complete a story chapter.",
+          "tier": "bronze"
+        },
+        {
+          "id": "chron-one",
+          "name": "Chronicle I",
+          "desc": "Finish every chapter of Chronicle I.",
+          "tier": "silver"
+        },
+        {
+          "id": "chron-two",
+          "name": "Chronicle II",
+          "desc": "Finish every chapter of Chronicle II.",
+          "tier": "gold"
+        },
+        {
+          "id": "interludes",
+          "name": "Between the Breaches",
+          "desc": "Finish all three interludes.",
+          "tier": "silver"
+        },
+        {
+          "id": "online-first",
+          "name": "Not Alone",
+          "desc": "Finish an online match.",
+          "tier": "bronze"
+        },
+        {
+          "id": "coop-clear",
+          "name": "Fireteam",
+          "desc": "Close the rift together online.",
+          "tier": "silver"
+        },
+        {
+          "id": "versus-win",
+          "name": "Rift Champion",
+          "desc": "Win a Versus match.",
+          "tier": "silver"
+        },
+        {
+          "id": "prisms-10k",
+          "name": "Prism Hoarder",
+          "desc": "Earn 10,000 prisms in total.",
+          "tier": "silver"
+        },
+        {
+          "id": "shop-first",
+          "name": "Retail Therapy",
+          "desc": "Buy something in the shop.",
+          "tier": "bronze"
+        },
+        {
+          "id": "evolved",
+          "name": "Evolution",
+          "desc": "Buy an evolved class.",
+          "tier": "gold"
+        },
+        {
+          "id": "secret-class",
+          "name": "Classified",
+          "desc": "Unlock a secret class.",
+          "tier": "gold"
+        },
+        {
+          "id": "level-cleared",
+          "name": "Level Up",
+          "desc": "Clear a level in Levels mode.",
+          "tier": "bronze"
+        },
+        {
+          "id": "secret-thread",
+          "name": "By a Thread",
+          "desc": "Defeat a boss with under 5% hull left.",
+          "tier": "gold",
+          "secret": true
+        },
+        {
+          "id": "secret-pacifist",
+          "name": "Pacifist",
+          "desc": "Survive the first two minutes of a run without destroying anything.",
+          "tier": "silver",
+          "secret": true
+        },
+        {
+          "id": "secret-full-refraction",
+          "name": "Full Refraction",
+          "desc": "Close the rift on Nightmare as the Rainbow.",
+          "tier": "platinum",
+          "secret": true
+        },
+        {
+          "id": "secret-night-shift",
+          "name": "Night Shift",
+          "desc": "Close the rift between midnight and 4 am.",
+          "tier": "bronze",
+          "secret": true
         }
       ],
       "patchNotes": [
+        {
+          "version": "1.4.5",
+          "date": "2026-11-23",
+          "notes": [
+            "54 new achievements, from 34 to 88: one for every boss beyond the Rift Titan, Elemental Pantheon and Boss Hunter",
+            "Closing the rift: Boss Rush (and on Nightmare), Breach II, the Daily Rift, modifiers, Minimalist, five classes, all ten classes, a secret class and five maps",
+            "Long haul: survive 20 and 30 minutes, level 30, 1,000 kills or 100,000 score in a run, 10,000 and 50,000 kills in total, 25 and 100 runs",
+            "Story, online and shop: chapters, both chronicles, the interludes, online matches, Versus wins, prisms earned, shop purchases, evolved and secret classes, Levels mode",
+            "Four new secret achievements to find",
+            "Fixed: the difficulty clears (Rift Tourist to Nightmare’s End) no longer unlock for finishing a story chapter or a level, only for defeating the Rift Titan"
+          ]
+        },
         {
           "version": "1.4.4",
           "date": "2026-11-22",
@@ -583,8 +930,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.4.zip",
-        "sizeBytes": 927957
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.5.zip",
+        "sizeBytes": 921617
       },
       "requirements": {
         "os": "Windows 10 or 11 (64-bit), or Android 7+ through Spectra for Android",
