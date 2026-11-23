@@ -1,6 +1,13 @@
 {
   "news": [
     {
+      "tag": "Update",
+      "title": "Spectra Workshop: mods and resource packs",
+      "date": "2026-11-24",
+      "body": "Spectra Launcher 1.0.0 brings the Workshop: resource packs, data mods and code mods for Prismfall and LUMEN, made by players and checked by Spectra staff before they go up. Open a game page and press Workshop to browse and subscribe, or read the mod guide to make your own.",
+      "game": "prismfall"
+    },
+    {
       "tag": "Release",
       "title": "LUMEN is out: Stormlight Salvage",
       "body": "Our second game is here. Fly a scrap-built ship through a storm-torn sky, shoot sky-pirates apart and bolt their parts onto your hull, then make it home before the storm tears it apart. Free in the Spectra Launcher.",
@@ -113,8 +120,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.4.5",
-      "build": 36,
+      "version": "1.4.6",
+      "build": 37,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -125,9 +132,10 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.5.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.6.zip",
       "exe": "Prismfall.exe",
-      "sizeBytes": 1191164,
+      "mods": true,
+      "sizeBytes": 1195642,
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "screenshots": [
@@ -691,6 +699,16 @@
       ],
       "patchNotes": [
         {
+          "version": "1.4.6",
+          "date": "2026-11-24",
+          "notes": [
+            "Spectra Workshop support: subscribe to mods and resource packs from the game page in Spectra Launcher",
+            "Resource packs recolour the neon, swap sounds and restyle the menus (achievements and online play stay on)",
+            "Data mods change upgrades, hostiles, bosses and difficulties; code mods run their own code with the game’s events",
+            "While a data or code mod is on, achievements and online play are off, and the menu shows MODDED"
+          ]
+        },
+        {
           "version": "1.4.5",
           "date": "2026-11-23",
           "notes": [
@@ -937,8 +955,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.5.zip",
-        "sizeBytes": 921617
+        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.6.zip",
+        "sizeBytes": 925790
       },
       "requirements": {
         "os": "Windows 10 or 11 (64-bit), or Android 7+ through Spectra for Android",
@@ -957,8 +975,8 @@
       "tagline": "Scrap-built hull. Storm-torn sky. Bring the light home.",
       "description": "A scrap-ship salvage run through a storm-torn sky archipelago. Shoot sky-pirates apart and bolt their parts onto your hull wherever they touch. Dive into squalls and thunderheads to harvest stormlight cores, then make it back to a floating dock before the strain tears your ship apart.",
       "status": "available",
-      "version": "1.0.1",
-      "build": 4,
+      "version": "1.0.2",
+      "build": 5,
       "released": "2026-11-23",
       "achievementsFrom": "2026-11-23T13:34:38Z",
       "genres": [
@@ -969,10 +987,11 @@
         "Windows"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/lumen/Lumen-1.0.1.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/lumen/Lumen-1.0.2.zip",
       "exe": "Lumen.exe",
-      "sizeBytes": 315879,
-      "sha256": "d66c6db7a72887f6d53d11431bbc7fc90410800dc9dd43bec2c51c8a22fd721f",
+      "mods": true,
+      "sizeBytes": 319531,
+      "sha256": "7de5e4c8cc644b66185d159ccfdf1d21daa68eeaa5c8912ebdd4570a5bd85fc5",
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/lumen-cover.png?v=2",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/lumen-banner.png?v=3",
       "screenshots": [
@@ -1386,6 +1405,15 @@
       ],
       "patchNotes": [
         {
+          "version": "1.0.2",
+          "date": "2026-11-24",
+          "notes": [
+            "Spectra Workshop support: subscribe to mods and resource packs from the game page in Spectra Launcher",
+            "Resource packs recolour your ship and the menus; data mods change part stats; code mods run their own code with the voyage’s events",
+            "While a data or code mod is on, achievements are off and the title screen says MODDED"
+          ]
+        },
+        {
           "version": "1.0.1",
           "date": "2026-11-23",
           "notes": [
@@ -1420,8 +1448,8 @@
     }
   ],
   "androidApp": {
-    "version": "0.2.3",
+    "version": "0.3.0",
     "url": "https://github.com/Nautiquatic/Spectra/releases/download/Android/SpectraAndroid.apk",
-    "sizeBytes": 4634772
+    "sizeBytes": 4645728
   }
 }

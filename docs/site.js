@@ -260,11 +260,11 @@
   }
 
   let gFilter = { q: '', genre: 'All', status: 'all', android: false };
-  pages.games = () => {
+  const gamesPart = () => {
     const genres = ['All', ...new Set(GAMES.flatMap((g) => g.genres))];
     return `
     <section class="wrap page-head">
-      ${label('02', 'The spectrum')}
+      ${label('02', 'Games · The spectrum')}
       <h1>All games</h1>
       <p class="lead">Everything Spectra has made or is making. Install and play them through the Spectra Launcher.</p>
     </section>
@@ -344,9 +344,9 @@
     ${more.length ? `<section class="wrap sec">${label('→', 'More from Spectra')}<div class="index">${more.map((x) => indexRow(x, GAMES.indexOf(x))).join('')}</div></section>` : ''}`;
   };
 
-  pages.launcher = () => `
+  const launcherPart = () => `
     <section class="wrap page-head">
-      ${label('03', 'Spectra Launcher')}
+      ${label('02', 'Games · Spectra Launcher')}
       <h1>Your home for Spectra games</h1>
       <p class="lead">A small desktop app that installs, updates and launches every Spectra game, and keeps you playing with friends.</p>
       <div class="row gap wrap-row">${dlBtn()}${androidDownload('Download Android APK', 'line')}</div>
@@ -385,12 +385,12 @@
     <section class="wrap sec">${ticket()}</section>`;
 
   // ---------- leaderboards: every public board, per game, from Spectra accounts ----------
-  pages.boards = (id) => {
+  const boardsPart = (id) => {
     const list = GAMES.filter((g) => playable(g) && g.achievements.length);
     const g = byId[id] && list.includes(byId[id]) ? byId[id] : list[0];
     return `
     <section class="wrap page-head">
-      ${label('04', 'Leaderboards')}
+      ${label('03', 'Boards · Leaderboards')}
       <h1>Boards</h1>
       <p class="lead">Who has unlocked the most, and who has played the longest, from everyone with a Spectra account. Sign in to the launcher and play to appear here.</p>
     </section>
@@ -417,7 +417,7 @@
       <div class="board-col"><h3>Most achievements</h3><ol class="ranks">${byPts.map((x, i) => `<li class="${i < 3 ? 'top top' + (i + 1) : ''}"><em>${i + 1}</em>${who(x)}<span class="r-val"><b class="${x.n + x.sec > pub.length ? 'over' : ''}">${x.n + x.sec}/${pub.length}</b>${x.best && window.SpectraTiers ? window.SpectraTiers.badge(x.best) : ''}${x.sec ? `<small>${x.sec} secret</small>` : ''}<small>${x.pts} pts</small></span></li>`).join('')}</ol></div>
       <div class="board-col"><h3>Most played</h3><ol class="ranks">${byPlay.map((x, i) => `<li class="${i < 3 ? 'top top' + (i + 1) : ''}"><em>${i + 1}</em>${who(x)}<span class="r-val"><b>${fmtPlay(x.play)}</b></span></li>`).join('')}</ol>
         <h3>Rarest achievements</h3><ul class="rarity">${rarity.slice(0, full ? 20 : 6).map(({ a, pct }) => `<li class="t-${esc(a.tier || 'bronze')}"><span><b>${esc(a.hidden ? 'Hidden achievement' : a.name)}</b><small>${esc(a.hidden ? 'Unlock it to see it' : a.desc)}</small></span><span class="r-bar"><i style="width:${Math.max(2, pct)}%"></i></span><em>${pct}%</em></li>`).join('')}</ul></div>
-    </div><p class="fine">${players.length} player${players.length === 1 ? '' : 's'} with a Spectra account. Secret achievements count past the total (32/29) but are never named. <a href="#/hall">Hall of Fame</a></p>`;
+    </div><p class="fine">${players.length} player${players.length === 1 ? '' : 's'} with a Spectra account. Secret achievements count past the total (32/29) but are never named. <a href="#/boards/hall">Hall of Fame</a></p>`;
   }
   async function fillBoards() {
     const A = window.SpectraWebAccount;
@@ -439,7 +439,7 @@
   }
   pages.devlog = () => `
     <section class="wrap page-head">
-      ${label('06', 'Devlog')}
+      ${label('05', 'Devlog')}
       <h1>What changed, and why</h1>
       <p class="lead">Short posts from the studio, and the version notes for every game, the launcher and the IDE.</p>
     </section>
@@ -641,9 +641,9 @@
       <div class="ide-status"><span>⑂ main</span><span>UTF-8 · LF · Rust · Ln 3, Col 18</span></div>
     </div>`;
   }
-  pages.ide = () => `
+  const idePart = () => `
     <section class="wrap page-head ide-head">
-      ${label('07', 'Spectra IDE')}
+      ${label('02', 'Games · Spectra IDE')}
       <h1>The editor we make Spectra with</h1>
       <p class="lead">A small, fast, native code editor for Windows, laid out like the big ones. Tabs, a split view, a terminal, a command palette, and plugins for the languages and mods you work on.</p>
       <div class="row gap wrap-row">${ideBtn()}</div>
@@ -783,10 +783,92 @@
   }
 
   // ---------- router ----------
+  // ---------- Workshop: mods and resource packs (browse here, subscribe in the launcher) ----------
+  const WS_KIND = { pack: 'Resource pack', data: 'Data mod', code: 'Code mod' };
+  const wsState = { game: '', sort: 'popular' };
+  pages.workshop = (arg) => {
+    if (arg === 'guide') return `
+    <section class="wrap page-head">${label('✎', 'Workshop · Mod guide')}<h1>Make a mod</h1>
+      <p class="lead">How Workshop zips work, what each game lets you change, and examples to start from. <a href="#/workshop">Back to the Workshop</a></p></section>
+    <section class="wrap"><article class="md" id="wsGuide"><p class="muted">Loading the guide…</p></article></section>`;
+    if (arg) return `<section class="wrap"><div id="wsItem" data-id="${esc(arg)}"><p class="muted">Loading…</p></div></section>`;
+    const mg = GAMES.filter((g) => g.mods && playable(g));
+    return `
+    <section class="wrap page-head">${label('04', 'Workshop')}<h1>Workshop</h1>
+      <p class="lead">Resource packs and mods for Spectra games, made by players and checked by Spectra staff before they go up. Subscribe in Spectra Launcher (Workshop page) and it installs them for you. <a href="#/workshop/guide">Make your own</a></p></section>
+    <section class="wrap">
+      <div class="row-between ws-tools"><div class="chips">${[['', 'All games'], ...mg.map((g) => [g.id, g.title])].map(([k, l]) => `<button class="chip ${wsState.game === k ? 'on' : ''}" data-ws-game="${esc(k)}">${esc(l)}</button>`).join('')}</div>
+        <div class="chips">${[['popular', 'Popular'], ['new', 'New']].map(([k, l]) => `<button class="chip ${wsState.sort === k ? 'on' : ''}" data-ws-sort="${k}">${l}</button>`).join('')}</div></div>
+      <div id="wsGrid"><p class="muted">Loading the Workshop…</p></div>
+    </section>`;
+  };
+  async function bindWorkshop(arg) {
+    const A = window.SpectraWebAccount;
+    if (arg === 'guide') {
+      const el = document.getElementById('wsGuide');
+      try { const t = await (await fetch('workshop-guide.md?v=' + Date.now())).text(); if (el) el.innerHTML = mdToHtml(t.replace(/^# .*\n/, '')); }
+      catch { if (el) el.innerHTML = '<p class="muted">Couldn’t load the guide.</p>'; }
+      return;
+    }
+    if (arg) {
+      const el = document.getElementById('wsItem');
+      if (!A || !A.available) { el.innerHTML = '<p class="muted">The Workshop needs Spectra accounts, which aren’t available right now.</p>'; return; }
+      let it; try { it = await A.workshop.item(arg); } catch (err) { el.innerHTML = `<p class="muted">${esc(err.message)}</p>`; return; }
+      if (!it) { el.innerHTML = '<p class="lead">This item isn’t on the Workshop.</p><a class="btn line" href="#/workshop">Back to the Workshop</a>'; return; }
+      const g = byId[it.game_id], m = it.manifest || {};
+      const changes = [m.palette && 'colours', m.sounds && 'sounds', (m.css || []).length && 'menus', m.data && 'game data', (m.code || []).length && 'runs code'].filter(Boolean);
+      document.title = it.title + ' · Workshop · Spectra';
+      el.innerHTML = `<a class="back" href="#/workshop">← Workshop</a>
+        <div class="page-head ws-head">${label('✦', esc(WS_KIND[it.kind] || 'Mod') + ' · ' + esc(g ? g.title : it.game_id))}<h1>${esc(it.title)}</h1>
+          <p class="lead">${esc(it.summary || '')}</p>
+          <p class="muted">by <a href="#/u/${encodeURIComponent(it.authorP ? it.authorP.username : '')}">${esc(it.authorP ? it.authorP.display_name : 'a player')}</a>${(window.SpectraRank || (() => ''))(it.authorP)}</p></div>
+        <div class="ws-item-grid"><div class="ws-desc">${esc(it.description || 'No description.')}
+          ${it.kind === 'code' ? '<p class="ws-warn"><b>Code mod.</b> It runs its own code inside the game. Spectra staff checked this version before it went up, but only install code mods you trust.</p>' : ''}</div>
+          <aside class="ws-side"><dl class="facts">
+            <div><dt>Version</dt><dd>v${esc(it.version)}</dd></div><div><dt>Updated</dt><dd>${esc(new Date(it.live_at || it.updated_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }))}</dd></div>
+            <div><dt>Subscribers</dt><dd>${(it.subscribers || 0).toLocaleString()}</dd></div><div><dt>Changes</dt><dd>${esc(changes.join(', ') || '—')}</dd></div></dl>
+            <p class="muted">${it.kind === 'pack' ? 'Achievements and online play stay on with resource packs.' : 'Achievements and online play are off while a data or code mod is on.'}</p>
+            <p>To get it, open <b>Spectra Launcher → Workshop</b>, find “${esc(it.title)}” and press Subscribe.</p>
+            <a class="btn solid full" href="#/download" data-download>Get Spectra Launcher</a></aside></div>`;
+      return;
+    }
+    const grid = document.getElementById('wsGrid');
+    const draw = async () => {
+      if (!grid) return;
+      if (!A || !A.available) { grid.innerHTML = '<p class="muted">The Workshop needs Spectra accounts, which aren’t available right now.</p>'; return; }
+      grid.innerHTML = '<p class="muted">Loading the Workshop…</p>';
+      let rows; try { rows = await A.workshop.list(wsState); } catch (err) { grid.innerHTML = `<p class="muted">${esc(err.message)}</p>`; return; }
+      grid.innerHTML = rows.length ? `<div class="ws-grid">${rows.map((it) => `<a class="ws-card k-${esc(it.kind)}" href="#/workshop/${esc(it.id)}">
+          <span class="ws-kind">${esc(WS_KIND[it.kind] || 'Mod')}</span><b>${esc(it.title)}</b><span class="muted">${esc(it.summary || '')}</span>
+          <small>${esc(byId[it.game_id] ? byId[it.game_id].title : it.game_id)} · by ${esc(it.authorP ? it.authorP.display_name : 'a player')} · ${(it.subscribers || 0).toLocaleString()} subscribers</small></a>`).join('')}</div>`
+        : '<p class="muted">No mods here yet. <a href="#/workshop/guide">Make the first one</a>.</p>';
+    };
+    document.querySelectorAll('[data-ws-game]').forEach((b) => (b.onclick = () => { wsState.game = b.dataset.wsGame; document.querySelectorAll('[data-ws-game]').forEach((x) => x.classList.toggle('on', x === b)); draw(); }));
+    document.querySelectorAll('[data-ws-sort]').forEach((b) => (b.onclick = () => { wsState.sort = b.dataset.wsSort; document.querySelectorAll('[data-ws-sort]').forEach((x) => x.classList.toggle('on', x === b)); draw(); }));
+    draw();
+  }
+  // a small Markdown renderer for the mod guide: headings, paragraphs, lists, tables, code, links, bold
+  function mdToHtml(md) {
+    const inline = (t) => esc(t).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+      .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, txt, href) => (/^(https:|#|assets\/)/.test(href) ? `<a href="${href}"${/^https:/.test(href) ? ' target="_blank" rel="noopener"' : ''}>${txt}</a>` : txt));
+    const out = [], lines = md.replace(/\r/g, '').split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const l = lines[i];
+      if (/^```/.test(l)) { const buf = []; while (++i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i]); out.push(`<pre><code>${esc(buf.join('\n'))}</code></pre>`); continue; }
+      const h = /^(#{1,4}) (.*)/.exec(l); if (h) { out.push(`<h${h[1].length + 1}>${inline(h[2])}</h${h[1].length + 1}>`); continue; }
+      if (/^\|/.test(l)) { const rows = []; while (i < lines.length && /^\|/.test(lines[i])) rows.push(lines[i++]); i--; const cells = (r) => r.replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+        out.push(`<table><thead><tr>${cells(rows[0]).map((c) => `<th>${inline(c)}</th>`).join('')}</tr></thead><tbody>${rows.slice(2).map((r) => `<tr>${cells(r).map((c) => `<td>${inline(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`); continue; }
+      if (/^\s*- /.test(l)) { const items = []; while (i < lines.length && /^\s*(- |  \S)/.test(lines[i])) { if (/^\s*- /.test(lines[i])) items.push(lines[i].replace(/^\s*- /, '')); else items[items.length - 1] += ' ' + lines[i].trim(); i++; } i--; out.push(`<ul>${items.map((x) => `<li>${inline(x)}</li>`).join('')}</ul>`); continue; }
+      if (!l.trim()) continue;
+      const para = [l]; while (i + 1 < lines.length && lines[i + 1].trim() && !/^(#|```|\||\s*- )/.test(lines[i + 1])) para.push(lines[++i]);
+      out.push(`<p>${inline(para.join(' '))}</p>`);
+    }
+    return out.join('\n');
+  }
   // ---------- Hall of Fame: players who got every achievement (opt-in) ----------
-  pages.hall = () => `
+  const hallPart = () => `
     <section class="wrap page-head">
-      ${label('05', 'Hall of Fame')}
+      ${label('03', 'Boards · Hall of Fame')}
       <h1>Hall of Fame</h1>
       <p class="lead">Players who unlocked every achievement in every released Spectra game. <b>Achievement Specialist</b> means every achievement; <b>Achievement Master</b> means the secret ones too. When new achievements arrive, holders become “Former” until they catch up. Checked by the Spectra servers; playtests and unreleased games don’t count.</p>
       <div id="hallMe"></div>
@@ -903,11 +985,25 @@
     } catch (err) { pane.innerHTML = `<p class="muted">${esc(err.message)}</p>`; }
   }
 
+  // ---------- merged pages: Games (games, the launcher, the IDE) and Boards (leaderboards, Hall of Fame) ----------
+  const subnav = (base, cur, items) => `<nav class="wrap subnav" aria-label="${esc(base)}">${items.map(([k, l]) => `<a href="#/${base}${k ? '/' + k : ''}" class="${cur === k ? 'on' : ''}" ${cur === k ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>`;
+  pages.games = (arg) => {
+    const tab = arg === 'launcher' || arg === 'ide' ? arg : '';
+    return subnav('games', tab, [['', 'Games'], ['launcher', 'Spectra Launcher'], ['ide', 'Spectra IDE']])
+      + (tab === 'launcher' ? launcherPart() : tab === 'ide' ? idePart() : gamesPart());
+  };
+  pages.boards = (arg) => {
+    const tab = arg === 'hall' ? 'hall' : '';
+    return subnav('boards', tab, [['', 'Leaderboards'], ['hall', 'Hall of Fame']]) + (tab === 'hall' ? hallPart() : boardsPart(arg));
+  };
+  // old addresses still work
+  const ALIASES = { launcher: ['games', 'launcher'], ide: ['games', 'ide'], hall: ['boards', 'hall'] };
   function route() {
     const h = location.hash.replace(/^#\/?/, '');
     const [name, raw, rawExtra] = h.split('/');
     const decode = (value) => { try { return decodeURIComponent(value || ''); } catch { return ''; } };
-    const arg = decode(raw), extra = decode(rawExtra);
+    let arg = decode(raw), extra = decode(rawExtra);
+    if (ALIASES[name]) { history.replaceState(null, '', '#/' + ALIASES[name].join('/')); return route(); }
     const accountRoute = ['account', 'u', 'join'].includes(name);
     const key = accountRoute ? 'account' : Object.hasOwn(pages, name) ? name : 'home';
     if (beamStop) beamStop();
@@ -916,7 +1012,7 @@
       window.SpectraAccountPages.render({ root: app.firstElementChild, section: name, arg, extra, games: byId, playable });
     } else app.innerHTML = `<div class="page page-${key}">${pages[key](arg)}</div>`;
     document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === (key === 'game' ? 'games' : key)));
-    document.title = key === 'game' && byId[arg] ? `${byId[arg].title} · Spectra` : accountRoute ? 'Account · Spectra' : ({ hall: 'Hall of Fame · Spectra', admin: 'Admin · Spectra', boards: 'Leaderboards · Spectra', devlog: 'Devlog · Spectra', ide: 'Spectra IDE', report: arg === 'inbox' ? 'Reports inbox · Spectra' : 'Report a problem · Spectra' })[key] || 'Spectra · Light goes in. Games come out.';
+    document.title = key === 'game' && byId[arg] ? `${byId[arg].title} · Spectra` : accountRoute ? 'Account · Spectra' : ({ workshop: 'Workshop · Spectra', admin: 'Admin · Spectra', boards: arg === 'hall' ? 'Hall of Fame · Spectra' : 'Leaderboards · Spectra', games: arg === 'launcher' ? 'Spectra Launcher' : arg === 'ide' ? 'Spectra IDE' : 'Games · Spectra', devlog: 'Devlog · Spectra', ide: 'Spectra IDE', report: arg === 'inbox' ? 'Reports inbox · Spectra' : 'Report a problem · Spectra' })[key] || 'Spectra · Light goes in. Games come out.';
     document.body.classList.remove('menu-open');
     document.getElementById('menuBtn').setAttribute('aria-expanded', 'false');
     if (key === 'home') {
@@ -930,12 +1026,13 @@
     if (key === 'devlog') loadDevlog().then(renderDevlog);
     if (key === 'report') bindReport(arg);
     if (key === 'game') fillReviews();
-    if (key === 'hall') renderHall();
+    if (key === 'boards' && arg === 'hall') renderHall();
+    if (key === 'workshop') bindWorkshop(arg);
     if (key === 'admin') { adminState.role = null; renderAdmin(); }
     prefillNotify();
     bindTour();
     bindReveal();
-    if (h === 'launcher' && window._faq) { window._faq = false; setTimeout(() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' }), 50); }
+    if (key === 'games' && arg === 'launcher' && window._faq) { window._faq = false; setTimeout(() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' }), 50); }
     else window.scrollTo({ top: 0, behavior: 'instant' });
   }
   function bindGames() {

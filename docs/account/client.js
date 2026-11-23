@@ -243,6 +243,33 @@
     return rows;
   };
 
+  // ---------- Spectra Workshop (browse only; subscribing happens in the launcher) ----------
+  const WS_COLS = 'id,game_id,author,kind,title,summary,description,version,size_bytes,manifest,subscribers,live_at,updated_at';
+  const wsAuthors = async (rows) => {
+    const ids = [...new Set(rows.map((r) => r.author))];
+    if (!ids.length) return rows;
+    const ps = must(await client().from('profiles').select(profileFields).in('id', ids));
+    await decorate(ps.map((p) => [p.id, p]));
+    const by = Object.fromEntries(ps.map((p) => [p.id, p]));
+    return rows.map((r) => ({ ...r, authorP: by[r.author] || null }));
+  };
+  const workshop = {
+    async list({ game = '', sort = 'popular' } = {}) {
+      let q = client().from('workshop_items').select(WS_COLS).not('version', 'is', null).eq('hidden', false);
+      if (game) q = q.eq('game_id', game);
+      q = sort === 'new' ? q.order('live_at', { ascending: false }) : q.order('subscribers', { ascending: false });
+      const { data, error } = await q.limit(200);
+      if (error) throw new Error(missingFn(error) ? 'The Workshop opens soon.' : 'Couldn’t load the Workshop. Try again in a moment.');
+      return wsAuthors(data || []);
+    },
+    async item(id) {
+      if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+      const { data, error } = await client().from('workshop_items').select(WS_COLS).eq('id', id).not('version', 'is', null).maybeSingle();
+      if (error) throw new Error(missingFn(error) ? 'The Workshop opens soon.' : 'Couldn’t load that item.');
+      return data ? (await wsAuthors([data]))[0] : null;
+    },
+  };
+
   // ---------- the Hall of Fame (opt-in; supabase/achievements.sql) ----------
   const missingFn = (e) => e && (e.code === 'PGRST202' || e.code === '42P01' || e.code === 'PGRST205' || /could not find the function|does not exist|schema cache/i.test(e.message || ''));
   const hallOfFame = async () => {
@@ -330,7 +357,7 @@
 
   window.SpectraWebAccount = {
     available: !!sb, usernamePattern, gameIdPattern, user, profile, byUsername, extras, privateLibrary, stats, signIn, ids, leaderboard, notify,
-    report, myReports, isAdmin, allReports, updateReport, deleteReport, reviews, hallOfFame, inHall, setHall, myRole, myBan, admin, setBadgePrefs,
+    report, myReports, isAdmin, allReports, updateReport, deleteReport, reviews, hallOfFame, inHall, setHall, myRole, myBan, admin, setBadgePrefs, workshop,
     onSessionChange(fn) {
       sb?.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') setTimeout(() => fn(session?.user || null), 0);
