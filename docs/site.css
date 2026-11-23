@@ -655,3 +655,11 @@ button.shot { padding: 0; border: 0; cursor: zoom-in; background: var(--bg-2, #1
 .rv-av { width: 26px; height: 26px; display: inline-grid; place-items: center; font: 700 12px var(--body); color: #08080c; }
 .rv p { margin: 10px 0 0; color: #cfccd6; line-height: 1.5; white-space: pre-wrap; }
 .rv .fine { margin-top: 10px; display: block; }
+
+/* ---------- ranks ---------- */
+.rank-badge { display: inline-flex; align-items: center; margin-left: 8px; padding: 2px 7px; font: 700 10px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; vertical-align: middle; white-space: nowrap; border: 1px solid currentColor; }
+h1 .rank-badge { font-size: 13px; padding: 5px 11px; margin-left: 16px; transform: translateY(-0.4em); }
+.rank-badge.r-owner { color: #08080c; border: 0; background: linear-gradient(90deg, var(--r1), var(--r2), var(--r3), var(--r4), var(--r5), var(--r6)); }
+.rank-badge.r-admin { color: #ff6b6b; }
+.rank-badge.r-moderator { color: #5ec8ff; }
+.rank-badge.r-tester { color: #5ee8a4; }

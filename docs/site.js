@@ -406,7 +406,7 @@
       return { p: r.profiles, play: Number(r.playtime) || 0, n: got.filter((a) => !a.secret).length, sec: got.filter((a) => a.secret).length, pts: got.reduce((s, a) => s + (TIER_PTS[a.tier] || 1), 0), got };
     }).filter((x) => x.play > 0 || x.got.length);
     if (!players.length) return '<p class="muted">No one is on this board yet. Play with a Spectra account to be first.</p>';
-    const who = (x) => `<a class="who" href="#/u/${encodeURIComponent(x.p.username)}"><b style="background:${/^#[0-9a-f]{6}$/i.test(x.p.avatar_color || '') ? x.p.avatar_color : '#927dff'}">${esc((x.p.display_name || x.p.username).slice(0, 1).toUpperCase())}</b><span>${esc(x.p.display_name || x.p.username)}<small>@${esc(x.p.username)}</small></span></a>`;
+    const who = (x) => `<a class="who" href="#/u/${encodeURIComponent(x.p.username)}"><b style="background:${/^#[0-9a-f]{6}$/i.test(x.p.avatar_color || '') ? x.p.avatar_color : '#927dff'}">${esc((x.p.display_name || x.p.username).slice(0, 1).toUpperCase())}</b><span>${esc(x.p.display_name || x.p.username)}${(window.SpectraRank || (() => ''))(x.p)}<small>@${esc(x.p.username)}</small></span></a>`;
     const byPts = players.slice().sort((a, b) => b.pts - a.pts || b.n - a.n || b.play - a.play).slice(0, full ? 25 : 10);
     const byPlay = players.slice().sort((a, b) => b.play - a.play).slice(0, full ? 10 : 5);
     const rarity = pub.map((a) => ({ a, pct: Math.round((100 * players.filter((x) => Number(x.got.includes(a))).length) / players.length) })).sort((x, y) => x.pct - y.pct);
@@ -614,7 +614,7 @@
     const avg = rows.reduce((a, r) => a + r.stars, 0) / rows.length;
     const time = (s) => (s >= 3600 ? Math.floor(s / 3600) + 'h ' : '') + Math.floor((s % 3600) / 60) + 'm';
     el.innerHTML = `<div class="rv-top"><b>${avg.toFixed(1)}</b>${stars(avg)}<span class="fine">${rows.length} review${rows.length === 1 ? '' : 's'}</span></div>
-      <div class="rv-list">${rows.slice(0, 6).map((r) => `<div class="rv"><div class="rv-head"><a href="#/u/${esc(r.profiles.username)}"><span class="rv-av" style="background:${esc(r.profiles.avatar_color || '#927dff')}">${esc((r.profiles.display_name || '?')[0].toUpperCase())}</span>${esc(r.profiles.display_name)}</a>${stars(r.stars)}</div>
+      <div class="rv-list">${rows.slice(0, 6).map((r) => `<div class="rv"><div class="rv-head"><a href="#/u/${esc(r.profiles.username)}"><span class="rv-av" style="background:${esc(r.profiles.avatar_color || '#927dff')}">${esc((r.profiles.display_name || '?')[0].toUpperCase())}</span>${esc(r.profiles.display_name)}${(window.SpectraRank || (() => ''))(r.profiles)}</a>${stars(r.stars)}</div>
         ${r.body ? `<p>${esc(r.body)}</p>` : ''}<span class="fine">${time(r.playtime || 0)} played · ${fmtDate(r.updated_at)}</span></div>`).join('')}</div>${hint}`;
   }
 

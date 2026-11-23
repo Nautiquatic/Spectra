@@ -77,12 +77,22 @@
     attempts.length = 0;
     return data.user;
   };
-  const profile = async (id) => must(await client().from('profiles').select(profileFields).eq('id', id).maybeSingle());
+  // ranks (owner, admin, …; supabase/roles.sql). Missing table = no ranks, never an error.
+  const RANKS = { owner: 'Owner', admin: 'Admin', moderator: 'Mod', tester: 'Tester' };
+  window.SpectraRank = (p) => (p && RANKS[p.role] ? `<span class="rank-badge r-${p.role}" title="Spectra ${RANKS[p.role]}">${RANKS[p.role]}</span>` : '');
+  const rolesFor = async (ids) => {
+    ids = [...new Set(ids.filter(Boolean))];
+    if (!ids.length) return {};
+    const { data, error } = await client().from('user_roles').select('user_id,role').in('user_id', ids.slice(0, 500));
+    return error ? {} : Object.fromEntries((data || []).map((r) => [r.user_id, r.role]));
+  };
+  const withRole = async (p) => { if (p) p.role = (await rolesFor([p.id]))[p.id] || null; return p; };
+  const profile = async (id) => withRole(must(await client().from('profiles').select(profileFields).eq('id', id).maybeSingle()));
   async function byUsername(name) {
     if (!usernamePattern.test(name)) return null;
     const query = name.replaceAll('_', '\\_');
     const result = must(await client().from('profiles').select(profileFields).ilike('username', query).maybeSingle());
-    return result?.username.toLowerCase() === name.toLowerCase() ? result : null;
+    return result?.username.toLowerCase() === name.toLowerCase() ? withRole(result) : null;
   }
   const extras = async (id) => must(await client().from('game_stats').select('achievements')
     .eq('user_id', id).eq('game_id', profileMetadata).maybeSingle())?.achievements || {};
@@ -97,8 +107,11 @@
   // every player's public stats for one game, with their public profile (for the leaderboards)
   const leaderboard = async (gameId) => {
     if (!gameIdPattern.test(gameId) || gameId === profileMetadata) return [];
-    return must(await client().from('game_stats').select('user_id,playtime,achievements,last_played,profiles(username,display_name,avatar_color)')
+    const rows = must(await client().from('game_stats').select('user_id,playtime,achievements,last_played,profiles(username,display_name,avatar_color)')
       .eq('game_id', gameId).limit(500));
+    const roles = await rolesFor(rows.map((r) => r.user_id));
+    rows.forEach((r) => { if (r.profiles) r.profiles.role = roles[r.user_id] || null; });
+    return rows;
   };
   // "notify me" for games that aren't out yet: an email and a game, nothing else (see supabase/notify.sql)
   const notify = async (email, gameId) => {
@@ -169,10 +182,13 @@
   // public game reviews (written in the launcher after playing; see supabase/reviews.sql)
   const reviews = async (gameId) => {
     if (!sb || !gameIdPattern.test(gameId)) return [];
-    const { data, error } = await client().from('reviews').select('stars,body,playtime,updated_at,profiles(username,display_name,avatar_color)')
+    const { data, error } = await client().from('reviews').select('user_id,stars,body,playtime,updated_at,profiles(username,display_name,avatar_color)')
       .eq('game_id', gameId).order('updated_at', { ascending: false }).limit(200);
     if (error) return [];
-    return (data || []).filter((r) => r.profiles);
+    const rows = (data || []).filter((r) => r.profiles);
+    const roles = await rolesFor(rows.map((r) => r.user_id));
+    rows.forEach((r) => { r.profiles.role = roles[r.user_id] || null; });
+    return rows;
   };
 
   window.SpectraWebAccount = {
@@ -259,6 +275,8 @@
       if (!rows.length) return result;
       const players = new Map(must(await client().from('profiles').select(profileFields)
         .in('id', [...new Set(rows.map(idOf))])).map((entry) => [entry.id, entry]));
+      const roles = await rolesFor([...players.keys()]);
+      players.forEach((p, id) => { p.role = roles[id] || null; });
       for (const row of rows) {
         const entry = players.get(idOf(row));
         if (entry) result[row.status === 'accepted' ? 'accepted' : row.addressee === account.id ? 'incoming' : 'outgoing'].push(entry);

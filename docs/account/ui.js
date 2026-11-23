@@ -167,7 +167,7 @@
       <header class="player-panel player-identity" style="--profile-accent:${avatarColor(p)}">
         ${avatar(p, extras, true)}
         <div class="player-identity-text">
-          <h1>${esc(p.display_name || p.username)}</h1>
+          <h1>${esc(p.display_name || p.username)}${(window.SpectraRank || (() => ''))(p)}</h1>
           <p class="muted">&#64;${esc(p.username)}${date(p.created_at) ? ' · Joined ' + esc(date(p.created_at)) : ''}</p>
           ${presenceLine(presence, games, now)}
           ${p.bio ? `<p class="player-bio">${esc(p.bio)}</p>` : ownProfile ? '<a class="player-bio-link" href="#/account/settings/bio">Add a bio</a>' : ''}
@@ -236,7 +236,7 @@
 
   function friendsPage(groups) {
     const list = (key, title, empty, remove) => `<section class="account-card"><h2>${title}</h2>
-      ${groups[key].length ? groups[key].map((p) => `<div class="account-friend"><a href="${userLink(p.username)}">${avatar(p)}<span>${esc(p.display_name)} <small>&#64;${esc(p.username)}</small></span></a>
+      ${groups[key].length ? groups[key].map((p) => `<div class="account-friend"><a href="${userLink(p.username)}">${avatar(p)}<span>${esc(p.display_name)}${(window.SpectraRank || (() => ''))(p)} <small>&#64;${esc(p.username)}</small></span></a>
         <div class="account-actions">${key === 'incoming' ? button('Accept', 'accept-friend', p.username) : ''}${button(remove, 'remove-friend', p.username)}</div></div>`).join('')
         : `<p class="muted">${empty}</p>`}</section>`;
     return layout('Friends', feedbackLine + `<div class="account-columns">
