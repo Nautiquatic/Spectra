@@ -317,6 +317,7 @@
         ${Array.isArray(g.screenshots) && g.screenshots.length ? `<div class="shots">${g.screenshots.map((s, i) => `<button class="shot" type="button" data-shot="${esc(s)}" aria-label="Open screenshot ${i + 1}"><img src="${esc(s)}" alt="${esc(g.title)} screenshot ${i + 1}" loading="lazy"></button>`).join('')}</div>` : ''}
         ${g.features.length ? `${label('A', 'Features')}<ol class="feats">${g.features.map((f) => `<li>${esc(f)}</li>`).join('')}</ol>` : ''}
         ${g.achievements.length ? `${label('B', `Achievements · ${g.achievements.filter((a) => !a.secret).length}`)}<div class="ach">${g.achievements.filter((a) => !a.secret).map((a, i) => a.hidden ? '<div class="secret"><em>??</em><span><b>Hidden</b><p>Unlock it in the game to find out.</p></span></div>' : `<div><em>${String(i + 1).padStart(2, '0')}</em><span><b>${esc(a.name)}</b><p>${esc(a.desc)}</p></span></div>`).join('')}</div>` : ''}
+        ${playable(g) ? `${label('★', 'Player reviews')}<div class="reviews" data-reviews="${esc(g.id)}"><p class="muted">Loading reviews…</p></div>` : ''}
         ${playable(g) && g.achievements.length ? `${label('B', 'Leaderboard')}<div class="board" data-board="${esc(g.id)}"><p class="muted">Loading the leaderboard…</p></div>` : ''}
         ${playable(g) && g.patchNotes.length ? `${label('C', 'Patch notes')}<div class="patches">${g.patchNotes.map((p) => `<div class="patch"><div class="p-head"><b>${esc(p.version)}</b><time>${fmtDate(p.date)}</time></div><ul>${(p.notes || []).map((n) => `<li>${esc(n)}</li>`).join('')}</ul></div>`).join('')}</div>` : ''}
       </div>
@@ -335,6 +336,7 @@
         </dl>
         ${g.requirements ? `<div class="reqs">${label('D', 'System requirements')}<dl class="spec">${[['os', 'OS'], ['processor', 'Processor'], ['memory', 'Memory'], ['graphics', 'Graphics'], ['storage', 'Storage'], ['online', 'Internet']].filter(([k]) => g.requirements[k]).map(([k, l]) => `<div><dt>${l}</dt><dd>${esc(g.requirements[k])}</dd></div>`).join('')}</dl></div>` : ''}
         ${playable(g) && g.achievements.length ? `<a class="btn line sm full" href="#/boards/${esc(g.id)}">All leaderboards ${arrow}</a>` : ''}
+        ${playable(g) ? `<a class="btn line sm full report-link" href="#/report/${esc(g.id)}">Report a problem with ${esc(g.title)}</a>` : ''}
       </aside>
     </section>
     ${more.length ? `<section class="wrap sec">${label('→', 'More from Spectra')}<div class="index">${more.map((x) => indexRow(x, GAMES.indexOf(x))).join('')}</div></section>` : ''}`;
@@ -451,6 +453,169 @@
       <div class="devlog">${items.map((p) => `<article class="dev ${p.kind}"><div class="dev-meta"><time>${fmtDate(p.date)}</time><span class="tag info">${esc(p.tag || 'Studio')}</span>${p.version ? `<span class="dev-ver">v${esc(p.version)}</span>` : ''}</div>
         <div class="dev-body"><h3>${p.game && byId[p.game] ? `<a href="#/game/${esc(p.game)}">${esc(p.title)}</a>` : esc(p.title)}</h3>${p.body ? `<p>${esc(p.body)}</p>` : ''}${p.notes && p.notes.length ? `<details><summary>${p.notes.length} change${p.notes.length === 1 ? '' : 's'}</summary><ul>${p.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul></details>` : ''}</div></article>`).join('') || '<p class="muted">Nothing here yet.</p>'}</div>`;
     el.querySelectorAll('[data-devtag]').forEach((b) => b.addEventListener('click', () => { devFilter = b.dataset.devtag; renderDevlog(); }));
+  }
+
+  // ---------- report a problem / feedback (stored privately in Supabase: supabase/reports.sql) ----------
+  const REPORT_KINDS = [['bug', 'Bug'], ['crash', 'Crash'], ['performance', 'Slow / laggy'], ['feedback', 'Feedback'], ['idea', 'Idea'], ['other', 'Something else']];
+  const REPORT_STATUS = { new: 'Received', seen: 'Seen', 'in-progress': 'Being worked on', fixed: 'Fixed', 'wont-fix': "Won't fix", duplicate: 'Already reported' };
+  const reportTargets = () => [
+    ...GAMES.map((g) => [g.id, g.title]),
+    ['launcher', 'Spectra Launcher'], ['android-app', 'Spectra for Android'], ['ide', 'Spectra IDE'], ['website', 'This website'], ['other', 'Something else'],
+  ];
+  const targetName = (id) => (reportTargets().find(([k]) => k === id) || [id, id])[1];
+  const versionOf = (id) => (byId[id] && playable(byId[id]) ? byId[id].version || '' : id === 'launcher' ? CFG.launcherVersion || '' : id === 'android-app' ? (ANDROID && ANDROID.version) || '' : id === 'ide' ? CFG.ideVersion || '' : '');
+  pages.report = (arg) => {
+    if (arg === 'inbox') return `
+    <section class="wrap page-head">
+      ${label('✉', 'Reports inbox')}
+      <h1>Reports</h1>
+      <p class="lead">Every bug report and piece of feedback sent from the website and the launcher. Only Spectra admins can see this page.</p>
+    </section>
+    <section class="wrap"><div id="inbox"><p class="muted">Loading…</p></div></section>`;
+    const pick = byId[arg] || ['launcher', 'android-app', 'ide', 'website', 'other'].includes(arg) ? arg : '';
+    return `
+    <section class="wrap page-head">
+      ${label('?', 'Report a problem')}
+      <h1>Found a bug? Tell us.</h1>
+      <p class="lead">Bugs, crashes, lag, ideas or anything else about a Spectra game, the launcher or this site. Reports come straight to the Spectra team and stay private.</p>
+    </section>
+    <section class="wrap report-wrap">
+      <form class="report-form" id="reportForm" novalidate>
+        <label class="rf-field"><span>What is it about?</span>
+          <select name="game" required><option value="">Choose…</option>${reportTargets().map(([k, l]) => `<option value="${esc(k)}" ${k === pick ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>
+        <div class="rf-field"><span>What kind of report?</span>
+          <div class="chips rf-kinds" role="radiogroup">${REPORT_KINDS.map(([k, l], i) => `<label class="chip ${i === 0 ? 'on' : ''}"><input type="radio" name="kind" value="${k}" ${i === 0 ? 'checked' : ''}>${esc(l)}</label>`).join('')}</div></div>
+        <label class="rf-field"><span>Title</span><input name="title" maxlength="120" placeholder="For example: Game freezes when the leviathan appears" required></label>
+        <label class="rf-field"><span>What happened?</span><textarea name="details" rows="5" maxlength="4000" placeholder="What did you expect, and what happened instead?" required></textarea></label>
+        <label class="rf-field" data-steps><span>Steps to make it happen again <em>(optional)</em></span><textarea name="steps" rows="3" maxlength="2000" placeholder="1. Start a story run&#10;2. Pick the Lancer&#10;3. …"></textarea></label>
+        <div class="rf-row">
+          <label class="rf-field"><span>Version <em>(optional)</em></span><input name="version" maxlength="40" value="${esc(versionOf(pick))}" placeholder="e.g. 1.4.4"></label>
+          <label class="rf-field"><span>Played on</span><select name="platform"><option value="windows">Windows</option><option value="android">Android</option><option value="browser">Web browser</option><option value="other">Other</option></select></label>
+        </div>
+        <label class="rf-field"><span>Email for a reply <em>(optional)</em></span><input name="contact" type="email" maxlength="254" placeholder="you@example.com" autocomplete="email"></label>
+        <label class="rf-trap" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label>
+        <p class="fine rf-who" id="reportWho">Signed-out reports are anonymous unless you leave an email.</p>
+        <div class="row gap wrap-row"><button class="btn solid" type="submit">Send report</button><span class="rf-msg" id="reportMsg" role="status"></span></div>
+      </form>
+      <aside class="report-side">
+        ${label('i', 'Good reports')}
+        <ul class="rf-tips"><li>One problem per report.</li><li>Say what you did just before it happened.</li><li>Include the version. It's on the game's page in the launcher.</li><li>For crashes, say what was on screen.</li></ul>
+        <div id="myReports"></div>
+      </aside>
+    </section>`;
+  };
+  async function bindReport(arg) {
+    const A = window.SpectraWebAccount;
+    if (arg === 'inbox') return renderInbox();
+    const f = document.getElementById('reportForm');
+    if (!f) return;
+    const sync = () => {
+      f.querySelectorAll('.rf-kinds .chip').forEach((c) => c.classList.toggle('on', c.querySelector('input').checked));
+      const k = f.kind.value;
+      f.querySelector('[data-steps]').hidden = !['bug', 'crash', 'performance'].includes(k);
+    };
+    f.addEventListener('change', (e) => {
+      if (e.target.name === 'game' && !f.version.dataset.touched) f.version.value = versionOf(f.game.value);
+      if (e.target.name === 'game' && f.game.value === 'android-app') f.platform.value = 'android';
+      sync();
+    });
+    f.version.addEventListener('input', () => { f.version.dataset.touched = '1'; });
+    sync();
+    let me = null;
+    try { me = A && A.available ? await A.user() : null; } catch {}
+    if (me) {
+      document.getElementById('reportWho').textContent = 'You are signed in, so you can see this report and our reply under “Your reports”.';
+      if (me.email && !f.contact.value) f.contact.value = me.email;
+      renderMyReports();
+    }
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('reportMsg'), btn = f.querySelector('button[type=submit]');
+      msg.classList.remove('bad');
+      if (f.website.value) { msg.textContent = 'Thanks!'; return; } // a bot filled the hidden field
+      try {
+        if (!A || !A.available) throw new Error('Reports aren’t available right now. Try again later.');
+        btn.disabled = true; msg.textContent = 'Sending…';
+        await A.report({ game: f.game.value, kind: f.kind.value, title: f.elements.title.value, details: f.details.value, steps: f.querySelector('[data-steps]').hidden ? '' : f.steps.value, version: f.version.value, platform: f.platform.value, contact: f.contact.value });
+        const what = targetName(f.game.value);
+        f.outerHTML = `<div class="report-done"><h3>Thanks, we've got it.</h3><p>Your report about ${esc(what)} is with the Spectra team.${me ? ' You can follow it under “Your reports”.' : f.contact.value ? ' If we need more detail, we’ll email you.' : ''}</p><a class="btn line sm" href="#/report/${esc(f.game.value)}" data-again>Send another report</a></div>`;
+        document.querySelector('[data-again]')?.addEventListener('click', (ev) => { ev.preventDefault(); route(); });
+        if (me) renderMyReports();
+      } catch (err) { msg.textContent = err.message; msg.classList.add('bad'); btn.disabled = false; }
+    });
+  }
+  async function renderMyReports() {
+    const el = document.getElementById('myReports');
+    const A = window.SpectraWebAccount;
+    if (!el || !A) return;
+    try {
+      const rows = await A.myReports();
+      if (!rows.length) { el.innerHTML = ''; return; }
+      el.innerHTML = `${label('↺', 'Your reports')}<div class="my-reports">${rows.map((r) => `<div class="my-report"><div class="row between"><b>${esc(r.title)}</b><span class="rstat s-${esc(r.status)}">${esc(REPORT_STATUS[r.status] || r.status)}</span></div>
+        <span class="fine">${esc(targetName(r.game))} · ${fmtDate(r.created_at)}</span>${r.reply ? `<p class="my-reply"><b>Spectra:</b> ${esc(r.reply)}</p>` : ''}</div>`).join('')}</div>`;
+    } catch { el.innerHTML = ''; }
+  }
+  let inboxFilter = { status: 'open', game: '' };
+  async function renderInbox() {
+    const el = document.getElementById('inbox');
+    const A = window.SpectraWebAccount;
+    if (!el) return;
+    if (!A || !A.available || !(await A.isAdmin().catch(() => false))) {
+      el.innerHTML = `<p class="lead">This page is for the Spectra team. ${A && A.available ? '<a href="#/account">Sign in</a> with an admin account.' : ''}</p><a class="btn line" href="#/report">Report a problem instead</a>`;
+      return;
+    }
+    let rows;
+    try { rows = await A.allReports(); } catch (err) { el.innerHTML = `<p class="lead">${esc(err.message)}</p>`; return; }
+    const open = (r) => ['new', 'seen', 'in-progress'].includes(r.status);
+    const list = rows.filter((r) => (inboxFilter.status === 'all' || (inboxFilter.status === 'open' ? open(r) : r.status === inboxFilter.status)) && (!inboxFilter.game || r.game === inboxFilter.game));
+    const games = [...new Set(rows.map((r) => r.game))];
+    const kindName = Object.fromEntries(REPORT_KINDS);
+    el.innerHTML = `<div class="inbox-tools">
+        <div class="chips">${[['open', `Open (${rows.filter(open).length})`], ['new', `New (${rows.filter((r) => r.status === 'new').length})`], ['fixed', 'Fixed'], ['all', `All (${rows.length})`]].map(([k, l]) => `<button class="chip ${inboxFilter.status === k ? 'on' : ''}" data-ifs="${k}">${esc(l)}</button>`).join('')}</div>
+        <select id="inboxGame"><option value="">Everything</option>${games.map((g) => `<option value="${esc(g)}" ${inboxFilter.game === g ? 'selected' : ''}>${esc(targetName(g))}</option>`).join('')}</select>
+      </div>
+      ${list.length ? list.map((r) => `<article class="inbox-item ${r.status === 'new' ? 'is-new' : ''}" data-rid="${r.id}">
+        <div class="ii-head"><div><span class="tag info">${esc(kindName[r.kind] || r.kind)}</span><span class="fine">#${r.id} · ${esc(targetName(r.game))}${r.version ? ' v' + esc(r.version) : ''} · ${esc(r.platform || '')} · ${new Date(r.created_at).toLocaleString()}</span></div><span class="rstat s-${esc(r.status)}">${esc(REPORT_STATUS[r.status] || r.status)}</span></div>
+        <h3>${esc(r.title)}</h3>
+        <p class="ii-text">${esc(r.details)}</p>
+        ${r.steps ? `<p class="ii-steps"><b>Steps</b><br>${esc(r.steps)}</p>` : ''}
+        <p class="fine">${r.contact ? `Reply to <a href="mailto:${esc(r.contact)}?subject=${encodeURIComponent('Your Spectra report: ' + r.title)}">${esc(r.contact)}</a>` : 'No email given'}${r.user_id ? ' · signed-in player (sees your reply on this site)' : ' · anonymous'}</p>
+        <div class="ii-act">
+          <select data-ist>${Object.entries(REPORT_STATUS).map(([k, l]) => `<option value="${k}" ${r.status === k ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
+          <input data-irp maxlength="2000" placeholder="Reply the player sees (optional)" value="${esc(r.reply)}">
+          <button class="btn line sm" data-isave>Save</button><button class="btn line sm" data-idel title="Delete report">Delete</button><span class="fine" data-imsg></span>
+        </div></article>`).join('') : '<p class="muted">Nothing here. Nice.</p>'}`;
+    el.querySelectorAll('[data-ifs]').forEach((b) => b.addEventListener('click', () => { inboxFilter.status = b.dataset.ifs; renderInbox(); }));
+    el.querySelector('#inboxGame').addEventListener('change', (e) => { inboxFilter.game = e.target.value; renderInbox(); });
+    el.querySelectorAll('.inbox-item').forEach((it) => {
+      const id = +it.dataset.rid, m = it.querySelector('[data-imsg]');
+      it.querySelector('[data-isave]').addEventListener('click', async () => {
+        m.textContent = 'Saving…';
+        try { await A.updateReport(id, { status: it.querySelector('[data-ist]').value, reply: it.querySelector('[data-irp]').value }); m.textContent = 'Saved'; setTimeout(renderInbox, 600); } catch (err) { m.textContent = err.message; }
+      });
+      it.querySelector('[data-idel]').addEventListener('click', async () => {
+        if (!confirm('Delete report #' + id + '? This can’t be undone.')) return;
+        try { await A.deleteReport(id); renderInbox(); } catch (err) { m.textContent = err.message; }
+      });
+    });
+  }
+
+  // ---------- reviews on game pages ----------
+  async function fillReviews() {
+    const el = document.querySelector('[data-reviews]');
+    const A = window.SpectraWebAccount;
+    if (!el) return;
+    const g = byId[el.dataset.reviews];
+    const rows = A && A.available ? await A.reviews(el.dataset.reviews).catch(() => []) : [];
+    if (!el.isConnected) return;
+    const stars = (n) => `<span class="stars" aria-label="${n} out of 5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= Math.round(n) ? 'on' : ''}">★</i>`).join('')}</span>`;
+    const hint = `<p class="fine">Reviews come from players in the Spectra Launcher. Play ${esc(g ? g.title : 'the game')} there for a minute, then rate it on its page.</p>`;
+    if (!rows.length) { el.innerHTML = `<p class="muted">No reviews yet.</p>${hint}`; return; }
+    const avg = rows.reduce((a, r) => a + r.stars, 0) / rows.length;
+    const time = (s) => (s >= 3600 ? Math.floor(s / 3600) + 'h ' : '') + Math.floor((s % 3600) / 60) + 'm';
+    el.innerHTML = `<div class="rv-top"><b>${avg.toFixed(1)}</b>${stars(avg)}<span class="fine">${rows.length} review${rows.length === 1 ? '' : 's'}</span></div>
+      <div class="rv-list">${rows.slice(0, 6).map((r) => `<div class="rv"><div class="rv-head"><a href="#/u/${esc(r.profiles.username)}"><span class="rv-av" style="background:${esc(r.profiles.avatar_color || '#927dff')}">${esc((r.profiles.display_name || '?')[0].toUpperCase())}</span>${esc(r.profiles.display_name)}</a>${stars(r.stars)}</div>
+        ${r.body ? `<p>${esc(r.body)}</p>` : ''}<span class="fine">${time(r.playtime || 0)} played · ${fmtDate(r.updated_at)}</span></div>`).join('')}</div>${hint}`;
   }
 
   // ---------- Spectra IDE ----------
@@ -628,7 +793,7 @@
       window.SpectraAccountPages.render({ root: app.firstElementChild, section: name, arg, extra, games: byId, playable });
     } else app.innerHTML = `<div class="page page-${key}">${pages[key](arg)}</div>`;
     document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === (key === 'game' ? 'games' : key)));
-    document.title = key === 'game' && byId[arg] ? `${byId[arg].title} · Spectra` : accountRoute ? 'Account · Spectra' : ({ boards: 'Leaderboards · Spectra', devlog: 'Devlog · Spectra', ide: 'Spectra IDE' })[key] || 'Spectra · Light goes in. Games come out.';
+    document.title = key === 'game' && byId[arg] ? `${byId[arg].title} · Spectra` : accountRoute ? 'Account · Spectra' : ({ boards: 'Leaderboards · Spectra', devlog: 'Devlog · Spectra', ide: 'Spectra IDE', report: arg === 'inbox' ? 'Reports inbox · Spectra' : 'Report a problem · Spectra' })[key] || 'Spectra · Light goes in. Games come out.';
     document.body.classList.remove('menu-open');
     document.getElementById('menuBtn').setAttribute('aria-expanded', 'false');
     if (key === 'home') {
@@ -640,6 +805,8 @@
     if (key === 'games') bindGames();
     if (key === 'game' || key === 'boards') fillBoards();
     if (key === 'devlog') loadDevlog().then(renderDevlog);
+    if (key === 'report') bindReport(arg);
+    if (key === 'game') fillReviews();
     prefillNotify();
     bindTour();
     bindReveal();

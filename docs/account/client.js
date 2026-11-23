@@ -112,8 +112,72 @@
     throw new Error('Could not sign you up right now. Try again later.');
   };
 
+  // ---------- bug reports and feedback (see supabase/reports.sql) ----------
+  const REPORT_KINDS = ['bug', 'crash', 'performance', 'feedback', 'idea', 'other'];
+  const reportError = (error) => {
+    if (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|schema cache/i.test(error.message || '')) return new Error('Reports open shortly. Try again later.');
+    if (error.code === 'P0001') return new Error(error.message);
+    if (error.status === 429) return new Error('Too many attempts. Wait a few minutes and try again.');
+    return new Error('Could not send your report right now. Try again later.');
+  };
+  const report = async (r) => {
+    const clean = (v, n) => String(v || '').trim().slice(0, n);
+    const row = {
+      game: clean(r.game, 40), kind: r.kind, title: clean(r.title, 120), details: clean(r.details, 4000),
+      steps: clean(r.steps, 2000), version: clean(r.version, 40), platform: clean(r.platform, 12), contact: clean(r.contact, 254).toLowerCase(),
+    };
+    if (!gameIdPattern.test(row.game)) throw new Error('Choose what the report is about.');
+    if (!REPORT_KINDS.includes(row.kind)) throw new Error('Choose the kind of report.');
+    if (row.title.length < 4) throw new Error('Give the report a short title.');
+    if (row.details.length < 10) throw new Error('Describe what happened in a sentence or two.');
+    if (row.contact && !/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/.test(row.contact)) throw new Error('That email address doesn’t look right. Leave it empty if you prefer.');
+    const account = sb ? await user().catch(() => null) : null;
+    if (account) row.user_id = account.id;
+    const { error } = await client().from('reports').insert(row);
+    if (error) throw reportError(error);
+    return true;
+  };
+  const myReports = async () => {
+    const account = await user();
+    if (!account) return [];
+    const { data, error } = await client().from('reports').select('id,created_at,game,kind,title,status,reply,updated_at').eq('user_id', account.id).order('created_at', { ascending: false }).limit(50);
+    if (error) throw reportError(error);
+    return data || [];
+  };
+  const isAdmin = async () => {
+    if (!(await user())) return false;
+    const { data, error } = await client().rpc('is_admin');
+    return !error && data === true;
+  };
+  const allReports = async () => {
+    const { data, error } = await client().from('reports').select('*').order('created_at', { ascending: false }).limit(500);
+    if (error) throw reportError(error);
+    return data || [];
+  };
+  const updateReport = async (id, patch) => {
+    const row = { updated_at: new Date().toISOString() };
+    if (patch.status) row.status = patch.status;
+    if (patch.reply != null) row.reply = String(patch.reply).slice(0, 2000);
+    const { error } = await client().from('reports').update(row).eq('id', id);
+    if (error) throw new Error(error.message || 'Could not update the report.');
+  };
+  const deleteReport = async (id) => {
+    const { error } = await client().from('reports').delete().eq('id', id);
+    if (error) throw new Error(error.message || 'Could not delete the report.');
+  };
+
+  // public game reviews (written in the launcher after playing; see supabase/reviews.sql)
+  const reviews = async (gameId) => {
+    if (!sb || !gameIdPattern.test(gameId)) return [];
+    const { data, error } = await client().from('reviews').select('stars,body,playtime,updated_at,profiles(username,display_name,avatar_color)')
+      .eq('game_id', gameId).order('updated_at', { ascending: false }).limit(200);
+    if (error) return [];
+    return (data || []).filter((r) => r.profiles);
+  };
+
   window.SpectraWebAccount = {
     available: !!sb, usernamePattern, gameIdPattern, user, profile, byUsername, extras, privateLibrary, stats, signIn, ids, leaderboard, notify,
+    report, myReports, isAdmin, allReports, updateReport, deleteReport, reviews,
     onSessionChange(fn) {
       sb?.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') setTimeout(() => fn(session?.user || null), 0);
