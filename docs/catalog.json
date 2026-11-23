@@ -957,8 +957,8 @@
       "tagline": "Scrap-built hull. Storm-torn sky. Bring the light home.",
       "description": "A scrap-ship salvage run through a storm-torn sky archipelago. Shoot sky-pirates apart and bolt their parts onto your hull wherever they touch. Dive into squalls and thunderheads to harvest stormlight cores, then make it back to a floating dock before the strain tears your ship apart.",
       "status": "available",
-      "version": "1.0.0",
-      "build": 3,
+      "version": "1.0.1",
+      "build": 4,
       "released": "2026-11-23",
       "achievementsFrom": "2026-11-23T13:34:38Z",
       "genres": [
@@ -969,10 +969,10 @@
         "Windows"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/lumen/Lumen-1.0.0.zip",
+      "download": "https://github.com/Nautiquatic/Spectra/releases/download/lumen/Lumen-1.0.1.zip",
       "exe": "Lumen.exe",
-      "sizeBytes": 313747,
-      "sha256": "244f6ca4cef7c593cd7828f5ec019622784899417926d4ba9f270f995ec6b94d",
+      "sizeBytes": 315879,
+      "sha256": "d66c6db7a72887f6d53d11431bbc7fc90410800dc9dd43bec2c51c8a22fd721f",
       "cover": "https://nautiquatic.github.io/Spectra/assets/games/lumen-cover.png?v=2",
       "banner": "https://nautiquatic.github.io/Spectra/assets/games/lumen-banner.png?v=3",
       "screenshots": [
@@ -1385,6 +1385,17 @@
         }
       ],
       "patchNotes": [
+        {
+          "version": "1.0.1",
+          "date": "2026-11-23",
+          "notes": [
+            "Real ship physics: your hull now has a centre of mass and turns about it",
+            "Thrusters push from where they sit. One off to the side of your centre of mass swings the nose the other way, so a thruster on the far left turns you right",
+            "Too much twist overpowers the Lens Core gyro and the ship spins out. Ballast Keels steady the gyro",
+            "Lopsided thrust no longer slides you sideways; heavy parts move the centre of mass, and off-centre knocks on islands set you spinning",
+            "New trim readout on the HUD (Trim true, Pulls, Spins, SPIN-OUT), and the centre of mass shows while you drag a part"
+          ]
+        },
         {
           "version": "1.0.0",
           "date": "2026-11-23",
