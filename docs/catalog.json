@@ -132,16 +132,16 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-1.4.7.zip",
+      "download": "https://github.com/iZynith/Spectra/releases/download/a/Prismfall-1.4.7.zip",
       "exe": "Prismfall.exe",
       "mods": true,
       "sizeBytes": 1196141,
-      "cover": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-cover.png",
-      "banner": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
+      "cover": "https://izynith.github.io/Spectra/assets/games/prismfall-cover.png",
+      "banner": "https://izynith.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "screenshots": [
-        "https://nautiquatic.github.io/Spectra/assets/games/prismfall-shot-1.webp",
-        "https://nautiquatic.github.io/Spectra/assets/games/prismfall-shot-2.webp",
-        "https://nautiquatic.github.io/Spectra/assets/games/prismfall-shot-3.webp"
+        "https://izynith.github.io/Spectra/assets/games/prismfall-shot-1.webp",
+        "https://izynith.github.io/Spectra/assets/games/prismfall-shot-2.webp",
+        "https://izynith.github.io/Spectra/assets/games/prismfall-shot-3.webp"
       ],
       "art": {
         "from": "#1a0c3a",
@@ -963,7 +963,7 @@
         }
       ],
       "android": {
-        "download": "https://github.com/Nautiquatic/Spectra/releases/download/a/Prismfall-android-1.4.7.zip",
+        "download": "https://github.com/iZynith/Spectra/releases/download/a/Prismfall-android-1.4.7.zip",
         "sizeBytes": 926197
       },
       "requirements": {
@@ -974,8 +974,8 @@
         "storage": "About 2 MB",
         "online": "Only for multiplayer"
       },
-      "trailer": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-trailer.webm",
-      "trailerPoster": "https://nautiquatic.github.io/Spectra/assets/games/prismfall-shot-2.webp"
+      "trailer": "https://izynith.github.io/Spectra/assets/games/prismfall-trailer.webm",
+      "trailerPoster": "https://izynith.github.io/Spectra/assets/games/prismfall-shot-2.webp"
     },
     {
       "id": "lumen",
@@ -995,17 +995,17 @@
         "Windows"
       ],
       "featured": true,
-      "download": "https://github.com/Nautiquatic/Spectra/releases/download/lumen/Lumen-1.0.3.zip",
+      "download": "https://github.com/iZynith/Spectra/releases/download/lumen/Lumen-1.0.3.zip",
       "exe": "Lumen.exe",
       "mods": true,
       "sizeBytes": 320024,
       "sha256": "4d11b3f5095b425e6cc7ace87dc66936979eb22b46e7895f41e9860672cfcaf8",
-      "cover": "https://nautiquatic.github.io/Spectra/assets/games/lumen-cover.png?v=2",
-      "banner": "https://nautiquatic.github.io/Spectra/assets/games/lumen-banner.png?v=3",
+      "cover": "https://izynith.github.io/Spectra/assets/games/lumen-cover.png?v=2",
+      "banner": "https://izynith.github.io/Spectra/assets/games/lumen-banner.png?v=3",
       "screenshots": [
-        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-1.png?v=2",
-        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-2.png?v=2",
-        "https://nautiquatic.github.io/Spectra/assets/games/lumen-shot-3.png?v=2"
+        "https://izynith.github.io/Spectra/assets/games/lumen-shot-1.png?v=2",
+        "https://izynith.github.io/Spectra/assets/games/lumen-shot-2.png?v=2",
+        "https://izynith.github.io/Spectra/assets/games/lumen-shot-3.png?v=2"
       ],
       "art": {
         "from": "#08101c",
@@ -1464,8 +1464,8 @@
     }
   ],
   "androidApp": {
-    "version": "0.3.1",
-    "url": "https://github.com/Nautiquatic/Spectra/releases/download/Android/SpectraAndroid.apk",
+    "version": "0.3.2",
+    "url": "https://github.com/iZynith/Spectra/releases/download/Android/SpectraAndroid.apk",
     "sizeBytes": 4646640
   }
 }
