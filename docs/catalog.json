@@ -120,8 +120,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.4.7",
-      "build": 38,
+      "version": "1.5.0",
+      "build": 39,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -132,10 +132,10 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/iZynith/Spectra/releases/download/a/Prismfall-1.4.7.zip",
+      "download": "https://github.com/iZynith/Spectra/releases/download/a/Prismfall-1.5.0.zip",
       "exe": "Prismfall.exe",
       "mods": true,
-      "sizeBytes": 1196141,
+      "sizeBytes": 1234067,
       "cover": "https://izynith.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://izynith.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "screenshots": [
@@ -699,6 +699,24 @@
       ],
       "patchNotes": [
         {
+          "version": "1.5.0",
+          "date": "2026-11-26",
+          "notes": [
+            "New mode: Arcade. Prismfall as a bullet hell: twelve stages of Prism Emitters, shot curtains and bosses, with its own soundtrack. Your hitbox is the white core, and grazing shots scores",
+            "Waves and Endless Waves are now in single-player too: 30 waves with a boss every 5th and the Rift Titan on wave 30 (it counts towards Ascension)",
+            "Arcade bosses climb four tiers: Normal, Evolved, Ascended, then Malevolence. After each boss you heal and pick a free upgrade",
+            "Three Malevolences, each with its own body, spell cards, music, entrance and ending: Vesperine the Unlit, the Maw of Seven and Astraea Null. On Nightmare they are brutal",
+            "Two new classes: the Weaver (helix threads, Loom slows shots) and the Chronomancer (clock-hand bolts that stop and surge, Stopwatch freezes shots)",
+            "Evolved classes reworked (2,000 to 3,000 prisms): every class has its own stats, a specialised aura and a new ability on G",
+            "New: Ascended classes (7,500 to 10,000 prisms). Each has its own stats, an attack change, an aura with passives, a new look and an ultimate on T",
+            "Ascension needs the Rift Titan beaten on Nightmare in Story, Normal and Waves, then one more Nightmare Titan before each further Ascension. Hold up to three; deleting one gives back 20%",
+            "Seven new health upgrades: Nanoweave, Lifebloom, Vital Core, Blood Bank, Mending Pulse, Overgrowth and Phoenix Heart",
+            "Secret classes, and their upgrades, Evolved and Ascended items, stay hidden in the shop until you unlock them",
+            "Comet Tyrant nerfed: less hull and contact damage, slower charges with a longer wind-up, fewer shots and smaller fire hazards",
+            "Fixed: Procedural maps with two voids only drew one, so the zone timer could start with no void in sight"
+          ]
+        },
+        {
           "version": "1.4.7",
           "date": "2026-11-24",
           "notes": [
@@ -963,8 +981,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/iZynith/Spectra/releases/download/a/Prismfall-android-1.4.7.zip",
-        "sizeBytes": 926197
+        "download": "https://github.com/iZynith/Spectra/releases/download/a/Prismfall-android-1.5.0.zip",
+        "sizeBytes": 969133
       },
       "requirements": {
         "os": "Windows 10 or 11 (64-bit), or Android 7+ through Spectra for Android",
