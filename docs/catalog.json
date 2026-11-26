@@ -120,8 +120,8 @@
       "tagline": "One hull. Endless light. Survive the rift.",
       "description": "A neon arena survival shooter. Steer your hull, aim your prism cannon and fire by hand while you dash and harvest light shards to level up. Stay inside the red border of the rift, survive escalating swarms, and break the Prism Wraith when it breaches.",
       "status": "available",
-      "version": "1.5.0",
-      "build": 39,
+      "version": "1.5.1",
+      "build": 40,
       "released": "2026-11-06",
       "genres": [
         "Arcade",
@@ -132,10 +132,10 @@
         "Android"
       ],
       "featured": true,
-      "download": "https://github.com/iZynith/Spectra/releases/download/a/Prismfall-1.5.0.zip",
+      "download": "https://github.com/iZynith/Spectra/releases/download/a/Prismfall-1.5.1.zip",
       "exe": "Prismfall.exe",
       "mods": true,
-      "sizeBytes": 1234067,
+      "sizeBytes": 1248745,
       "cover": "https://izynith.github.io/Spectra/assets/games/prismfall-cover.png",
       "banner": "https://izynith.github.io/Spectra/assets/games/prismfall-banner.png?v=2",
       "screenshots": [
@@ -699,6 +699,14 @@
       ],
       "patchNotes": [
         {
+          "version": "1.5.1",
+          "date": "2026-11-26",
+          "notes": [
+            "Add your own content without touching the code: upgrades (one file each, with simple stats), classes and achievements in the data folder. See data/README.md",
+            "Menders near each other heal less and less often, and a hostile can only be mended once every 1.5s"
+          ]
+        },
+        {
           "version": "1.5.0",
           "date": "2026-11-26",
           "notes": [
@@ -981,8 +989,8 @@
         }
       ],
       "android": {
-        "download": "https://github.com/iZynith/Spectra/releases/download/a/Prismfall-android-1.5.0.zip",
-        "sizeBytes": 969133
+        "download": "https://github.com/iZynith/Spectra/releases/download/a/Prismfall-android-1.5.1.zip",
+        "sizeBytes": 983611
       },
       "requirements": {
         "os": "Windows 10 or 11 (64-bit), or Android 7+ through Spectra for Android",
